@@ -1,0 +1,16 @@
+<?php
+declare(strict_types=1);
+
+function sl_template_escape_array(array $array): array
+{
+    return array_map("htmlspecialchars", $array);
+}
+
+function sl_template_escape_array_of_arrays(array $array): array
+{
+    return array_map(function (array $inner_array) {
+            return array_map("htmlspecialchars", $inner_array);
+        },
+        $array
+    );
+}

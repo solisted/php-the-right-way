@@ -1,0 +1,99 @@
+body {
+    color: #222222;
+    background-color: #ffffff;
+    margin: 2em auto;
+    padding: 0 .62em;
+    font: 1em sans-serif;
+    max-width: 60em;
+}
+
+table {
+    border: 1px solid #aaaaaa;
+    border-collapse: separate;
+    border-radius: .4em;
+    border-spacing: 0;
+    width: 100%;
+}
+
+table td, table th {
+    padding: .4em .8em;
+}
+
+table td {
+    border-top: 1px solid #aaaaaa;
+}
+
+table th {
+    border-top: none;
+    text-align: left;
+}
+
+table th:first-child {
+    text-align: right
+}
+
+form {
+    border: 1px solid #aaaaaa;
+    border-radius: .4em;
+    padding: .8em 1.6em;
+    width: calc(100% - 3.2em - 2px);
+}
+
+form label {
+    padding: .2em 0;
+    margin: .4em 0;
+}
+
+form input[type=text] {
+    display: inline-block;
+    font-size: 1em;
+    padding: .4em .8em;
+    margin: .4em 0 .8em 0;
+    width: calc(100% - 1.6em - 2px);
+    border: 1px solid #aaaaaa;
+    border-radius: .4em;
+}
+
+form input[type=text].error {
+    margin-bottom: .2em;
+    border-color: red;
+}
+
+form input[readonly] {
+    color: #aaaaaa;
+}
+
+form button {
+    display: inline-block;
+    font-size: 1em;
+    font-weight: normal;
+    padding: .4em .8em;
+    margin: .2em .4em .2em 0;
+    border: 1px solid #aaaaaa;
+    border-radius: .4em;
+    color: #222222;
+    cursor: pointer;
+}
+
+form button[type=submit] {
+    background-color: #eeeeee;
+}
+
+form button[type=button] {
+    background-color: #ffffff;
+}
+
+form span.error {
+    display: block;
+    font-size: .9em;
+    color: red;
+    margin-bottom: .8em;
+}
+
+a, a:visited {
+    color: #0055aa;
+}
+
+a:hover {
+    color: #002288;
+}
