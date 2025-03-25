@@ -32,42 +32,37 @@ function sl_request_is_method(string $method): bool
     return isset($_SERVER["REQUEST_METHOD"]) && $_SERVER["REQUEST_METHOD"] === $method;
 }
 
-function sl_request_query_get_integer(string $parameter_name, int $min, int $max, ?int $default = NULL): int
+function sl_request_get_integer(int $request_type, string $parameter_name, int $min, int $max, ?int $default = null): int
 {
     $value = filter_input(
-        INPUT_GET,
+        $request_type,
         $parameter_name,
         FILTER_VALIDATE_INT,
         [
-            "options" => ["min_range" => $min, "max_range" => $max, "default" => $default],
+            "options" => ["min_range" => $min, "max_range" => $max],
             "flags" => FILTER_NULL_ON_FAILURE
         ]
     );
 
-    if ($value === false || $value === NULL) {
+    if (($value === false && $default === null) || $value === null) {
         sl_request_terminate(400);
+    }
+
+    if ($value === false) {
+        return $default;
     }
 
     return $value;
 }
 
-function sl_request_post_get_integer(string $parameter_name, int $min, int $max, ?int $default = NULL): int
+function sl_request_query_get_integer(string $parameter_name, int $min, int $max, ?int $default = null): int
 {
-    $value = filter_input(
-        INPUT_POST,
-        $parameter_name,
-        FILTER_VALIDATE_INT,
-        [
-            "options" => ["min_range" => $min, "max_range" => $max, "default" => $default],
-            "flags" => FILTER_NULL_ON_FAILURE
-        ]
-    );
+    return sl_request_get_integer(INPUT_GET, $parameter_name, $min, $max, $default);
+}
 
-    if ($value === false || $value === NULL) {
-        sl_request_terminate(400);
-    }
-
-    return $value;
+function sl_request_post_get_integer(string $parameter_name, int $min, int $max, ?int $default = null): int
+{
+    return sl_request_get_integer(INPUT_POST, $parameter_name, $min, $max, $default);
 }
 
 function sl_request_get_post_parameters(array $parameters): array

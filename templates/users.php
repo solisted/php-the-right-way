@@ -1,11 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <title>Users</title>
-  <link rel="stylesheet" href="/default.css"/>
-</head>
-<body>
+<div class="main">
   <table>
     <thead>
       <tr>
@@ -17,6 +10,7 @@
       </tr>
     </thead>
     <tbody>
+      <?php if (count($users) > 0): ?>
       <?php foreach ($users as $user): ?>
       <tr>
         <td align="right"><?= $user["id"] ?></td>
@@ -26,7 +20,12 @@
         <td><?= $user["email"] ?></td>
       </tr>
       <?php endforeach; ?>
+      <?php else: ?>
+      <tr>
+        <td colspan="5" align="center">No users found</td>
+      </tr>
+      <?php endif ?>
     </tbody>
   </table>
-</body>
-</html>
+<?php sl_template_render_pager($url, $page, $size, $total_pages); ?>
+</div>

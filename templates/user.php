@@ -1,11 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <title>Users</title>
-  <link rel="stylesheet" href="/default.css"/>
-</head>
-<body>
+<div class="main">
   <form method="POST" action="/user/<?= $user['id'] > 0 ? $user['id'] : "add" ?>">
     <input type="hidden" name="id" value="<?= $user['id'] ?>"/>
     <label for="username">Username</label>
@@ -31,5 +24,4 @@
     <button type="submit"><?= $user["id"] == 0 ? "Add" : "Update" ?></button>
     <a href="/users"><button type="button">Cancel</button></a>
   </form>
-</body>
-</html>
+</div>
