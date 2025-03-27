@@ -38,3 +38,23 @@ function sl_database_is_unique_email(PDO $connection, string $email, int $user_i
 
     return $statement->fetchColumn(0) === 0;
 }
+
+function sl_database_is_unique_rolename(PDO $connection, string $name, int $role_id): bool
+{
+    $statement = $connection->prepare("SELECT COUNT(*) FROM roles WHERE name = :name AND id <> :id");
+    $statement->bindValue(":name", $name, PDO::PARAM_STR);
+    $statement->bindValue(":id", $role_id, PDO::PARAM_INT);
+    $statement->execute();
+
+    return $statement->fetchColumn(0) === 0;
+}
+
+function sl_database_is_unique_actionname(PDO $connection, string $name, int $action_id): bool
+{
+    $statement = $connection->prepare("SELECT COUNT(*) FROM actions WHERE name = :name AND id <> :id");
+    $statement->bindValue(":name", $name, PDO::PARAM_STR);
+    $statement->bindValue(":id", $action_id, PDO::PARAM_INT);
+    $statement->execute();
+
+    return $statement->fetchColumn(0) === 0;
+}

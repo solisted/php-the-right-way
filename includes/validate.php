@@ -29,7 +29,7 @@ function sl_validate_name(string $name, string $field_name): ?string
     }
 
     if ($length < 2 || $length > 32) {
-        return "${field_name} length must be between 6 and 16 characters";
+        return "${field_name} length must be between 2 and 32 characters";
     }
 
     if (preg_match("/^[[:alpha:]]+$/u", $name) !== 1) {
@@ -53,6 +53,63 @@ function sl_validate_email(string $email, string $field_name): ?string
 
     if (filter_var($email, FILTER_VALIDATE_EMAIL) !== $email) {
         return "${field_name} must a valid email address";
+    }
+
+    return null;
+}
+
+function sl_validate_rolename(string $name, string $field_name): ?string
+{
+    $length = mb_strlen($name);
+
+    if ($length === 0) {
+        return "${field_name} is required";
+    }
+
+    if ($length < 4 || $length > 32) {
+        return "${field_name} length must be between 4 and 32 characters";
+    }
+
+    if (preg_match("/^[[:alpha:]]+$/u", $name) !== 1) {
+        return "${field_name} can have only letters";
+    }
+
+    return null;
+}
+
+function sl_validate_description(string $description, string $field_name): ?string
+{
+    $length = mb_strlen($description);
+
+    if ($length === 0) {
+        return "${field_name} is required";
+    }
+
+    if ($length < 10 || $length > 1024) {
+        return "${field_name} length must be between 10 and 1024 characters";
+    }
+
+    if (preg_match("/^[[:print:]]+$/u", $description) !== 1) {
+        return "${field_name} can have only printable characters";
+    }
+
+    return null;
+}
+
+function sl_validate_actionname(string $name, string $field_name): ?string
+{
+    $length = mb_strlen($name);
+
+    if ($length === 0) {
+        return "${field_name} is required";
+    }
+
+    if ($length < 4 || $length > 32) {
+        return "${field_name} length must be between 4 and 32 characters";
+    }
+
+    if (preg_match("/^[[:alpha:]]+$/u", $name) !== 1) {
+        return "${field_name} can have only letters";
     }
 
     return null;

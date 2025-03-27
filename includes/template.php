@@ -25,7 +25,7 @@ function sl_template_render_footer(): void
     require("../templates/footer.php");
 }
 
-function sl_render_sidebar(): void
+function sl_template_render_sidebar(): void
 {
     require("../templates/sidebar.php");
 }

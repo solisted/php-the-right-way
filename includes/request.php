@@ -32,6 +32,11 @@ function sl_request_is_method(string $method): bool
     return isset($_SERVER["REQUEST_METHOD"]) && $_SERVER["REQUEST_METHOD"] === $method;
 }
 
+function sl_request_is_uri(string $uri): bool
+{
+    return isset($_SERVER["REQUEST_URI"]) && mb_stripos($_SERVER["REQUEST_URI"], $uri) === 0;
+}
+
 function sl_request_get_integer(int $request_type, string $parameter_name, int $min, int $max, ?int $default = null): int
 {
     $value = filter_input(

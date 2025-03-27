@@ -6,9 +6,9 @@ require("../includes/database.php");
 require("../includes/request.php");
 require("../includes/template.php");
 
-function sl_render_users(array $users, string $url, int $page, int $size, int $total_pages): void
+function sl_render_roles(array $roles, string $url, int $page, int $size, int $total_pages): void
 {
-    require("../templates/users.php");
+    require("../templates/roles.php");
 }
 
 sl_request_method_assert("GET");
@@ -18,7 +18,7 @@ $page_size = sl_request_query_get_integer("size", 10, 100, 15);
 
 $connection = sl_database_get_connection();
 
-$statement = $connection->query("SELECT COUNT(*) FROM users");
+$statement = $connection->query("SELECT COUNT(*) FROM roles");
 $row_count = $statement->fetchColumn(0);
 
 $total_pages = intval(ceil($row_count / $page_size));
@@ -26,14 +26,14 @@ if ($total_pages > 0 && $page > $total_pages) {
     sl_request_terminate(400);
 }
 
-$statement = $connection->prepare("SELECT id, username, first_name, last_name, email FROM users LIMIT :offset, :limit");
+$statement = $connection->prepare("SELECT id, name, description FROM roles LIMIT :offset, :limit");
 $statement->bindValue(":offset", ($page - 1) * $page_size, PDO::PARAM_INT);
 $statement->bindValue(":limit", $page_size, PDO::PARAM_INT);
 $statement->execute();
 
-$users = sl_template_escape_array_of_arrays($statement->fetchAll(PDO::FETCH_ASSOC));
+$roles = sl_template_escape_array_of_arrays($statement->fetchAll(PDO::FETCH_ASSOC));
 
 sl_template_render_header();
 sl_template_render_sidebar();
-sl_render_users($users, "/users", $page, $page_size, $total_pages);
+sl_render_roles($roles, "/roles", $page, $page_size, $total_pages);
 sl_template_render_footer();

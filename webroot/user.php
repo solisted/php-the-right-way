@@ -106,6 +106,6 @@ if (sl_request_is_method("GET")) {
 }
 
 sl_template_render_header();
-sl_render_sidebar();
+sl_template_render_sidebar();
 sl_render_user($user, $errors);
 sl_template_render_footer();

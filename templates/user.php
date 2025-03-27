@@ -11,7 +11,7 @@
     <?php if (isset($errors['first_name'])): ?>
       <span class="error"><?= $errors['first_name'] ?></span>
     <?php endif; ?>
-    <label for="first_name">Last Name</label>
+    <label for="last_name">Last Name</label>
     <input type="text" name="last_name" value="<?= $user['last_name'] ?>"<?= isset($errors['last_name']) ? ' class="error"' : "" ?>/>
     <?php if (isset($errors['last_name'])): ?>
       <span class="error"><?= $errors['last_name'] ?></span>

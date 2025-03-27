@@ -4,9 +4,9 @@
       <tr>
         <th width="5%">#</th>
         <th width="20%">Username</th>
-        <th width="25%">First Name</th>
-        <th width="25%">Last Name</th>
-        <th width="25%">Email</th>
+        <th width="20%">First Name</th>
+        <th width="20%">Last Name</th>
+        <th width="35%">Email</th>
       </tr>
     </thead>
     <tbody>

@@ -8,6 +8,7 @@ body {
 }
 
 table {
+    table-layout: fixed;
     border: 1px solid #aaaaaa;
     border-collapse: separate;
     border-radius: .4em;
@@ -16,6 +17,9 @@ table {
 }
 
 table td, table th {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
     padding: .4em .8em;
 }
 
