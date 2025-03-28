@@ -7,7 +7,7 @@
       <span class="error"><?= $errors['name'] ?></span>
     <?php endif; ?>
     <label for="description">Description</label>
-    <input type="text" name="description" value="<?= $action['description'] ?>"<?= isset($errors['description']) ? ' class="error"' : "" ?>/>
+    <input type="text" name="description" id="description" value="<?= $action['description'] ?>"<?= isset($errors['description']) ? ' class="error"' : "" ?>/>
     <?php if (isset($errors['description'])): ?>
       <span class="error"><?= $errors['description'] ?></span>
     <?php endif; ?>

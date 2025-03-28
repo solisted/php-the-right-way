@@ -14,6 +14,7 @@ table {
     border-radius: .4em;
     border-spacing: 0;
     width: 100%;
+    margin-bottom: 1em;
 }
 
 table td, table th {
@@ -41,6 +42,7 @@ form {
     border-radius: .4em;
     padding: .8em 1.6em;
     width: calc(100% - 3.2em - 2px);
+    margin-bottom: 1em;
 }
 
 form label {
@@ -48,7 +50,7 @@ form label {
     margin: .4em 0;
 }
 
-form input[type=text] {
+form input[type=text], form select {
     display: inline-block;
     font-size: 1em;
     padding: .4em .8em;
@@ -87,11 +89,30 @@ form button[type=button] {
     background-color: #ffffff;
 }
 
+form button[disabled] {
+    color: #aaaaaa;
+}
+
 form span.error {
     display: block;
     font-size: .9em;
     color: red;
     margin-bottom: .8em;
+}
+
+form.horizontal {
+    padding: .4em 1.6em;
+}
+
+form.horizontal label {
+}
+
+form.horizontal select {
+    display: inline-block;
+    width: 15em;
+    margin: .4em;
+    max-width: 30em;
+    text-overflow: ellipsis;
 }
 
 a, a:visited {
