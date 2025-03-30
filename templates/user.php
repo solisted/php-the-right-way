@@ -31,7 +31,8 @@
       <tr>
         <th width="5%">#</th>
         <th width="30%">Name</th>
-        <th width="65%">Description</th>
+        <th width="60%">Description</th>
+        <th width="5%">&nbsp;</th>
       </tr>
     </thead>
     <tbody>
@@ -41,6 +42,14 @@
         <td align="right"><?= $role["id"] ?></td>
         <td><?= $role["name"] ?></td>
         <td><?= $role["description"] ?></td>
+        <td align="right">
+          <form class="hidden" method="POST" action="/user/<?= $user['id'] ?>">
+            <input type="hidden" name="action" value="delete_role"/>
+            <input type="hidden" name="id" value="<?= $user['id'] ?>"/>
+            <input type="hidden" name="role_id" value="<?= $role['id'] ?>"/>
+            <button type="submit">&#128473;</button>
+          </form>
+        </td>
       </tr>
       <?php endforeach; ?>
       <?php else: ?>
@@ -51,6 +60,7 @@
     </tbody>
   </table>
   <form class="horizontal" method="POST" action="/user/<?= $user['id'] ?>">
+    <input type="hidden" name="action" value="add_role"/>
     <input type="hidden" name="id" value="<?= $user['id'] ?>"/>
     <label for="role">Role</label>
     <?php if (count($other_roles) > 0): ?>

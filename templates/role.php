@@ -21,7 +21,8 @@
       <tr>
         <th width="5%">#</th>
         <th width="30%">Name</th>
-        <th width="65%">Description</th>
+        <th width="60%">Description</th>
+        <th width="5%">&nbsp;</th>
       </tr>
     </thead>
     <tbody>
@@ -31,6 +32,14 @@
         <td align="right"><?= $action["id"] ?></td>
         <td><?= $action["name"] ?></td>
         <td><?= $action["description"] ?></td>
+        <td align="right">
+          <form class="hidden" method="POST" action="/role/<?= $role['id'] ?>">
+            <input type="hidden" name="action" value="delete_action"/>
+            <input type="hidden" name="id" value="<?= $role['id'] ?>"/>
+            <input type="hidden" name="action_id" value="<?= $action['id'] ?>"/>
+            <button type="submit">&#128473;</button>
+          </form>
+        </td>
       </tr>
       <?php endforeach; ?>
       <?php else: ?>
@@ -41,6 +50,7 @@
     </tbody>
   </table>
   <form class="horizontal" method="POST" action="/role/<?= $role['id'] ?>">
+    <input type="hidden" name="action" value="add_action"/>
     <input type="hidden" name="id" value="<?= $role['id'] ?>"/>
     <label for="action">Action</label>
     <?php if (count($other_actions) > 0): ?>

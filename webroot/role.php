@@ -110,12 +110,23 @@ if (sl_request_is_method("GET")) {
             $other_actions = sl_role_get_other_actions($connection, $role_id);
         }
     } else if ($role_id > 0) {
-        $statement = $connection->prepare("INSERT INTO roles_actions VALUES (:role_id, :action_id)");
-        $statement->bindValue(":role_id", $role_id, PDO::PARAM_INT);
-        $statement->bindValue(":action_id", $action_id, PDO::PARAM_INT);
-        $statement->execute();
+        if (isset($_POST["action"]) && $_POST["action"] === "add_action") {
+            $statement = $connection->prepare("INSERT INTO roles_actions VALUES (:role_id, :action_id)");
+            $statement->bindValue(":role_id", $role_id, PDO::PARAM_INT);
+            $statement->bindValue(":action_id", $action_id, PDO::PARAM_INT);
+            $statement->execute();
 
-        sl_request_redirect("/role/${role_id}");
+            sl_request_redirect("/role/${role_id}");
+        } else if (isset($_POST["action"]) && $_POST["action"] === "delete_action") {
+            $statement = $connection->prepare("DELETE FROM roles_actions WHERE role_id = :role_id AND action_id = :action_id");
+            $statement->bindValue(":role_id", $role_id, PDO::PARAM_INT);
+            $statement->bindValue(":action_id", $action_id, PDO::PARAM_INT);
+            $statement->execute();
+
+            sl_request_redirect("/role/${role_id}");
+        } else {
+            sl_request_terminate(400);
+        }
     } else {
         sl_request_terminate(400);
     }

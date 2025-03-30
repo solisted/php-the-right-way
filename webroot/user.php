@@ -134,12 +134,23 @@ if (sl_request_is_method("GET")) {
             $other_roles = sl_user_get_other_roles($connection, $user_id);
         }
     } else if ($user_id > 0) {
-        $statement = $connection->prepare("INSERT INTO users_roles VALUES (:user_id, :role_id)");
-        $statement->bindValue(":user_id", $user_id, PDO::PARAM_INT);
-        $statement->bindValue(":role_id", $role_id, PDO::PARAM_INT);
-        $statement->execute();
+        if (isset($_POST["action"]) && $_POST["action"] === "add_role") {
+            $statement = $connection->prepare("INSERT INTO users_roles VALUES (:user_id, :role_id)");
+            $statement->bindValue(":user_id", $user_id, PDO::PARAM_INT);
+            $statement->bindValue(":role_id", $role_id, PDO::PARAM_INT);
+            $statement->execute();
 
-        sl_request_redirect("/user/${user_id}");
+            sl_request_redirect("/user/${user_id}");
+        } else if (isset($_POST["action"]) && $_POST["action"] === "delete_role") {
+            $statement = $connection->prepare("DELETE FROM users_roles WHERE user_id = :user_id AND role_id = :role_id");
+            $statement->bindValue(":user_id", $user_id, PDO::PARAM_INT);
+            $statement->bindValue(":role_id", $role_id, PDO::PARAM_INT);
+            $statement->execute();
+
+            sl_request_redirect("/user/${user_id}");
+        } else {
+            sl_request_terminate(400);
+        }
     } else {
         sl_request_terminate(400);
     }

@@ -100,6 +100,23 @@ form span.error {
     margin-bottom: .8em;
 }
 
+form.hidden {
+    display: inline;
+    padding: 0;
+    margin: 0;
+    border: none;
+}
+
+form.hidden button {
+    display: inline;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background-color: #ffffff;
+    position: relative;
+    top: -.15em;
+}
+
 form.horizontal {
     padding: .4em 1.6em;
 }
@@ -190,7 +207,7 @@ ul.sidebar li.active a {
     color: #ffffff;
 }
 
-@media screen and (max-width: 60em) {
+@media only screen and (max-width: 60em) {
     div.sidebar,  div.main {
         float: none;
         width: 100%;
