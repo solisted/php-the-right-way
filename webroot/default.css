@@ -50,7 +50,7 @@ form label {
     margin: .4em 0;
 }
 
-form input[type=text], form select {
+form input[type=text], form input[type=password], form select {
     display: inline-block;
     font-size: 1em;
     padding: .4em .8em;
@@ -60,7 +60,7 @@ form input[type=text], form select {
     border-radius: .4em;
 }
 
-form input[type=text].error {
+form input[type=text].error, form input[type=password].error {
     margin-bottom: .2em;
     border-color: red;
 }
@@ -100,6 +100,13 @@ form span.error {
     margin-bottom: .8em;
 }
 
+form span.alert {
+    display: block;
+    color: red;
+    margin: .8em 0;
+    text-align: center;
+}
+
 form.hidden {
     display: inline;
     padding: 0;
@@ -130,6 +137,11 @@ form.horizontal select {
     margin: .4em;
     max-width: 30em;
     text-overflow: ellipsis;
+}
+
+form h3 {
+    margin: 0 0 .6em 0;
+    text-align: center;
 }
 
 a, a:visited {
@@ -178,6 +190,11 @@ div.sidebar {
 div.main {
     float: right;
     width: 80%;
+}
+
+div.login {
+    width: 20em;
+    margin: 10em auto 0 auto;
 }
 
 ul.sidebar {

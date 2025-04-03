@@ -30,3 +30,8 @@ function sl_sanitize_actionname(string $name): string
 {
     return mb_trim($name);
 }
+
+function sl_sanitize_password(string $password): string
+{
+    return mb_trim($password);
+}

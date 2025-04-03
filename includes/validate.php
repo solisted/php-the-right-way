@@ -115,6 +115,24 @@ function sl_validate_actionname(string $name, string $field_name): ?string
     return null;
 }
 
+function sl_validate_login_username(string $username, string $field_name): ?string
+{
+    if (mb_strlen($username) === 0) {
+        return "${field_name} is required";
+    }
+
+    return null;
+}
+
+function sl_validate_login_password(string $password, string $field_name): ?string
+{
+    if (mb_strlen($password) === 0) {
+        return "${field_name} is required";
+    }
+
+    return null;
+}
+
 function sl_validate_has_errors(array $errors): bool
 {
     foreach ($errors as $error) {
