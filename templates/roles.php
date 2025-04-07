@@ -12,7 +12,11 @@
       <?php foreach ($roles as $role): ?>
       <tr>
         <td align="right"><?= $role["id"] ?></td>
+        <?php if (sl_auth_is_authorized_any(["ReadRole", "UpdateRole"])): ?>
         <td><a href="/role/<?= $role["id"] ?>"><?= $role["name"] ?></a></td>
+        <?php else: ?>
+        <td><?= $role["name"] ?></td>
+        <?php endif; ?>
         <td><?= $role["description"] ?></td>
       </tr>
       <?php endforeach; ?>

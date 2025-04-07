@@ -1,3 +1,7 @@
+<?php
+  $can_update = sl_auth_is_authorized("UpdateRole") && $role['id'] > 0;
+  $can_create = sl_auth_is_authorized("CreateRole") && $role['id'] === 0;
+?>
 <div class="main">
   <form method="POST" action="/role/<?= $role['id'] > 0 ? $role['id'] : "add" ?>">
     <input type="hidden" name="id" value="<?= $role['id'] ?>"/>
@@ -11,8 +15,10 @@
     <?php if (isset($errors['description'])): ?>
       <span class="error"><?= $errors['description'] ?></span>
     <?php endif; ?>
+    <?php if ($can_update || $can_create): ?>
     <button type="submit"><?= $role["id"] == 0 ? "Add" : "Update" ?></button>
     <a href="/roles"><button type="button">Cancel</button></a>
+    <?php endif; ?>
   </form>
   <?php if ($role['id'] > 0): ?>
   <h3>Actions</h3>
@@ -33,12 +39,14 @@
         <td><?= $action["name"] ?></td>
         <td><?= $action["description"] ?></td>
         <td align="right">
+          <?php if ($can_update): ?>
           <form class="hidden" method="POST" action="/role/<?= $role['id'] ?>">
             <input type="hidden" name="action" value="delete_action"/>
             <input type="hidden" name="id" value="<?= $role['id'] ?>"/>
             <input type="hidden" name="action_id" value="<?= $action['id'] ?>"/>
             <button type="submit">&#128473;</button>
           </form>
+          <?php endif; ?>
         </td>
       </tr>
       <?php endforeach; ?>
@@ -49,6 +57,7 @@
       <?php endif ?>
     </tbody>
   </table>
+  <?php if ($can_update): ?>
   <form class="horizontal" method="POST" action="/role/<?= $role['id'] ?>">
     <input type="hidden" name="action" value="add_action"/>
     <input type="hidden" name="id" value="<?= $role['id'] ?>"/>
@@ -64,5 +73,6 @@
     <?php endif ?>
     <button type="submit" <?= count($other_actions) === 0 ? "disabled" : "" ?>>Add</button>
   </form>
+  <?php endif ?>
   <?php endif ?>
 </div>

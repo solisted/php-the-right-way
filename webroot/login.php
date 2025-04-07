@@ -48,7 +48,17 @@ if (sl_request_is_method("POST")) {
         } else {
             $user = $statement->fetch(PDO::FETCH_ASSOC);
             if (password_verify($password, $user["password"]) === true) {
+                $statement = $connection->prepare(
+                    "SELECT DISTINCT a.name FROM users u, users_roles ur, roles_actions ra, actions a WHERE u.id = ur.user_id AND ur.role_id = ra.role_id AND a.id = ra.action_id AND u.id = :user_id"
+                );
+                $statement->bindValue(":user_id", $user["id"], PDO::PARAM_INT);
+                $statement->execute();
+
+                $actions = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+
                 $_SESSION["user_id"] = $user["id"];
+                $_SESSION["actions"] = $actions;
+
                 sl_request_redirect("/users");
             } else {
                 $auth_error = "Incorrect username or password";

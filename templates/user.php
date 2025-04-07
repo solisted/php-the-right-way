@@ -1,3 +1,7 @@
+<?php
+  $can_update = sl_auth_is_authorized("UpdateUser") && $user['id'] > 0;
+  $can_create = sl_auth_is_authorized("CreateUser") && $user['id'] === 0;
+?>
 <div class="main">
   <form method="POST" action="/user/<?= $user['id'] > 0 ? $user['id'] : "add" ?>">
     <input type="hidden" name="id" value="<?= $user['id'] ?>"/>
@@ -21,8 +25,10 @@
     <?php if (isset($errors['email'])): ?>
       <span class="error"><?= $errors['email'] ?></span>
     <?php endif; ?>
+    <?php if ($can_update || $can_create): ?>
     <button type="submit"><?= $user["id"] == 0 ? "Add" : "Update" ?></button>
     <a href="/users"><button type="button">Cancel</button></a>
+    <?php endif; ?>
   </form>
   <?php if ($user['id'] > 0): ?>
   <h3>Roles</h3>
@@ -43,12 +49,14 @@
         <td><?= $role["name"] ?></td>
         <td><?= $role["description"] ?></td>
         <td align="right">
+          <?php if ($can_update): ?>
           <form class="hidden" method="POST" action="/user/<?= $user['id'] ?>">
             <input type="hidden" name="action" value="delete_role"/>
             <input type="hidden" name="id" value="<?= $user['id'] ?>"/>
             <input type="hidden" name="role_id" value="<?= $role['id'] ?>"/>
             <button type="submit">&#128473;</button>
           </form>
+          <?php endif; ?>
         </td>
       </tr>
       <?php endforeach; ?>
@@ -56,9 +64,10 @@
       <tr>
         <td colspan="5" align="center">No roles found</td>
       </tr>
-      <?php endif ?>
+      <?php endif; ?>
     </tbody>
   </table>
+  <?php if ($can_update): ?>
   <form class="horizontal" method="POST" action="/user/<?= $user['id'] ?>">
     <input type="hidden" name="action" value="add_role"/>
     <input type="hidden" name="id" value="<?= $user['id'] ?>"/>
@@ -71,8 +80,9 @@
     </select>
     <?php else: ?>
     <select name="role_id" disabled><option>No roles found</option></select>
-    <?php endif ?>
+    <?php endif; ?>
     <button type="submit" <?= count($other_roles) === 0 ? "disabled" : "" ?>>Add</button>
   </form>
-  <?php endif ?>
+  <?php endif; ?>
+  <?php endif; ?>
 </div>

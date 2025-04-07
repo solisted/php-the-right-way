@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require("../includes/errors.php");
 require("../includes/authentication.php");
+require("../includes/authorization.php");
 require("../includes/database.php");
 require("../includes/request.php");
 require("../includes/template.php");
@@ -32,6 +33,8 @@ if (sl_request_is_method("GET")) {
     $action_id = sl_request_query_get_integer("id", 0, PHP_INT_MAX);
 
     if ($action_id > 0) {
+        sl_auth_assert_authorized_any(["ReadAction", "UpdateAction"]);
+
         $statement = $connection->prepare("SELECT id, name, description FROM actions WHERE id = :id");
         $statement->bindValue(":id", $action_id, PDO::PARAM_INT);
         $statement->execute();
@@ -41,8 +44,12 @@ if (sl_request_is_method("GET")) {
         }
 
         $action = sl_template_escape_array($statement->fetch(PDO::FETCH_ASSOC));
+    } else {
+        sl_auth_assert_authorized("CreateAction");
     }
 } else {
+    sl_auth_assert_authorized_any(["CreateAction", "UpdateAction"]);
+
     $action_id = sl_request_post_get_integer("id", 0, PHP_INT_MAX);
 
     $parameters = sl_request_get_post_parameters([
@@ -64,11 +71,13 @@ if (sl_request_is_method("GET")) {
 
     if (!sl_validate_has_errors($errors)) {
         if ($action_id > 0) {
+            sl_auth_assert_authorized("UpdateAction");
             $statement = $connection->prepare(
                 "UPDATE actions SET name = :name, description = :description WHERE id = :id"
             );
             $statement->bindValue(":id", $action_id, PDO::PARAM_INT);
         } else {
+            sl_auth_assert_authorized("CreateAction");
             $statement = $connection->prepare(
                 "INSERT INTO actions (name, description) VALUES (:name, :description)"
             );

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require("../includes/errors.php");
 require("../includes/authentication.php");
+require("../includes/authorization.php");
 require("../includes/database.php");
 require("../includes/request.php");
 require("../includes/template.php");
@@ -54,6 +55,8 @@ if (sl_request_is_method("GET")) {
     $role_id = sl_request_query_get_integer("id", 0, PHP_INT_MAX);
 
     if ($role_id > 0) {
+        sl_auth_assert_authorized_any(["ReadRole", "UpdateRole"]);
+
         $statement = $connection->prepare("SELECT id, name, description FROM roles WHERE id = :id");
         $statement->bindValue(":id", $role_id, PDO::PARAM_INT);
         $statement->execute();
@@ -66,8 +69,12 @@ if (sl_request_is_method("GET")) {
 
         $role_actions = sl_role_get_role_actions($connection, $role_id);
         $other_actions = sl_role_get_other_actions($connection, $role_id);
+    } else {
+        sl_auth_assert_authorized("CreateRole");
     }
 } else {
+    sl_auth_assert_authorized_any(["CreateRole", "UpdateRole"]);
+
     $action_id = sl_request_post_get_integer("action_id", 0, PHP_INT_MAX, 0);
     $role_id = sl_request_post_get_integer("id", 0, PHP_INT_MAX);
 
@@ -91,11 +98,13 @@ if (sl_request_is_method("GET")) {
 
         if (!sl_validate_has_errors($errors)) {
             if ($role_id > 0) {
+                sl_auth_assert_authorized("UpdateRole");
                 $statement = $connection->prepare(
                     "UPDATE roles SET name = :name, description = :description WHERE id = :id"
                 );
                 $statement->bindValue(":id", $role_id, PDO::PARAM_INT);
             } else {
+                sl_auth_assert_authorized("CreateRole");
                 $statement = $connection->prepare(
                     "INSERT INTO roles (name, description) VALUES (:name, :description)"
                 );
@@ -111,6 +120,8 @@ if (sl_request_is_method("GET")) {
             $other_actions = sl_role_get_other_actions($connection, $role_id);
         }
     } else if ($role_id > 0) {
+        sl_auth_assert_authorized("UpdateRole");
+
         if (isset($_POST["action"]) && $_POST["action"] === "add_action") {
             $statement = $connection->prepare("INSERT INTO roles_actions VALUES (:role_id, :action_id)");
             $statement->bindValue(":role_id", $role_id, PDO::PARAM_INT);

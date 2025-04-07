@@ -12,7 +12,11 @@
       <?php foreach ($actions as $action): ?>
       <tr>
         <td align="right"><?= $action["id"] ?></td>
+        <?php if (sl_auth_is_authorized_any(["ReadAction", "UpdateAction"])): ?>
         <td><a href="/action/<?= $action["id"] ?>"><?= $action["name"] ?></a></td>
+        <?php else: ?>
+        <td><?= $action["name"] ?></td>
+        <?php endif; ?>
         <td><?= $action["description"] ?></td>
       </tr>
       <?php endforeach; ?>

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require("../includes/errors.php");
 require("../includes/authentication.php");
+require("../includes/authorization.php");
 require("../includes/database.php");
 require("../includes/request.php");
 require("../includes/template.php");
@@ -13,6 +14,8 @@ function sl_render_users(array $users, string $url, int $page, int $size, int $t
 }
 
 sl_request_method_assert("GET");
+
+sl_auth_assert_authorized("ListUsers");
 
 $page = sl_request_query_get_integer("page", 1, PHP_INT_MAX, 1);
 $page_size = sl_request_query_get_integer("size", 10, 100, 15);
