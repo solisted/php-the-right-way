@@ -35,3 +35,8 @@ function sl_sanitize_password(string $password): string
 {
     return mb_trim($password);
 }
+
+function sl_sanitize_categoryname(string $name): string
+{
+    return mb_convert_case(mb_trim($name), MB_CASE_TITLE_SIMPLE);
+}

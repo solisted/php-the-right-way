@@ -59,7 +59,7 @@ if (sl_request_is_method("POST")) {
                 $_SESSION["user_id"] = $user["id"];
                 $_SESSION["actions"] = $actions;
 
-                sl_request_redirect("/users");
+                sl_request_redirect("/categories");
             } else {
                 $auth_error = "Incorrect username or password";
             }

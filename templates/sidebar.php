@@ -1,5 +1,10 @@
 <div class="sidebar">
   <ul class="sidebar">
+    <li class="header">Catalog</li>
+    <li <?= sl_request_is_uri('/categor') ? 'class="active"' : "" ?>>
+      <a href="/categories">Categories</a>
+      <a href="/category/add">+</a>
+    </li>
     <li class="header">Access control</li>
     <?php if (sl_auth_is_authorized("ListUsers")): ?>
     <li <?= sl_request_is_uri('/user') ? 'class="active"' : "" ?>><a href="/users">Users</a>

@@ -52,7 +52,7 @@ function sl_validate_email(string $email, string $field_name): ?string
     }
 
     if (filter_var($email, FILTER_VALIDATE_EMAIL) !== $email) {
-        return "${field_name} must a valid email address";
+        return "${field_name} must be a valid email address";
     }
 
     return null;
@@ -133,6 +133,25 @@ function sl_validate_login_password(string $password, string $field_name): ?stri
     return null;
 }
 
+function sl_validate_categoryname(string $name, string $field_name): ?string
+{
+    $length = mb_strlen($name);
+
+    if ($length === 0) {
+        return "${field_name} is required";
+    }
+
+    if ($length < 4 || $length > 64) {
+        return "${field_name} length must be between 4 and 64 characters";
+    }
+
+    if (preg_match("/^[[:alpha:][:space:]]+$/u", $name) !== 1) {
+        return "${field_name} can have only letters and space character";
+    }
+
+    return null;
+}
+
 function sl_validate_has_errors(array $errors): bool
 {
     foreach ($errors as $error) {
@@ -143,3 +162,4 @@ function sl_validate_has_errors(array $errors): bool
 
     return false;
 }
+
