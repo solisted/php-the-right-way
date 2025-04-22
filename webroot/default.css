@@ -60,7 +60,11 @@ form input[type=text], form input[type=password], form select {
     border-radius: .4em;
 }
 
-form input[type=text].error, form input[type=password].error {
+form select {
+    width: 100%;
+}
+
+form input[type=text].error, form input[type=password].error, form select.error {
     margin-bottom: .2em;
     border-color: red;
 }

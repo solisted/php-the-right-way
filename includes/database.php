@@ -68,3 +68,13 @@ function sl_database_is_unique_categoryname(PDO $connection, string $name, int $
 
     return $statement->fetchColumn(0) === 0;
 }
+
+function sl_database_is_unique_productname(PDO $connection, string $name, int $product_id): bool
+{
+    $statement = $connection->prepare("SELECT COUNT(*) FROM products WHERE name = :name AND id <> :id");
+    $statement->bindValue(":name", $name, PDO::PARAM_STR);
+    $statement->bindValue(":id", $product_id, PDO::PARAM_INT);
+    $statement->execute();
+
+    return $statement->fetchColumn(0) === 0;
+}

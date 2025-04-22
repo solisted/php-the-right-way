@@ -17,8 +17,10 @@
         </td>
         <td align="right">
           <form class="hidden" method="POST" action="/category/<?= $category['id'] ?>">
+            <input type="hidden" name="action" value="delete"/>
             <input type="hidden" name="id" value="<?= $category['id'] ?>"/>
-            <button type="submit" <?= $category['depth'] == 0 ? "disabled" : "" ?>>&#128473;</button>
+            <?php $can_delete = ($category['depth'] > 0) && ($category['rgt'] == $category['lft'] + 1); ?>
+            <button type="submit" <?= $can_delete ? "" : "disabled" ?>>&#128473;</button>
           </form>
         </td>
       </tr>

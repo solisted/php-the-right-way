@@ -27,7 +27,7 @@ function sl_user_get_user_roles(PDO $connection, int $user_id): array
 function sl_user_get_other_roles(PDO $connection, int $user_id): array
 {
     $statement = $connection->prepare(
-        "SELECT id, name, description FROM roles WHERE id NOT IN (SELECT role_id FROM users_roles WHERE user_id = :user_id)"
+        "SELECT id, name FROM roles LEFT JOIN users_roles ON role_id = id AND user_id = :user_id WHERE user_id IS NULL"
     );
     $statement->bindValue(":user_id", $user_id, PDO::PARAM_INT);
     $statement->execute();
@@ -42,7 +42,9 @@ $user = [
     "username" => "",
     "first_name" => "",
     "last_name" => "",
-    "email" => ""
+    "email" => "",
+    "password" => "",
+    "password1" => ""
 ];
 $user_roles = [];
 $other_roles = [];
@@ -50,7 +52,9 @@ $errors = [
     "username" => null,
     "first_name" => null,
     "last_name" => null,
-    "email" => null
+    "email" => null,
+    "password" => null,
+    "password1" => null
 ];
 
 $connection = sl_database_get_connection();
@@ -71,6 +75,9 @@ if (sl_request_is_method("GET")) {
 
         $user = sl_template_escape_array($statement->fetch(PDO::FETCH_ASSOC));
 
+        $user["password"] = "";
+        $user["password1"] = "";
+
         $user_roles = sl_user_get_user_roles($connection, $user_id);
         $other_roles = sl_user_get_other_roles($connection, $user_id);
     } else {
@@ -87,7 +94,9 @@ if (sl_request_is_method("GET")) {
             "username" => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
             "first_name" => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
             "last_name" => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-            "email" => FILTER_SANITIZE_FULL_SPECIAL_CHARS
+            "email" => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+            "password" => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+            "password1" => FILTER_SANITIZE_FULL_SPECIAL_CHARS
         ]);
 
         $user["id"] = $user_id;
@@ -96,11 +105,25 @@ if (sl_request_is_method("GET")) {
         $user["first_name"] = sl_sanitize_name($parameters["first_name"]);
         $user["last_name"] = sl_sanitize_name($parameters["last_name"]);
         $user["email"] = sl_sanitize_email($parameters["email"]);
+        $user["password"] = sl_sanitize_password($parameters["password"]);
+        $user["password1"] = sl_sanitize_password($parameters["password1"]);
 
         $errors["username"] = sl_validate_username($user["username"], "Username");
         $errors["first_name"] = sl_validate_name($user["first_name"], "First name");
         $errors["last_name"] = sl_validate_name($user["last_name"], "Last name");
         $errors["email"] = sl_validate_email($user["email"], "Email");
+
+        $hashed_password = null;
+
+        if ($user_id === 0 || ($user_id > 0 && !empty($user["password"]))) {
+            $errors["password"] = sl_validate_password($user["password"], "Password");
+
+            if ($errors["password"] === null && $user["password"] !== $user["password1"]) {
+                $errors["password1"] = "Passwords do not match";
+            } else {
+                $hashed_password = password_hash($user["password"], PASSWORD_BCRYPT);
+            }
+        }
 
         if (!isset($errors["username"]) && !sl_database_is_unique_username($connection, $user["username"], $user_id)) {
             $errors["username"] = "Username already exists";
@@ -122,16 +145,26 @@ if (sl_request_is_method("GET")) {
             if ($user_id > 0) {
                 sl_auth_assert_authorized("UpdateUser");
 
-                $statement = $connection->prepare(
-                    "UPDATE users SET username = :username, first_name = :first_name, last_name = :last_name, email = :email WHERE id = :id"
-                );
+                if ($hashed_password !== null) {
+                    $statement = $connection->prepare(
+                        "UPDATE users SET username = :username, first_name = :first_name, last_name = :last_name, email = :email, password = :password WHERE id = :id"
+                    );
+                    $statement->bindValue(":password", $hashed_password, PDO::PARAM_STR);
+                } else {
+                    $statement = $connection->prepare(
+                        "UPDATE users SET username = :username, first_name = :first_name, last_name = :last_name, email = :email WHERE id = :id"
+                    );
+                }
+
                 $statement->bindValue(":id", $user_id, PDO::PARAM_INT);
             } else {
                 sl_auth_assert_authorized("CreateUser");
 
                 $statement = $connection->prepare(
-                    "INSERT INTO users (username, first_name, last_name, email) VALUES (:username, :first_name, :last_name, :email)"
+                    "INSERT INTO users (username, first_name, last_name, email, password) VALUES (:username, :first_name, :last_name, :email, :password)"
                 );
+
+                $statement->bindValue(":password", $hashed_password, PDO::PARAM_STR);
             }
 
             $statement->bindValue(":username", $user["username"], PDO::PARAM_STR);

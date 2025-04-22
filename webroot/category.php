@@ -15,6 +15,13 @@ function sl_render_category(array $category, array $categories, int $parent_id, 
     require("../templates/category.php");
 }
 
+function sl_categories_find_category_by_id(int $category_id, array $categories): ?array
+{
+    return array_find($categories, function (array $value) use ($category_id) {
+        return isset($value["id"]) && intval($value["id"]) === $category_id;
+    });
+}
+
 sl_request_methods_assert(["GET", "POST"]);
 
 $category = [
@@ -41,50 +48,128 @@ if ($category_id > 0) {
     $statement->execute();
 
     if ($statement->rowCount() == 1) {
-        $parent_id = $statement->fetchColumn(0);
+        $category_parent_id = intval($statement->fetchColumn(0));
+    } else {
+        $category_parent_id = 0;
     }
 }
 
 if (sl_request_is_method("GET")) {
     if ($category_id > 0) {
-        $statement = $connection->prepare("SELECT id, name FROM categories WHERE id = :id");
-        $statement->bindValue(":id", $category_id, PDO::PARAM_INT);
-        $statement->execute();
-
-        if ($statement->rowCount() !== 1) {
+        $category = sl_categories_find_category_by_id($category_id, $categories);
+        if ($category === null) {
             sl_request_terminate(404);
         }
 
-        $category = sl_template_escape_array($statement->fetch(PDO::FETCH_ASSOC));
+        $parent_id = $category_parent_id;
     }
 } else {
-    $category_id = sl_request_query_get_integer("id", 0, PHP_INT_MAX);
+    $category_id = sl_request_post_get_integer("id", 0, PHP_INT_MAX);
 
-    $parameters = sl_request_get_post_parameters([
-        "name" => FILTER_SANITIZE_FULL_SPECIAL_CHARS
-    ]);
+    if (!isset($_POST["action"]) || $_POST["action"] !== "delete") {
+        $parent_id = sl_request_post_get_integer("parent_id", 0, PHP_INT_MAX, 0);
 
-    $category["id"] = $category_id;
-    $category["name"] = sl_sanitize_categoryname($parameters["name"]);
-    $errors["name"] = sl_validate_categoryname($category["name"], "Name");
+        $parameters = sl_request_get_post_parameters([
+            "name" => FILTER_SANITIZE_FULL_SPECIAL_CHARS
+        ]);
 
-    if (!isset($errors["name"]) && !sl_database_is_unique_categoryname($connection, $category["name"], $category_id)) {
-        $errors["name"] = "Category already exists";
-    }
+        $category["id"] = $category_id;
+        $category["name"] = sl_sanitize_categoryname($parameters["name"]);
+        $errors["name"] = sl_validate_categoryname($category["name"], "Name");
 
-    if (!sl_validate_has_errors($errors)) {
-        if ($category_id > 0) {
-            // Move category within the hierarchy if submitted parent id is different from actual parent id
-            $statement = $connection->prepare(
-                "UPDATE categories SET name = :name WHERE id = :id"
-            );
-            $statement->bindValue(":id", $category_id, PDO::PARAM_INT);
-        } else {
-            // Create category
+        if (!isset($errors["name"]) && !sl_database_is_unique_categoryname($connection, $category["name"], $category_id)) {
+            $errors["name"] = "Category already exists";
         }
 
-        $statement->bindValue(":name", $category["name"], PDO::PARAM_STR);
+        if ($parent_id === 0 && $category_id === 0) {
+            $errors["parent"] = "Select parent category";
+        }
+
+        if (!sl_validate_has_errors($errors)) {
+            if ($category_id > 0) {
+                if ($category_parent_id === $parent_id) {
+                    $statement = $connection->prepare(
+                        "UPDATE categories SET name = :name WHERE id = :id"
+                    );
+                    $statement->bindValue(":id", $category_id, PDO::PARAM_INT);
+                    $statement->bindValue(":name", $category["name"], PDO::PARAM_STR);
+                    $statement->execute();
+                } else {
+                    // Move category from one parent to another on the same level
+                }
+
+            } else {
+                $parent = array_find($categories, function (array $value) use ($parent_id) {
+                    return isset($value["id"]) && intval($value["id"]) === $parent_id;
+                });
+
+                if ($parent === null) {
+                    sl_request_terminate(400);
+                }
+
+                $connection->beginTransaction();
+
+                if ($parent["rgt"] == $parent["lft"] + 1) {
+                    $statement = $connection->prepare("UPDATE categories SET lft = lft + 2 WHERE lft > :left");
+                    $statement->bindValue(":left", $parent["lft"], PDO::PARAM_INT);
+                    $statement->execute();
+
+                    $statement = $connection->prepare("UPDATE categories SET rgt = rgt + 2 WHERE rgt > :left");
+                    $statement->bindValue(":left", $parent["lft"], PDO::PARAM_INT);
+                    $statement->execute();
+
+                    $left = $parent["lft"] + 1;
+                    $right = $parent["lft"] + 2;
+                } else {
+                    $statement = $connection->prepare("UPDATE categories SET lft = lft + 2 WHERE lft > :right");
+                    $statement->bindValue(":right", $parent["rgt"], PDO::PARAM_INT);
+                    $statement->execute();
+
+                    $statement = $connection->prepare("UPDATE categories SET rgt = rgt + 2 WHERE rgt >= :right");
+                    $statement->bindValue(":right", $parent["rgt"], PDO::PARAM_INT);
+                    $statement->execute();
+
+                    $left = $parent["rgt"];
+                    $right = $parent["rgt"] + 1;
+                }
+
+                $statement = $connection->prepare("INSERT INTO categories (name, lft, rgt) VALUES (:name, :left, :right)");
+                $statement->bindValue(":name", $category["name"], PDO::PARAM_STR);
+                $statement->bindValue(":left", $left, PDO::PARAM_INT);
+                $statement->bindValue(":right", $right, PDO::PARAM_INT);
+                $statement->execute();
+
+                $connection->commit();
+            }
+
+            sl_request_redirect("/categories");
+        }
+    } else {
+        $category = sl_categories_find_category_by_id($category_id, $categories);
+        if ($category === null) {
+            sl_request_terminate(404);
+        }
+
+
+        if ($category["depth"] == 0 || $category["rgt"] - $category["lft"] > 1) {
+            sl_request_terminate(400);
+        }
+
+        $connection->beginTransaction();
+
+        $statement = $connection->prepare("DELETE FROM categories WHERE id = :id");
+        $statement->bindValue(":id", $category_id, PDO::PARAM_INT);
         $statement->execute();
+
+        $statement = $connection->prepare("UPDATE categories SET lft = lft - 2 WHERE lft > :right");
+        $statement->bindValue(":right", $category["rgt"], PDO::PARAM_INT);
+        $statement->execute();
+
+        $statement = $connection->prepare("UPDATE categories SET rgt = rgt - 2 WHERE rgt > :right");
+        $statement->bindValue(":right", $category["rgt"], PDO::PARAM_INT);
+        $statement->execute();
+
+        $connection->commit();
 
         sl_request_redirect("/categories");
     }

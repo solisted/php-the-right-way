@@ -6,9 +6,12 @@
     <?php if (isset($errors['name'])): ?>
       <span class="error"><?= $errors['name'] ?></span>
     <?php endif; ?>
-    <?php if (count($categories) > 0): ?>
     <label for="parent">Parent category</label>
-    <select name="parent_id" id="parent">
+    <?php if (count($categories) > 0): ?>
+    <?php if ($category['id'] > 0): ?>
+    <input type="hidden" name="parent_id" value="<?= $parent_id ?>"/>
+    <?php endif; ?>
+    <select name="parent_id" id="parent"<?= isset($errors['parent']) ? ' class="error"' : "" ?> <?= $category['id'] > 0 ? "disabled" : "" ?>>
       <option value="0">Select category</option>
       <?php foreach ($categories as $parent_category): ?>
       <option value="<?= $parent_category['id'] ?>" <?= $parent_category['id'] == $parent_id ? "selected" : "" ?>>

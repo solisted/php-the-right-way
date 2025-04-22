@@ -65,7 +65,7 @@ CREATE TABLE `categories` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `lft` (`lft`,`rgt`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -74,8 +74,36 @@ CREATE TABLE `categories` (
 
 LOCK TABLES `categories` WRITE;
 /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
-INSERT INTO `categories` VALUES (1,'Computers',1,14),(2,'Computer Parts',2,7),(3,'Peripherals',8,13),(4,'Processors',3,4),(5,'Memory',5,6),(6,'Keyboard',9,10),(7,'Mouse',11,12);
+INSERT INTO `categories` VALUES (1,'Computers',1,20),(2,'Computer Parts',2,7),(3,'Processors',3,4),(4,'Memory',5,6),(5,'Peripherals',8,13),(6,'Keyboards',9,10),(7,'Mouse',11,12),(8,'Storage',14,19),(9,'Solid State Drives',15,16),(10,'Hard Drives',17,18);
 /*!40000 ALTER TABLE `categories` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `products`
+--
+
+DROP TABLE IF EXISTS `products`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `products` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `category_id` bigint unsigned NOT NULL,
+  `name` varchar(128) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`),
+  KEY `category_id` (`category_id`),
+  CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `products`
+--
+
+LOCK TABLES `products` WRITE;
+/*!40000 ALTER TABLE `products` DISABLE KEYS */;
+INSERT INTO `products` VALUES (1,3,'Intel Core Ultra 9 288V'),(2,3,'Intel Core Ultra 9 285T'),(3,3,'Intel Core Ultra 9 285K'),(4,3,'Intel Core Ultra 9 285HX'),(5,3,'Intel Core Ultra 9 285H'),(6,3,'Intel Core Ultra 9 285'),(7,3,'Intel Core Ultra 9 275HX'),(8,3,'Intel Core Ultra 7 666FX'),(9,3,'Intel Core Ultra 7 123GX');
+/*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -91,7 +119,7 @@ CREATE TABLE `roles` (
   `description` varchar(1024) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -100,7 +128,7 @@ CREATE TABLE `roles` (
 
 LOCK TABLES `roles` WRITE;
 /*!40000 ALTER TABLE `roles` DISABLE KEYS */;
-INSERT INTO `roles` VALUES (1,'Administrator','Full permissions'),(2,'Readonly','Read only permissions');
+INSERT INTO `roles` VALUES (1,'Administrator','Full permissions'),(2,'Readonly','Read only permissions'),(3,'Guest','Role without permissions');
 /*!40000 ALTER TABLE `roles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -144,12 +172,12 @@ CREATE TABLE `users` (
   `first_name` varchar(32) NOT NULL,
   `last_name` varchar(32) NOT NULL,
   `email` varchar(128) NOT NULL,
-  `password` char(60) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
+  `password` char(60) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `first_name` (`first_name`,`last_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -158,7 +186,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'testtest','Test','Test','test@example.com','$2y$12$FRUsr9ZHe0OaGlKE8I.q..SJ7RRFjD1mPnyz20n/Jrrgd7SAfdvbq');
+INSERT INTO `users` VALUES (1,'testtest','Test','Test','test@example.com','$2y$12$ZY3L9buAVtBvF5VQDsjk.uKKfFbuW.0INool6EEzCCUo1lEKtiQni'),(2,'userone','One','One','userone@example.com','$2y$12$EMrMy8NNiSm.9FWjydbnuuM2keam43nWRd9EnNaan0qAJ1d5LofJO'),(3,'usertwo','Two','Two','usertwo@example.com','$2y$12$v2CtYlwR4/Wa5TYsfydGvOHL.slJglrrryuCXQ2cGP4Jg6qTr9j16');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -185,7 +213,7 @@ CREATE TABLE `users_roles` (
 
 LOCK TABLES `users_roles` WRITE;
 /*!40000 ALTER TABLE `users_roles` DISABLE KEYS */;
-INSERT INTO `users_roles` VALUES (1,1);
+INSERT INTO `users_roles` VALUES (1,1),(2,2),(3,2);
 /*!40000 ALTER TABLE `users_roles` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50112 SET @disable_bulk_load = IF (@is_rocksdb_supported, 'SET SESSION rocksdb_bulk_load = @old_rocksdb_bulk_load', 'SET @dummy_rocksdb_bulk_load = 0') */;
@@ -202,4 +230,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-13 17:42:18
+-- Dump completed on 2025-04-22  9:59:53

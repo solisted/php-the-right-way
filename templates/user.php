@@ -26,6 +26,16 @@
       <span class="error"><?= $errors['email'] ?></span>
     <?php endif; ?>
     <?php if ($can_update || $can_create): ?>
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password" value="<?= $user['password'] ?>" <?= isset($errors['password']) ? ' class="error"' : "" ?>/>
+    <?php if (isset($errors['password'])): ?>
+      <span class="error"><?= $errors['password'] ?></span>
+    <?php endif; ?>
+    <label for="password1">Repeat Password</label>
+    <input type="password" name="password1" id="password1" value="<?= $user['password1'] ?>" <?= isset($errors['password1']) ? ' class="error"' : "" ?>/>
+    <?php if (isset($errors['password1'])): ?>
+      <span class="error"><?= $errors['password1'] ?></span>
+    <?php endif; ?>
     <button type="submit"><?= $user["id"] == 0 ? "Add" : "Update" ?></button>
     <a href="/users"><button type="button">Cancel</button></a>
     <?php endif; ?>

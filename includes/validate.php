@@ -152,6 +152,40 @@ function sl_validate_categoryname(string $name, string $field_name): ?string
     return null;
 }
 
+function sl_validate_productname(string $name, string $field_name): ?string
+{
+    $length = mb_strlen($name);
+
+    if ($length === 0) {
+        return "${field_name} is required";
+    }
+
+    if ($length < 8 || $length > 128) {
+        return "${field_name} length must be between 8 and 128 characters";
+    }
+
+    if (preg_match("/^[[:alnum:][:space:]]+$/u", $name) !== 1) {
+        return "${field_name} can have only letters, numbers, and space character";
+    }
+
+    return null;
+}
+
+function sl_validate_password(string $password, string $field_name): ?string
+{
+    $length = mb_strlen($password);
+
+    if ($length === 0) {
+        return "${field_name} is required";
+    }
+
+    if ($length < 8 || $length > 32) {
+        return "${field_name} length must be between 8 and 32 characters";
+    }
+
+    return null;
+}
+
 function sl_validate_has_errors(array $errors): bool
 {
     foreach ($errors as $error) {

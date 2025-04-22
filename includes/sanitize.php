@@ -40,3 +40,8 @@ function sl_sanitize_categoryname(string $name): string
 {
     return mb_convert_case(mb_trim($name), MB_CASE_TITLE_SIMPLE);
 }
+
+function sl_sanitize_productname(string $name): string
+{
+    return mb_trim($name);
+}
