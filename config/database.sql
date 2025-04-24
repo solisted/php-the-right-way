@@ -64,7 +64,7 @@ CREATE TABLE `categories` (
   `rgt` bigint unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
-  KEY `lft` (`lft`,`rgt`)
+  UNIQUE KEY `lft` (`lft`,`rgt`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -93,7 +93,7 @@ CREATE TABLE `products` (
   UNIQUE KEY `name` (`name`),
   KEY `category_id` (`category_id`),
   CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -102,7 +102,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` VALUES (1,3,'Intel Core Ultra 9 288V'),(2,3,'Intel Core Ultra 9 285T'),(3,3,'Intel Core Ultra 9 285K'),(4,3,'Intel Core Ultra 9 285HX'),(5,3,'Intel Core Ultra 9 285H'),(6,3,'Intel Core Ultra 9 285'),(7,3,'Intel Core Ultra 9 275HX'),(8,3,'Intel Core Ultra 7 666FX'),(9,3,'Intel Core Ultra 7 123GX');
+INSERT INTO `products` VALUES (1,3,'Intel Core Ultra 9 288V'),(2,3,'Intel Core Ultra 9 285T'),(3,3,'Intel Core Ultra 9 285K'),(4,3,'Intel Core Ultra 9 285HX'),(5,3,'Intel Core Ultra 9 285H'),(6,3,'Intel Core Ultra 9 285'),(7,3,'Intel Core Ultra 9 275HX'),(8,3,'Intel Core Ultra 7 666FX'),(9,3,'Intel Core Ultra 7 123GX'),(12,4,'CORSAIR Vengeance 64GB (2 x 32GB) 288-Pin DDR5 6400'),(13,4,'CORSAIR Vengeance 192GB (4 x 48GB) 288-Pin DDR5 5200'),(14,4,'CORSAIR Vengeance 96GB (2 x 48GB) 288-Pin DDR5 7000'),(15,4,'CORSAIR Vengeance 64GB (2 x 32GB) 288-Pin DDR5 5600'),(17,4,'CORSAIR Vengeance 32GB (2 x 16GB) 288-Pin DDR5 5200'),(18,4,'CORSAIR Vengeance 32GB (2 x 16GB) 288-Pin DDR5 6400'),(19,4,'CORSAIR Vengeance 32GB (2 x 16GB) 288-Pin DDR5 5600'),(20,4,'CORSAIR Vengeance 96GB (2 x 48GB) 288-Pin DDR5 6000');
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -230,4 +230,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-22  9:59:53
+-- Dump completed on 2025-04-24 14:55:09

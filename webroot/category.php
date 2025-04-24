@@ -34,13 +34,9 @@ $errors = [
 $parent_id = 0;
 
 $connection = sl_database_get_connection();
+$categories = sl_template_escape_array_of_arrays(sl_database_get_categories($connection));
 
 $category_id = sl_request_query_get_integer("id", 0, PHP_INT_MAX);
-
-$statement = $connection->query("SELECT node.id, node.name, node.lft, node.rgt, (COUNT(parent.id) - 1) AS depth FROM categories AS node, categories AS parent WHERE node.lft BETWEEN parent.lft AND parent.rgt GROUP BY node.id ORDER BY node.lft");
-$statement->execute();
-
-$categories = sl_template_escape_array_of_arrays($statement->fetchAll(PDO::FETCH_ASSOC));
 
 if ($category_id > 0) {
     $statement = $connection->prepare("SELECT parent.id FROM categories AS node, categories AS parent WHERE node.lft BETWEEN parent.lft AND parent.rgt AND node.id = :id ORDER BY parent.lft DESC LIMIT 1, 1");
@@ -74,10 +70,10 @@ if (sl_request_is_method("GET")) {
         ]);
 
         $category["id"] = $category_id;
-        $category["name"] = sl_sanitize_categoryname($parameters["name"]);
-        $errors["name"] = sl_validate_categoryname($category["name"], "Name");
+        $category["name"] = sl_sanitize_case($parameters["name"], MB_CASE_TITLE_SIMPLE);
+        $errors["name"] = sl_validate_regexp($category["name"], 4, 64, "/^[[:alpha:][:space:]]+$/u", "Name", "letters and space character");
 
-        if (!isset($errors["name"]) && !sl_database_is_unique_categoryname($connection, $category["name"], $category_id)) {
+        if (!isset($errors["name"]) && !sl_database_is_unique_column($connection, "categories", "name", $category["name"], $category_id)) {
             $errors["name"] = "Category already exists";
         }
 
@@ -99,9 +95,7 @@ if (sl_request_is_method("GET")) {
                 }
 
             } else {
-                $parent = array_find($categories, function (array $value) use ($parent_id) {
-                    return isset($value["id"]) && intval($value["id"]) === $parent_id;
-                });
+                $parent = sl_categories_find_category_by_id($parent_id, $categories);
 
                 if ($parent === null) {
                     sl_request_terminate(400);

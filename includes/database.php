@@ -6,17 +6,24 @@ function sl_database_get_connection(): PDO
     return new PDO("mysql:dbname=ivan;host=localhost", "ivan", "ivan");
 }
 
-function sl_database_is_unique_username(PDO $connection, string $username, int $user_id): bool
+
+function sl_database_is_unique_column(PDO $connection, string $table, string $column, string $value, int $id)
 {
-    $statement = $connection->prepare("SELECT COUNT(*) FROM users WHERE username = :username AND id <> :id");
-    $statement->bindValue(":username", $username, PDO::PARAM_STR);
-    $statement->bindValue(":id", $user_id, PDO::PARAM_INT);
+    if (preg_match("/^[a-z0-9_]+$/", $table) !== 1 ||
+        preg_match("/^[a-z0-9_]+$/", $column) !== 1
+    ) {
+        trigger_error("Table and column names should have only alphanumeric characters and underscore", E_USER_ERROR);
+    }
+
+    $statement = $connection->prepare("SELECT COUNT(*) FROM `{$table}` WHERE `{$column}` = :value AND id <> :id");
+    $statement->bindValue(":value", $value, PDO::PARAM_STR);
+    $statement->bindValue(":id", $id, PDO::PARAM_INT);
     $statement->execute();
 
     return $statement->fetchColumn(0) === 0;
 }
 
-function sl_database_is_unique_name(PDO $connection, string $first_name, string $last_name, int $user_id): bool
+function sl_database_is_unique_user_name(PDO $connection, string $first_name, string $last_name, int $user_id): bool
 {
     $statement = $connection->prepare(
         "SELECT COUNT(*) FROM users WHERE first_name = :first_name AND last_name = :last_name AND id <> :id"
@@ -29,52 +36,18 @@ function sl_database_is_unique_name(PDO $connection, string $first_name, string 
     return $statement->fetchColumn(0) === 0;
 }
 
-function sl_database_is_unique_email(PDO $connection, string $email, int $user_id): bool
+function sl_database_get_categories(PDO $connection): array
 {
-    $statement = $connection->prepare("SELECT COUNT(*) FROM users WHERE email = :email AND id <> :id");
-    $statement->bindValue(":email", $email, PDO::PARAM_STR);
-    $statement->bindValue(":id", $user_id, PDO::PARAM_INT);
+    $statement = $connection->query("SELECT n.id, n.name, n.lft, n.rgt, (COUNT(pn.id) - 1) AS depth FROM categories n, categories pn WHERE n.lft BETWEEN pn.lft AND pn.rgt GROUP BY n.id ORDER BY n.lft");
     $statement->execute();
 
-    return $statement->fetchColumn(0) === 0;
+    return $statement->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function sl_database_is_unique_rolename(PDO $connection, string $name, int $role_id): bool
+function sl_database_get_categories_with_product_count(PDO $connection): array
 {
-    $statement = $connection->prepare("SELECT COUNT(*) FROM roles WHERE name = :name AND id <> :id");
-    $statement->bindValue(":name", $name, PDO::PARAM_STR);
-    $statement->bindValue(":id", $role_id, PDO::PARAM_INT);
+    $statement = $connection->query("SELECT n.id, n.name, n.lft, n.rgt, (COUNT(DISTINCT pn.id) - 1) AS depth, COUNT(DISTINCT p.id) AS products FROM categories n LEFT JOIN categories pn ON (n.lft >= pn.lft AND n.lft <= pn.rgt) LEFT JOIN products p ON (n.id = p.category_id) GROUP BY n.id ORDER BY n.lft");
     $statement->execute();
 
-    return $statement->fetchColumn(0) === 0;
-}
-
-function sl_database_is_unique_actionname(PDO $connection, string $name, int $action_id): bool
-{
-    $statement = $connection->prepare("SELECT COUNT(*) FROM actions WHERE name = :name AND id <> :id");
-    $statement->bindValue(":name", $name, PDO::PARAM_STR);
-    $statement->bindValue(":id", $action_id, PDO::PARAM_INT);
-    $statement->execute();
-
-    return $statement->fetchColumn(0) === 0;
-}
-
-function sl_database_is_unique_categoryname(PDO $connection, string $name, int $category_id): bool
-{
-    $statement = $connection->prepare("SELECT COUNT(*) FROM categories WHERE name = :name AND id <> :id");
-    $statement->bindValue(":name", $name, PDO::PARAM_STR);
-    $statement->bindValue(":id", $category_id, PDO::PARAM_INT);
-    $statement->execute();
-
-    return $statement->fetchColumn(0) === 0;
-}
-
-function sl_database_is_unique_productname(PDO $connection, string $name, int $product_id): bool
-{
-    $statement = $connection->prepare("SELECT COUNT(*) FROM products WHERE name = :name AND id <> :id");
-    $statement->bindValue(":name", $name, PDO::PARAM_STR);
-    $statement->bindValue(":id", $product_id, PDO::PARAM_INT);
-    $statement->execute();
-
-    return $statement->fetchColumn(0) === 0;
+    return $statement->fetchAll(PDO::FETCH_ASSOC);
 }

@@ -59,13 +59,13 @@ if (sl_request_is_method("GET")) {
 
     $action["id"] = $action_id;
 
-    $action["name"] = sl_sanitize_actionname($parameters["name"]);
-    $action["description"] = sl_sanitize_description($parameters["description"]);
+    $action["name"] = sl_sanitize_trim($parameters["name"]);
+    $action["description"] = sl_sanitize_trim($parameters["description"]);
 
-    $errors["name"] = sl_validate_actionname($action["name"], "Name");
-    $errors["description"] = sl_validate_description($action["description"], "Description");
+    $errors["name"] = sl_validate_regexp($action["name"], 4, 32, "/^[[:alpha:]]+$/u", "Name", "letters");
+    $errors["description"] = sl_validate_regexp($action["description"], 10, 1024, "/^[[:print:]]+$/u", "Description", "printable characters");
 
-    if (!isset($errors["name"]) && !sl_database_is_unique_actionname($connection, $action["name"], $action_id)) {
+    if (!isset($errors["name"]) && !sl_database_is_unique_column($connection, "actions", "name", $action["name"], $action_id)) {
         $errors["name"] = "Action already exists";
     }
 

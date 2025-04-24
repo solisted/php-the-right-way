@@ -86,13 +86,13 @@ if (sl_request_is_method("GET")) {
 
         $role["id"] = $role_id;
 
-        $role["name"] = sl_sanitize_rolename($parameters["name"]);
-        $role["description"] = sl_sanitize_description($parameters["description"]);
+        $role["name"] = sl_sanitize_case($parameters["name"], MB_CASE_TITLE_SIMPLE);
+        $role["description"] = sl_sanitize_trim($parameters["description"]);
 
-        $errors["name"] = sl_validate_rolename($role["name"], "Name");
-        $errors["description"] = sl_validate_description($role["description"], "Description");
+        $errors["name"] = sl_validate_regexp($role["name"], 4, 32, "/^[[:alpha:]]+$/u", "Name", "letters");
+        $errors["description"] = sl_validate_regexp($role["description"], 10, 1024, "/^[[:print:]]+$/u", "Description", "printable characters");
 
-        if (!isset($errors["name"]) && !sl_database_is_unique_rolename($connection, $role["name"], $role_id)) {
+        if (!isset($errors["name"]) && !sl_database_is_unique_column($connection, "roles", "name", $role["name"], $role_id)) {
             $errors["name"] = "Role already exists";
         }
 

@@ -33,7 +33,7 @@ table th {
     text-align: left;
 }
 
-table th:first-child {
+table th:first-child, table th.number {
     text-align: right
 }
 

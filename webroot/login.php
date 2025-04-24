@@ -30,11 +30,11 @@ if (sl_request_is_method("POST")) {
         "password" => FILTER_SANITIZE_FULL_SPECIAL_CHARS
     ]);
 
-    $username = sl_sanitize_username($parameters["username"]);
-    $password = sl_sanitize_password($parameters["password"]);
+    $username = sl_sanitize_case($parameters["username"], MB_CASE_LOWER_SIMPLE);
+    $password = sl_sanitize_trim($parameters["password"]);
 
-    $errors["username"] = sl_validate_login_username($username, "Username");
-    $errors["password"] = sl_validate_login_password($password, "Password");
+    $errors["username"] = sl_validate_required($username, "Username");
+    $errors["password"] = sl_validate_required($password, "Password");
 
     if (!sl_validate_has_errors($errors)) {
         $connection = sl_database_get_connection();

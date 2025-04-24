@@ -101,22 +101,22 @@ if (sl_request_is_method("GET")) {
 
         $user["id"] = $user_id;
 
-        $user["username"] = sl_sanitize_username($parameters["username"]);
-        $user["first_name"] = sl_sanitize_name($parameters["first_name"]);
-        $user["last_name"] = sl_sanitize_name($parameters["last_name"]);
-        $user["email"] = sl_sanitize_email($parameters["email"]);
-        $user["password"] = sl_sanitize_password($parameters["password"]);
-        $user["password1"] = sl_sanitize_password($parameters["password1"]);
+        $user["username"] = sl_sanitize_case($parameters["username"], MB_CASE_LOWER_SIMPLE);
+        $user["first_name"] = sl_sanitize_case($parameters["first_name"], MB_CASE_TITLE_SIMPLE);
+        $user["last_name"] = sl_sanitize_case($parameters["last_name"], MB_CASE_TITLE_SIMPLE);
+        $user["email"] = sl_sanitize_case($parameters["email"], MB_CASE_LOWER_SIMPLE);
+        $user["password"] = sl_sanitize_trim($parameters["password"]);
+        $user["password1"] = sl_sanitize_trim($parameters["password1"]);
 
-        $errors["username"] = sl_validate_username($user["username"], "Username");
-        $errors["first_name"] = sl_validate_name($user["first_name"], "First name");
-        $errors["last_name"] = sl_validate_name($user["last_name"], "Last name");
+        $errors["username"] = sl_validate_regexp($user["username"], 6, 16, "/^[[:alnum:]]+$/u", "Username", "alphanumeric characters");
+        $errors["first_name"] = sl_validate_regexp($user["first_name"], 2, 32, "/^[[:alpha:]]+$/u", "First name", "letters");
+        $errors["last_name"] = sl_validate_regexp($user["last_name"], 2, 32, "/^[[:alpha:]]+$/u", "Last name", "letters");
         $errors["email"] = sl_validate_email($user["email"], "Email");
 
         $hashed_password = null;
 
         if ($user_id === 0 || ($user_id > 0 && !empty($user["password"]))) {
-            $errors["password"] = sl_validate_password($user["password"], "Password");
+            $errors["password"] = sl_validate_length($user["password"], 8, 32, "Password");
 
             if ($errors["password"] === null && $user["password"] !== $user["password1"]) {
                 $errors["password1"] = "Passwords do not match";
@@ -125,19 +125,19 @@ if (sl_request_is_method("GET")) {
             }
         }
 
-        if (!isset($errors["username"]) && !sl_database_is_unique_username($connection, $user["username"], $user_id)) {
+        if (!isset($errors["username"]) && !sl_database_is_unique_column($connection, "users", "username", $user["username"], $user_id)) {
             $errors["username"] = "Username already exists";
         }
 
         if (!isset($errors["first_name"]) &&
             !isset($errors["last_name"]) &&
-            !sl_database_is_unique_name($connection, $user["first_name"], $user["last_name"], $user_id)
+            !sl_database_is_unique_user_name($connection, $user["first_name"], $user["last_name"], $user_id)
         ) {
             $errors["first_name"] = "First name and last name already exist";
             $errors["last_name"] = "First name and last name already exist";
         }
 
-        if (!isset($errors["email"]) && !sl_database_is_unique_email($connection, $user["email"], $user_id)) {
+        if (!isset($errors["email"]) && !sl_database_is_unique_column($connection, "users", "email", $user["email"], $user_id)) {
             $errors["email"] = "Email already exists";
         }
 
