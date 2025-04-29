@@ -9,6 +9,10 @@
       <a href="/products">Products</a>
       <a href="/product/add">+</a>
     </li>
+    <li <?= sl_request_is_uri('/attribute') ? 'class="active"' : "" ?>>
+      <a href="/attributes">Attributes</a>
+      <a href="/attribute/add">+</a>
+    </li>
     <li class="header">Access control</li>
     <?php if (sl_auth_is_authorized("ListUsers")): ?>
     <li <?= sl_request_is_uri('/user') ? 'class="active"' : "" ?>><a href="/users">Users</a>

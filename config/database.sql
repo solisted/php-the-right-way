@@ -51,6 +51,31 @@ INSERT INTO `actions` VALUES (1,'CreateUser','Add new user'),(2,'ReadUser','Retr
 UNLOCK TABLES;
 
 --
+-- Table structure for table `attributes`
+--
+
+DROP TABLE IF EXISTS `attributes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `attributes` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(32) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `attributes`
+--
+
+LOCK TABLES `attributes` WRITE;
+/*!40000 ALTER TABLE `attributes` DISABLE KEYS */;
+INSERT INTO `attributes` VALUES (5,'Brand'),(6,'Family'),(7,'Model');
+/*!40000 ALTER TABLE `attributes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `categories`
 --
 
@@ -230,4 +255,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-24 14:55:09
+-- Dump completed on 2025-04-30 10:22:23
