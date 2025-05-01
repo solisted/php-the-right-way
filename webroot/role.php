@@ -51,9 +51,9 @@ $errors = [
 
 $connection = sl_database_get_connection();
 
-if (sl_request_is_method("GET")) {
-    $role_id = sl_request_query_get_integer("id", 0, PHP_INT_MAX);
+$role_id = sl_request_query_get_integer("id", 0, PHP_INT_MAX);
 
+if (sl_request_is_method("GET")) {
     if ($role_id > 0) {
         sl_auth_assert_authorized_any(["ReadRole", "UpdateRole"]);
 
@@ -72,11 +72,12 @@ if (sl_request_is_method("GET")) {
     } else {
         sl_auth_assert_authorized("CreateRole");
     }
-} else {
+}
+
+if (sl_request_is_method("POST")) {
     sl_auth_assert_authorized_any(["CreateRole", "UpdateRole"]);
 
     $action_id = sl_request_post_get_integer("action_id", 0, PHP_INT_MAX, 0);
-    $role_id = sl_request_post_get_integer("id", 0, PHP_INT_MAX);
 
     if ($action_id === 0) {
         $parameters = sl_request_get_post_parameters([
@@ -122,14 +123,14 @@ if (sl_request_is_method("GET")) {
     } else if ($role_id > 0) {
         sl_auth_assert_authorized("UpdateRole");
 
-        if (isset($_POST["action"]) && $_POST["action"] === "add_action") {
+        if (sl_request_post_string_equals("action", "add_action")) {
             $statement = $connection->prepare("INSERT INTO roles_actions VALUES (:role_id, :action_id)");
             $statement->bindValue(":role_id", $role_id, PDO::PARAM_INT);
             $statement->bindValue(":action_id", $action_id, PDO::PARAM_INT);
             $statement->execute();
 
             sl_request_redirect("/role/${role_id}");
-        } else if (isset($_POST["action"]) && $_POST["action"] === "delete_action") {
+        } else if (sl_request_post_string_equals("action", "delete_action")) {
             $statement = $connection->prepare("DELETE FROM roles_actions WHERE role_id = :role_id AND action_id = :action_id");
             $statement->bindValue(":role_id", $role_id, PDO::PARAM_INT);
             $statement->bindValue(":action_id", $action_id, PDO::PARAM_INT);

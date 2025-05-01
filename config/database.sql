@@ -62,7 +62,7 @@ CREATE TABLE `attributes` (
   `name` varchar(32) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -71,7 +71,7 @@ CREATE TABLE `attributes` (
 
 LOCK TABLES `attributes` WRITE;
 /*!40000 ALTER TABLE `attributes` DISABLE KEYS */;
-INSERT INTO `attributes` VALUES (5,'Brand'),(6,'Family'),(7,'Model');
+INSERT INTO `attributes` VALUES (5,'Brand'),(6,'Family'),(9,'Memory Size'),(7,'Model'),(8,'Number Of Cores');
 /*!40000 ALTER TABLE `attributes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -90,7 +90,7 @@ CREATE TABLE `categories` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `lft` (`lft`,`rgt`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -99,8 +99,32 @@ CREATE TABLE `categories` (
 
 LOCK TABLES `categories` WRITE;
 /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
-INSERT INTO `categories` VALUES (1,'Computers',1,20),(2,'Computer Parts',2,7),(3,'Processors',3,4),(4,'Memory',5,6),(5,'Peripherals',8,13),(6,'Keyboards',9,10),(7,'Mouse',11,12),(8,'Storage',14,19),(9,'Solid State Drives',15,16),(10,'Hard Drives',17,18);
+INSERT INTO `categories` VALUES (1,'Computers',1,18),(2,'Computer Parts',2,7),(3,'Processors',3,4),(4,'Memory',5,6),(5,'Peripherals',8,13),(6,'Keyboards',9,10),(7,'Mouse',11,12),(8,'Storage',14,17),(9,'Solid State Drives',15,16);
 /*!40000 ALTER TABLE `categories` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `categories_attributes`
+--
+
+DROP TABLE IF EXISTS `categories_attributes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `categories_attributes` (
+  `category_id` bigint unsigned NOT NULL,
+  `attribute_id` bigint unsigned NOT NULL,
+  PRIMARY KEY (`category_id`,`attribute_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `categories_attributes`
+--
+
+LOCK TABLES `categories_attributes` WRITE;
+/*!40000 ALTER TABLE `categories_attributes` DISABLE KEYS */;
+INSERT INTO `categories_attributes` VALUES (3,5),(3,6),(3,7),(3,8),(4,5),(4,6),(4,7),(4,9);
+/*!40000 ALTER TABLE `categories_attributes` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -255,4 +279,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-30 10:22:23
+-- Dump completed on 2025-05-01  7:49:14

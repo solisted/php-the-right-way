@@ -3,7 +3,7 @@
   $can_create = sl_auth_is_authorized("CreateUser") && $user['id'] === 0;
 ?>
 <div class="main">
-  <form method="POST" action="/user/<?= $user['id'] > 0 ? $user['id'] : "add" ?>">
+  <form method="POST" action="/user/<?= $user['id'] > 0 ? $user['id'] : "add" ?>?XDEBUG_TRIGGER=1">
     <input type="hidden" name="id" value="<?= $user['id'] ?>"/>
     <label for="username">Username</label>
     <input type="text" name="username" id="username" value="<?= $user['username'] ?>"<?= isset($errors['username']) ? ' class="error"' : "" ?>/>

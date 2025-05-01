@@ -59,9 +59,9 @@ $errors = [
 
 $connection = sl_database_get_connection();
 
-if (sl_request_is_method("GET")) {
-    $user_id = sl_request_query_get_integer("id", 0, PHP_INT_MAX);
+$user_id = sl_request_query_get_integer("id", 0, PHP_INT_MAX);
 
+if (sl_request_is_method("GET")) {
     if ($user_id > 0) {
         sl_auth_assert_authorized_any(["ReadUser", "UpdateUser"]);
 
@@ -83,11 +83,12 @@ if (sl_request_is_method("GET")) {
     } else {
         sl_auth_assert_authorized("CreateUser");
     }
-} else {
+}
+
+if (sl_request_is_method("POST")) {
     sl_auth_assert_authorized_any(["CreateUser", "UpdateUser"]);
 
     $role_id = sl_request_post_get_integer("role_id", 0, PHP_INT_MAX, 0);
-    $user_id = sl_request_post_get_integer("id", 0, PHP_INT_MAX);
 
     if ($role_id === 0) {
         $parameters = sl_request_get_post_parameters([
@@ -113,7 +114,7 @@ if (sl_request_is_method("GET")) {
         $errors["last_name"] = sl_validate_regexp($user["last_name"], 2, 32, "/^[[:alpha:]]+$/u", "Last name", "letters");
         $errors["email"] = sl_validate_email($user["email"], "Email");
 
-        $hashed_password = null;
+        $update_password = false;
 
         if ($user_id === 0 || ($user_id > 0 && !empty($user["password"]))) {
             $errors["password"] = sl_validate_length($user["password"], 8, 32, "Password");
@@ -121,7 +122,7 @@ if (sl_request_is_method("GET")) {
             if ($errors["password"] === null && $user["password"] !== $user["password1"]) {
                 $errors["password1"] = "Passwords do not match";
             } else {
-                $hashed_password = password_hash($user["password"], PASSWORD_BCRYPT);
+                $update_password = true;
             }
         }
 
@@ -145,11 +146,11 @@ if (sl_request_is_method("GET")) {
             if ($user_id > 0) {
                 sl_auth_assert_authorized("UpdateUser");
 
-                if ($hashed_password !== null) {
+                if ($update_password) {
                     $statement = $connection->prepare(
                         "UPDATE users SET username = :username, first_name = :first_name, last_name = :last_name, email = :email, password = :password WHERE id = :id"
                     );
-                    $statement->bindValue(":password", $hashed_password, PDO::PARAM_STR);
+                    $statement->bindValue(":password", password_hash($user["password"], PASSWORD_BCRYPT), PDO::PARAM_STR);
                 } else {
                     $statement = $connection->prepare(
                         "UPDATE users SET username = :username, first_name = :first_name, last_name = :last_name, email = :email WHERE id = :id"
@@ -181,14 +182,14 @@ if (sl_request_is_method("GET")) {
     } else if ($user_id > 0) {
         sl_auth_assert_authorized("UpdateUser");
 
-        if (isset($_POST["action"]) && $_POST["action"] === "add_role") {
+        if (sl_request_post_string_equals("action", "add_role")) {
             $statement = $connection->prepare("INSERT INTO users_roles VALUES (:user_id, :role_id)");
             $statement->bindValue(":user_id", $user_id, PDO::PARAM_INT);
             $statement->bindValue(":role_id", $role_id, PDO::PARAM_INT);
             $statement->execute();
 
             sl_request_redirect("/user/${user_id}");
-        } else if (isset($_POST["action"]) && $_POST["action"] === "delete_role") {
+        } else if (sl_request_post_string_equals("action", "delete_role")) {
             $statement = $connection->prepare("DELETE FROM users_roles WHERE user_id = :user_id AND role_id = :role_id");
             $statement->bindValue(":user_id", $user_id, PDO::PARAM_INT);
             $statement->bindValue(":role_id", $role_id, PDO::PARAM_INT);

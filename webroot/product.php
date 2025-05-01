@@ -30,9 +30,9 @@ $errors = [
 $connection = sl_database_get_connection();
 $categories = sl_template_escape_array_of_arrays(sl_database_get_categories($connection));
 
-if (sl_request_is_method("GET")) {
-    $product_id = sl_request_query_get_integer("id", 0, PHP_INT_MAX);
+$product_id = sl_request_query_get_integer("id", 0, PHP_INT_MAX);
 
+if (sl_request_is_method("GET")) {
     if ($product_id > 0) {
         $statement = $connection->prepare("SELECT id, category_id, name FROM products WHERE id = :id");
         $statement->bindValue(":id", $product_id, PDO::PARAM_INT);
@@ -44,10 +44,10 @@ if (sl_request_is_method("GET")) {
 
         $product = sl_template_escape_array($statement->fetch(PDO::FETCH_ASSOC));
     }
-} else {
-    $product_id = sl_request_post_get_integer("id", 0, PHP_INT_MAX);
+}
 
-    if (!isset($_POST["action"]) || $_POST["action"] !== "delete") {
+if (sl_request_is_method("POST")) {
+    if (!sl_request_post_string_equals("action", "delete")) {
         $parameters = sl_request_get_post_parameters([
             "name" => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
             "category_id" => FILTER_SANITIZE_NUMBER_INT
@@ -99,7 +99,7 @@ if (sl_request_is_method("GET")) {
 
             sl_request_redirect("/products");
         }
-    } else {
+    } else if (sl_request_post_string_equals("action", "delete")) {
         $category_id = sl_request_query_get_integer("category", 0, PHP_INT_MAX, 0);
 
         $statement = $connection->prepare("DELETE FROM products WHERE id = :id");
@@ -107,6 +107,8 @@ if (sl_request_is_method("GET")) {
         $statement->execute();
 
         sl_request_redirect($category_id == 0 ? "/products" : "/products?category={$category_id}");
+    } else {
+        sl_request_terminate(400);
     }
 }
 

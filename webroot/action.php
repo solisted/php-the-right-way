@@ -29,8 +29,9 @@ $errors = [
 
 $connection = sl_database_get_connection();
 
+$action_id = sl_request_query_get_integer("id", 0, PHP_INT_MAX);
+
 if (sl_request_is_method("GET")) {
-    $action_id = sl_request_query_get_integer("id", 0, PHP_INT_MAX);
 
     if ($action_id > 0) {
         sl_auth_assert_authorized_any(["ReadAction", "UpdateAction"]);
@@ -47,10 +48,10 @@ if (sl_request_is_method("GET")) {
     } else {
         sl_auth_assert_authorized("CreateAction");
     }
-} else {
-    sl_auth_assert_authorized_any(["CreateAction", "UpdateAction"]);
+}
 
-    $action_id = sl_request_post_get_integer("id", 0, PHP_INT_MAX);
+if (sl_request_is_method("POST")) {
+    sl_auth_assert_authorized_any(["CreateAction", "UpdateAction"]);
 
     $parameters = sl_request_get_post_parameters([
         "name" => FILTER_SANITIZE_FULL_SPECIAL_CHARS,

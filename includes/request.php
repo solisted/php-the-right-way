@@ -74,3 +74,8 @@ function sl_request_get_post_parameters(array $parameters): array
 {
     return filter_input_array(INPUT_POST, $parameters, true);
 }
+
+function sl_request_post_string_equals(string $parameter, string $value)
+{
+    return isset($_POST[$parameter]) && $_POST[$parameter] === $value;
+}

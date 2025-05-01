@@ -27,9 +27,9 @@ $errors = [
 
 $connection = sl_database_get_connection();
 
-if (sl_request_is_method("GET")) {
-    $attribute_id = sl_request_query_get_integer("id", 0, PHP_INT_MAX);
+$attribute_id = sl_request_query_get_integer("id", 0, PHP_INT_MAX);
 
+if (sl_request_is_method("GET")) {
     if ($attribute_id > 0) {
         $statement = $connection->prepare("SELECT id, name FROM attributes WHERE id = :id");
         $statement->bindValue(":id", $attribute_id, PDO::PARAM_INT);
@@ -41,10 +41,10 @@ if (sl_request_is_method("GET")) {
 
         $attribute = sl_template_escape_array($statement->fetch(PDO::FETCH_ASSOC));
     }
-} else {
-    $attribute_id = sl_request_post_get_integer("id", 0, PHP_INT_MAX);
+}
 
-    if (!isset($_POST["action"]) || $_POST["action"] !== "delete") {
+if (sl_request_is_method("POST")) {
+    if (!sl_request_post_string_equals("action", "delete")) {
         $parameters = sl_request_get_post_parameters([
             "name" => FILTER_SANITIZE_FULL_SPECIAL_CHARS
         ]);
@@ -76,12 +76,14 @@ if (sl_request_is_method("GET")) {
 
             sl_request_redirect("/attributes");
         }
-    } else {
+    } else if (sl_request_post_string_equals("action", "delete")) {
         $statement = $connection->prepare("DELETE FROM attributes WHERE id = :id");
         $statement->bindValue(":id", $attribute_id, PDO::PARAM_INT);
         $statement->execute();
 
         sl_request_redirect("/attributes");
+    } else {
+        sl_request_terminate(400);
     }
 }
 
