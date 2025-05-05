@@ -14,7 +14,8 @@
     <select name="parent_id" id="parent"<?= isset($errors['parent']) ? ' class="error"' : "" ?> <?= $category['id'] > 0 ? "disabled" : "" ?>>
       <option value="0">Select category</option>
       <?php foreach ($categories as $parent_category): ?>
-      <option value="<?= $parent_category['id'] ?>" <?= $parent_category['id'] == $parent_id ? "selected" : "" ?>>
+      <?php $can_have_children = $parent_category["products"] == 0 ?>
+      <option value="<?= $parent_category['id'] ?>" <?= $parent_category['id'] == $parent_id ? "selected" : "" ?> <?= $can_have_children ? "" : "disabled"?>>
         <?= $parent_category['depth'] > 0 ? str_repeat("&emsp;", $parent_category['depth']) : "" ?>
         <?= $parent_category['name'] ?>
       </option>
