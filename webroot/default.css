@@ -50,7 +50,7 @@ form label {
     margin: .4em 0;
 }
 
-form input[type=text], form input[type=password], form select {
+form input[type=text], form input[type=password], form select, form textarea {
     display: inline-block;
     font-size: 1em;
     padding: .4em .8em;
@@ -64,7 +64,12 @@ form select {
     width: 100%;
 }
 
-form input[type=text].error, form input[type=password].error, form select.error {
+form textarea {
+    font: 1em sans-serif;
+    resize: none;
+}
+
+form input[type=text].error, form input[type=password].error, form select.error, form textarea.error {
     margin-bottom: .2em;
     border-color: red;
 }

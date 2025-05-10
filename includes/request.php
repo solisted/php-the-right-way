@@ -3,7 +3,16 @@ declare(strict_types=1);
 
 function sl_request_terminate(int $http_code): void
 {
+    ob_end_clean();
     http_response_code($http_code);
+
+    switch ($http_code) {
+        case 404:
+            require("../templates/header.php");
+            require("../templates/404.php");
+            require("../templates/footer.php");
+    }
+
     exit();
 }
 

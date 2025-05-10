@@ -162,7 +162,7 @@ if (sl_request_is_method("POST") && $attribute_id === 0 && !sl_request_post_stri
 
     $category["id"] = $category_id;
     $category["name"] = sl_sanitize_case($parameters["name"], MB_CASE_TITLE_SIMPLE);
-    $errors["name"] = sl_validate_regexp($category["name"], 4, 64, "/^[[:alpha:][:space:]]+$/u", "Name", "letters and space character");
+    $errors["name"] = sl_validate_regexp($category["name"], 4, 64, "/^[[:alpha:][:blank:]]+$/u", "Name", "letters and space character");
 
     if (!isset($errors["name"]) && !sl_database_is_unique_column($connection, "categories", "name", $category["name"], $category_id)) {
         $errors["name"] = "Category already exists";

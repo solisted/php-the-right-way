@@ -53,7 +53,7 @@ if (sl_request_is_method("POST")) {
 
         $attribute["name"] = sl_sanitize_trim($parameters["name"]);
 
-        $errors["name"] = sl_validate_regexp($attribute["name"], 4, 32, "/^[[:alpha:][:space:]]+$/u", "Name", "letters and space characters");
+        $errors["name"] = sl_validate_regexp($attribute["name"], 4, 32, "/^[[:alpha:][:blank:]]+$/u", "Name", "letters and space characters");
 
         if (!isset($errors["name"]) && !sl_database_is_unique_column($connection, "attributes", "name", $attribute["name"], $attribute_id)) {
             $errors["name"] = "Attribute already exists";
