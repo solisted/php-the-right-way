@@ -1,5 +1,6 @@
 <div class="main">
-  <form method="POST" action="/product/<?= $product['id'] > 0 ? $product['id'] : "add" ?>">
+  <form method="POST" action="/product/<?= $product['id'] > 0 ? $product['id'] : "add" ?>?tab=<?= $tab_number ?>">
+    <input type="hidden" name="action" value="add_update_product"/>
     <input type="hidden" name="id" value="<?= $product['id'] ?>"/>
     <label for="name">Name</label>
     <input type="text" name="name" id="name" value="<?= $product['name'] ?>"<?= isset($errors['name']) ? ' class="error"' : "" ?>/>
@@ -32,7 +33,15 @@
     <a href="/products"><button type="button">Cancel</button></a>
   </form>
   <?php if ($product['id'] > 0): ?>
-  <h3>Attributes</h3>
+  <ul class="tabbar">
+    <li class="<?= $tab_number === 0 ? "active" : "" ?>">
+      <a href="/product/<?= $product['id'] ?>?tab=0">Attributes</a>
+    </li>
+    <li class="<?= $tab_number === 1 ? "active" : "" ?>">
+      <a href="/product/<?= $product['id'] ?>?tab=1">Images</a>
+    </li>
+  </ul>
+  <?php if ($tab_number === 0): ?>
   <table>
     <thead>
       <tr>
@@ -50,7 +59,7 @@
         <td><?= $product_attribute['name'] ?></td>
         <td><?= $product_attribute['value'] ?></td>
         <td align="right">
-          <form class="hidden" method="POST" action="/product/<?= $product['id'] ?>">
+          <form class="hidden" method="POST" action="/product/<?= $product['id'] ?>?tab=<?= $tab_number ?>">
             <input type="hidden" name="action" value="delete_attribute"/>
             <input type="hidden" name="id" value="<?= $product['id'] ?>"/>
             <input type="hidden" name="attribute_id" value="<?= $product_attribute['id'] ?>"/>
@@ -66,7 +75,7 @@
       <?php endif ?>
     </tbody>
   </table>
-  <form method="POST" action="/product/<?= $product['id'] ?>">
+  <form method="POST" action="/product/<?= $product['id'] ?>?tab=<?= $tab_number ?>">
     <input type="hidden" name="action" value="add_attribute"/>
     <input type="hidden" name="id" value="<?= $product['id'] ?>"/>
     <label for="action">Attribute</label>
@@ -88,5 +97,51 @@
     <?php endif ?>
     <button type="submit" <?= count($other_attributes) === 0 ? "disabled" : "" ?>>Add</button>
   </form>
+  <?php endif; ?>
+  <?php if ($tab_number === 1): ?>
+  <table>
+    <thead>
+      <tr>
+        <th width="5%">#</th>
+        <th width="90%">File Name</th>
+        <th width="5%">&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php if (count($product_images) > 0): ?>
+      <?php foreach ($product_images as $product_image): ?>
+      <tr>
+        <td align="right"><?= $product_image['id'] ?></td>
+        <td>
+          <a href="/image/<?= $product_image['id'] ?>"><?= basename($product_image['filename']) ?></a>
+        </td>
+        <td align="right">
+          <form class="hidden" method="POST" action="/product/<?= $product['id'] ?>?tab=<?= $tab_number ?>">
+            <input type="hidden" name="action" value="delete_image"/>
+            <input type="hidden" name="id" value="<?= $product['id'] ?>"/>
+            <input type="hidden" name="attribute_id" value="<?= $product_image['id'] ?>"/>
+            <button type="submit">&#128473;</button>
+          </form>
+        </td>
+      </tr>
+      <?php endforeach; ?>
+      <?php else: ?>
+      <tr>
+        <td colspan="5" align="center">No images found</td>
+      </tr>
+      <?php endif ?>
+    </tbody>
+  </table>
+  <form enctype="multipart/form-data" method="POST" action="/product/<?= $product['id'] ?>?tab=<?= $tab_number ?>">
+    <input type="hidden" name="action" value="add_image"/>
+    <input type="hidden" name="id" value="<?= $product['id'] ?>"/>
+    <label for="image">Image</label>
+    <input type="file" id="image" name="image" accept="image/png, image/jpeg" <?= isset($errors['image']) ? ' class="error"' : "" ?>/>
+    <?php if (isset($errors['image'])): ?>
+      <span class="error"><?= $errors['image'] ?></span>
+    <?php endif; ?>
+    <button type="submit">Upload</button>
+  </form>
+  <?php endif; ?>
   <?php endif ?>
 </div>

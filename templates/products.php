@@ -21,7 +21,7 @@
         <?php endif; ?>
         <td align="right">
           <form class="hidden" method="POST" action="/product/<?= $product['id'] ?>?category=<?= $category_id ?>">
-            <input type="hidden" name="action" value="delete"/>
+            <input type="hidden" name="action" value="delete_product"/>
             <input type="hidden" name="id" value="<?= $product['id'] ?>"/>
             <button type="submit">&#128473;</button>
           </form>
