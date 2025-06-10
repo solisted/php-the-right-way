@@ -3,6 +3,7 @@
   $can_create = sl_auth_is_authorized("CreateRole") && $role['id'] === 0;
 ?>
 <div class="main">
+  <?php sl_template_render_flash_message() ?>
   <form method="POST" action="/role/<?= $role['id'] > 0 ? $role['id'] : "add" ?>">
     <input type="hidden" name="id" value="<?= $role['id'] ?>"/>
     <label for="name">Name</label>

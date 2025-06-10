@@ -109,11 +109,18 @@ form span.error {
     margin-bottom: .8em;
 }
 
-form span.alert {
+form span.alert, form span.confirm {
     display: block;
-    color: red;
     margin: .8em 0;
     text-align: center;
+}
+
+form span.alert {
+    color: red;
+}
+
+form span.confirm {
+    color: green;
 }
 
 form.hidden {
@@ -150,6 +157,11 @@ form.horizontal select, form.horizontal input {
 
 form h3 {
     margin: 0 0 .6em 0;
+    text-align: center;
+}
+
+form a.middle {
+    display: block;
     text-align: center;
 }
 
@@ -256,4 +268,18 @@ ul.tabbar li {
 
 h3 {
     margin: .8em 0em .4em 0em;
+}
+
+div.flash {
+    border: 1px solid #00aa00;
+    background-color: #adebad;
+    border-radius: .4em;
+    padding: 1em;
+    margin-bottom: 1em;
+    animation: .25s linear 3s forwards fade-out;
+}
+
+@keyframes fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; display: none; }
 }

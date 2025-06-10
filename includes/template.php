@@ -42,3 +42,15 @@ function sl_template_render_pager(string $url, int $page, int $size, int $total_
         require("../templates/pager.php");
     }
 }
+
+function sl_template_render_flash_message(): void
+{
+    if (!isset($_SESSION["flash_message"]) || empty("flash_message")) {
+        return;
+    }
+
+    $message = $_SESSION["flash_message"];
+    unset($_SESSION["flash_message"]);
+
+    require("../templates/flash.php");
+}

@@ -1,4 +1,5 @@
 <div class="main">
+  <?php sl_template_render_flash_message() ?>
   <form method="POST" action="/category/<?= $category['id'] > 0 ? $category['id'] : "add" ?>">
     <input type="hidden" name="id" value="<?= $category['id'] ?>"/>
     <label for="name">Name</label>

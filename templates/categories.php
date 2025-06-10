@@ -1,4 +1,5 @@
 <div class="main">
+  <?php sl_template_render_flash_message() ?>
   <table>
     <thead>
       <tr>

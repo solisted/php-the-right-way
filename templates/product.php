@@ -1,4 +1,5 @@
 <div class="main">
+  <?php sl_template_render_flash_message() ?>
   <form method="POST" action="/product/<?= $product['id'] > 0 ? $product['id'] : "add" ?>?tab=<?= $tab_number ?>">
     <input type="hidden" name="action" value="add_update_product"/>
     <input type="hidden" name="id" value="<?= $product['id'] ?>"/>
@@ -103,7 +104,8 @@
     <thead>
       <tr>
         <th width="5%">#</th>
-        <th width="90%">File Name</th>
+        <th width="70%">File Name</th>
+        <th width="20%">Type</th>
         <th width="5%">&nbsp;</th>
       </tr>
     </thead>
@@ -113,13 +115,14 @@
       <tr>
         <td align="right"><?= $product_image['id'] ?></td>
         <td>
-          <a href="/image/<?= $product_image['id'] ?>"><?= basename($product_image['filename']) ?></a>
+          <a href="/image/<?= $product_image['id'] ?>"><?= basename($product_image['orig_filename']) ?></a>
         </td>
+        <td><?= $product_image['mime_type'] ?></td>
         <td align="right">
           <form class="hidden" method="POST" action="/product/<?= $product['id'] ?>?tab=<?= $tab_number ?>">
             <input type="hidden" name="action" value="delete_image"/>
             <input type="hidden" name="id" value="<?= $product['id'] ?>"/>
-            <input type="hidden" name="attribute_id" value="<?= $product_image['id'] ?>"/>
+            <input type="hidden" name="image_id" value="<?= $product_image['id'] ?>"/>
             <button type="submit">&#128473;</button>
           </form>
         </td>

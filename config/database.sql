@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 8.4.4-4, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 8.4.5-5, for Linux (x86_64)
 --
 -- Host: localhost    Database: ivan
 -- ------------------------------------------------------
@@ -131,6 +131,63 @@ INSERT INTO `categories_attributes` VALUES (3,5),(4,5),(18,5),(3,6),(4,6),(18,6)
 UNLOCK TABLES;
 
 --
+-- Table structure for table `images`
+--
+
+DROP TABLE IF EXISTS `images`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `images` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `filename` varchar(64) NOT NULL,
+  `orig_filename` varchar(64) NOT NULL,
+  `mime_type` varchar(32) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `filename` (`filename`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `images`
+--
+
+LOCK TABLES `images` WRITE;
+/*!40000 ALTER TABLE `images` DISABLE KEYS */;
+INSERT INTO `images` VALUES (3,'/home/ivan/www/images/f2173bbe8e12c3d3c8eb252685fee74b.jpeg','cpu1.jpeg','image/jpeg'),(4,'/home/ivan/www/images/93210b3275467d7dab2ebfeb71708a4f.jpeg','cpu2.jpeg','image/jpeg'),(13,'/home/ivan/www/images/b886b961a7b36cf6afdd3c64b484376e.jpeg','cpu1.jpeg','image/jpeg'),(14,'/home/ivan/www/images/c6cc1716697c05d5451b4487c759a69c.jpeg','cpu2.jpeg','image/jpeg');
+/*!40000 ALTER TABLE `images` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `password_tokens`
+--
+
+DROP TABLE IF EXISTS `password_tokens`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `password_tokens` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `token` char(32) NOT NULL,
+  `created` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `token` (`token`),
+  KEY `created` (`created`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `password_tokens_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `password_tokens`
+--
+
+LOCK TABLES `password_tokens` WRITE;
+/*!40000 ALTER TABLE `password_tokens` DISABLE KEYS */;
+INSERT INTO `password_tokens` VALUES (1,1,'7d59b54bf79fdf18898efcbf030df9ce','2025-06-08 19:25:33'),(2,1,'c5754d7fe927db8d6daf1c4156e92959','2025-06-08 19:31:47'),(3,1,'77fed212f6d89241c20b78410b5a444d','2025-06-08 19:34:23'),(4,1,'7dd848c4d2c542a41c5a2a23afa849d1','2025-06-08 19:38:17'),(5,1,'0a3e1734be5616844462c914491836c7','2025-06-08 19:39:25'),(6,1,'4926b852e9d19d91a37816a354064924','2025-06-08 19:40:21'),(7,1,'951371b84dbe01e9aaf5d1e7b124e869','2025-06-08 19:59:14'),(8,1,'f4e621174ad905766cb4cd4a874a74f0','2025-06-08 20:13:46');
+/*!40000 ALTER TABLE `password_tokens` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `products`
 --
 
@@ -155,7 +212,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` VALUES (1,3,'Intel Core Ultra 9 288V','Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\r\n\r\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.'),(2,3,'Intel Core Ultra 9 285T',''),(3,3,'Intel Core Ultra 9 285K',''),(4,3,'Intel Core Ultra 9 285HX',''),(5,3,'Intel Core Ultra 9 285H',''),(6,3,'Intel Core Ultra 9 285',''),(7,3,'Intel Core Ultra 9 275HX',''),(8,3,'Intel Core Ultra 7 666FX',''),(9,3,'Intel Core Ultra 7 123GX',''),(12,4,'CORSAIR Vengeance 64GB (2 x 32GB) 288-Pin DDR5 6400','Phasellus fermentum malesuada phasellus netus dictum aenean placerat egestas amet. Ornare taciti semper dolor tristique morbi. Sem leo tincidunt aliquet semper eu lectus scelerisque quis. Sagittis vivamus mollis nisi mollis enim fermentum laoreet.\r\n\r\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Proin tortor purus platea sit eu id nisi litora libero. Neque vulputate consequat ac amet augue blandit maximus aliquet congue. Pharetra vestibulum posuere ornare faucibus fusce dictumst orci aenean eu facilisis ut volutpat commodo senectus purus himenaeos fames primis convallis nisi.'),(13,4,'CORSAIR Vengeance 192GB (4 x 48GB) 288-Pin DDR5 5200',''),(14,4,'CORSAIR Vengeance 96GB (2 x 48GB) 288-Pin DDR5 7000',''),(15,4,'CORSAIR Vengeance 64GB (2 x 32GB) 288-Pin DDR5 5600',''),(17,4,'CORSAIR Vengeance 32GB (2 x 16GB) 288-Pin DDR5 5200',''),(18,4,'CORSAIR Vengeance 32GB (2 x 16GB) 288-Pin DDR5 6400',''),(19,4,'CORSAIR Vengeance 32GB (2 x 16GB) 288-Pin DDR5 5600',''),(20,4,'CORSAIR Vengeance 96GB (2 x 48GB) 288-Pin DDR5 6000','');
+INSERT INTO `products` VALUES (1,3,'Intel Core Ultra 9 288V','Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\r\n\r\nLorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.'),(12,4,'CORSAIR Vengeance 64GB (2 x 32GB) 288-Pin DDR5 6400','Phasellus fermentum malesuada phasellus netus dictum aenean placerat egestas amet. Ornare taciti semper dolor tristique morbi. Sem leo tincidunt aliquet semper eu lectus scelerisque quis. Sagittis vivamus mollis nisi mollis enim fermentum laoreet.\r\n\r\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Proin tortor purus platea sit eu id nisi litora libero. Neque vulputate consequat ac amet augue blandit maximus aliquet congue. Pharetra vestibulum posuere ornare faucibus fusce dictumst orci aenean eu facilisis ut volutpat commodo senectus purus himenaeos fames primis convallis nisi.');
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -183,8 +240,35 @@ CREATE TABLE `products_attributes` (
 
 LOCK TABLES `products_attributes` WRITE;
 /*!40000 ALTER TABLE `products_attributes` DISABLE KEYS */;
-INSERT INTO `products_attributes` VALUES (1,5,'Intel'),(1,6,'Core Ultra 9'),(1,7,'288V'),(12,5,'CORSAIR'),(12,6,'Vengeance'),(12,7,'Vengeance 64GB'),(12,9,'64Gb');
+INSERT INTO `products_attributes` VALUES (12,5,'CORSAIR'),(12,6,'Vengeance'),(12,7,'Vengeance 64GB');
 /*!40000 ALTER TABLE `products_attributes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `products_images`
+--
+
+DROP TABLE IF EXISTS `products_images`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `products_images` (
+  `product_id` bigint unsigned NOT NULL,
+  `image_id` bigint unsigned NOT NULL,
+  PRIMARY KEY (`product_id`,`image_id`),
+  KEY `image_id` (`image_id`),
+  CONSTRAINT `products_images_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
+  CONSTRAINT `products_images_ibfk_2` FOREIGN KEY (`image_id`) REFERENCES `images` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `products_images`
+--
+
+LOCK TABLES `products_images` WRITE;
+/*!40000 ALTER TABLE `products_images` DISABLE KEYS */;
+INSERT INTO `products_images` VALUES (12,3),(12,4),(1,13),(1,14);
+/*!40000 ALTER TABLE `products_images` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -267,7 +351,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'testtest','Test','Test','test@example.com','$2y$12$ZY3L9buAVtBvF5VQDsjk.uKKfFbuW.0INool6EEzCCUo1lEKtiQni'),(2,'userone','One','One','userone@example.com','$2y$12$EMrMy8NNiSm.9FWjydbnuuM2keam43nWRd9EnNaan0qAJ1d5LofJO'),(3,'usertwo','Two','Two','usertwo@example.com','$2y$12$v2CtYlwR4/Wa5TYsfydGvOHL.slJglrrryuCXQ2cGP4Jg6qTr9j16');
+INSERT INTO `users` VALUES (1,'testtest','Test','Test','isolisted@gmail.com','$2y$12$ZY3L9buAVtBvF5VQDsjk.uKKfFbuW.0INool6EEzCCUo1lEKtiQni'),(2,'userone','One','One','userone@example.com','$2y$12$EMrMy8NNiSm.9FWjydbnuuM2keam43nWRd9EnNaan0qAJ1d5LofJO'),(3,'usertwo','Two','Two','usertwo@example.com','$2y$12$v2CtYlwR4/Wa5TYsfydGvOHL.slJglrrryuCXQ2cGP4Jg6qTr9j16');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -311,4 +395,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-09 21:27:23
+-- Dump completed on 2025-06-10 18:36:01

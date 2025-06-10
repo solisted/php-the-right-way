@@ -15,5 +15,6 @@
     <span class="error"><?= $errors['password'] ?></span>
     <?php endif; ?>
     <button type="submit">Login</button>
+    <a href="/forgot-password">Forgot password?</a>
   </form>
 </div>

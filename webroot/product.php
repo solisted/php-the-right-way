@@ -9,6 +9,7 @@ require("../includes/request.php");
 require("../includes/template.php");
 require("../includes/validate.php");
 require("../includes/sanitize.php");
+require("../includes/session.php");
 
 function sl_render_product(
     int $tab_number,
@@ -69,7 +70,7 @@ function sl_product_get_other_attributes(PDO $connection, int $product_id, int $
 
 function sl_product_get_product_images(PDO $connection, int $product_id): array
 {
-    $statement = $connection->prepare("SELECT id, filename FROM images, products_images WHERE image_id = id AND product_id = :product_id");
+    $statement = $connection->prepare("SELECT id, filename, orig_filename, mime_type FROM images, products_images WHERE image_id = id AND product_id = :product_id");
     $statement->bindValue(":product_id", $product_id, PDO::PARAM_INT);
     $statement->execute();
 
@@ -103,6 +104,7 @@ $categories = sl_template_escape_array_of_arrays(sl_database_get_categories($con
 
 $product_id = sl_request_query_get_integer("id", 0, PHP_INT_MAX);
 $attribute_id = sl_request_post_get_integer("attribute_id", 0, PHP_INT_MAX, 0);
+$image_id = sl_request_post_get_integer("image_id", 0, PHP_INT_MAX, 0);
 $tab_number = sl_request_query_get_integer("tab", 0, 1, 0);
 
 if (sl_request_is_method("GET") && $product_id > 0) {
@@ -173,6 +175,7 @@ if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "add
         $statement->bindValue(":description", $product["description"], PDO::PARAM_STR);
         $statement->execute();
 
+        sl_session_set_flash_message($product_id > 0 ? "Product updated successfully" : "Product added successfully");
         sl_request_redirect("/products");
     } else if ($tab_number === 0) {
         $product_attributes = sl_product_get_product_attributes($connection, $product_id);
@@ -181,12 +184,13 @@ if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "add
 }
 
 if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "delete_product")) {
-    $category_id = sl_request_query_get_integer("category", 0, PHP_INT_MAX, 0);
+    $product_id = sl_request_post_get_integer("id", 0, PHP_INT_MAX);
 
     $statement = $connection->prepare("DELETE FROM products WHERE id = :id");
     $statement->bindValue(":id", $product_id, PDO::PARAM_INT);
     $statement->execute();
 
+    sl_session_set_flash_message("Product deleted successfully");
     sl_request_redirect($category_id == 0 ? "/products" : "/products?category={$category_id}");
 }
 
@@ -211,6 +215,7 @@ if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "add
         $statement->bindValue(":value", $attribute["value"], PDO::PARAM_STR);
         $statement->execute();
 
+        sl_session_set_flash_message("Attribute added successfully");
         sl_request_redirect("/product/{$product_id}");
     } else {
         $product_id = sl_request_post_get_integer("id", 0, PHP_INT_MAX);
@@ -230,11 +235,14 @@ if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "add
 }
 
 if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "delete_attribute")) {
+    $product_id = sl_request_post_get_integer("id", 0, PHP_INT_MAX);
+
     $statement = $connection->prepare("DELETE FROM products_attributes WHERE product_id = :product_id AND attribute_id = :attribute_id");
     $statement->bindValue(":product_id", $product_id, PDO::PARAM_INT);
     $statement->bindValue(":attribute_id", $attribute_id, PDO::PARAM_INT);
     $statement->execute();
 
+    sl_session_set_flash_message("Attribute deleted successfully");
     sl_request_redirect("/product/{$product_id}");
 }
 
@@ -245,12 +253,24 @@ if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "add
         $source_file_name = $_FILES["image"]["tmp_name"];
     }
 
+    if (!sl_validate_has_errors($errors)) {
+        if (!isset($_FILES["image"]["name"]) || empty($_FILES["image"]["name"])) {
+            $errors["image"] = "Image file name required";
+        } else {
+            $orig_file_name = sl_sanitize_filter($_FILES["image"]["name"], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        }
+    }
+
     if (!sl_validate_has_errors($errors) && filesize($source_file_name) > 2097152) {
         $errors["image"] = "Image size should not exceed 2Mb";
     }
 
-    if (!sl_validate_has_errors($errors) && !in_array(mime_content_type($source_file_name), ["image/png", "image/jpeg"])) {
-        $errors["image"] = "Only PNG and JPEG images supported";
+    if (!sl_validate_has_errors($errors)) {
+        $image_type = mime_content_type($source_file_name);
+
+        if (!in_array($image_type, ["image/png", "image/jpeg"])) {
+            $errors["image"] = "Only PNG and JPEG images supported";
+        }
     }
 
     if (!sl_validate_has_errors($errors)) {
@@ -272,8 +292,12 @@ if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "add
 
         $connection->beginTransaction();
 
-        $statement = $connection->prepare("INSERT INTO images (filename) VALUES (:filename)");
+        $statement = $connection->prepare(
+            "INSERT INTO images (filename, orig_filename, mime_type) VALUES (:filename, :orig_filename, :mime_type)"
+        );
         $statement->bindValue(":filename", $destination_path_name, PDO::PARAM_STR);
+        $statement->bindValue(":orig_filename", $orig_file_name, PDO::PARAM_STR);
+        $statement->bindValue(":mime_type", $image_type, PDO::PARAM_STR);
         $statement->execute();
 
         $image_id = $connection->lastInsertId();
@@ -285,6 +309,7 @@ if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "add
 
         $connection->commit();
 
+        sl_session_set_flash_message("Image uploaded successfully");
         sl_request_redirect("/product/{$product_id}?tab={$tab_number}");
     } else {
         $product_id = sl_request_post_get_integer("id", 0, PHP_INT_MAX);
@@ -301,6 +326,41 @@ if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "add
             $product_images = sl_product_get_product_images($connection, $product_id);
         }
     }
+}
+
+if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "delete_image")) {
+    $product_id = sl_request_post_get_integer("id", 0, PHP_INT_MAX);
+
+    $statement = $connection->prepare("SELECT filename FROM images WHERE id = :image_id");
+    $statement->bindValue(":image_id", $image_id, PDO::PARAM_INT);
+    $statement->execute();
+
+    if ($statement->rowCount() !== 1) {
+        sl_request_terminate(404);
+    }
+
+    $file_name = realpath($statement->fetchColumn(0));
+    if ($file_name === false || preg_match("/^\/home\/ivan\/www\/images\/[a-f0-9]{32}\.(png|jpeg|jpg)$/", $file_name) !== 1) {
+        sl_request_terminate(400);
+    }
+
+    $connection->beginTransaction();
+
+    $statement = $connection->prepare("DELETE FROM products_images WHERE product_id = :product_id AND image_id = :image_id");
+    $statement->bindValue(":product_id", $product_id, PDO::PARAM_INT);
+    $statement->bindValue(":image_id", $image_id, PDO::PARAM_INT);
+    $statement->execute();
+
+    $statement = $connection->prepare("DELETE FROM images WHERE id = :image_id");
+    $statement->bindValue(":image_id", $image_id, PDO::PARAM_INT);
+    $statement->execute();
+
+    $connection->commit();
+
+    unlink($file_name);
+
+    sl_session_set_flash_message("Image deleted successfully");
+    sl_request_redirect("/product/{$product_id}?tab={$tab_number}");
 }
 
 sl_template_render_header();

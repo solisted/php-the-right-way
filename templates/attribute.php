@@ -1,4 +1,5 @@
 <div class="main">
+  <?php sl_template_render_flash_message() ?>
   <form method="POST" action="/attribute/<?= $attribute['id'] > 0 ? $attribute['id'] : "add" ?>">
     <input type="hidden" name="id" value="<?= $attribute['id'] ?>"/>
     <label for="name">Name</label>

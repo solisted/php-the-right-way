@@ -3,6 +3,7 @@
   $can_create = sl_auth_is_authorized("CreateAction") && $action['id'] === 0;
 ?>
 <div class="main">
+  <?php sl_template_render_flash_message() ?>
   <form method="POST" action="/action/<?= $action['id'] > 0 ? $action['id'] : "add" ?>">
     <input type="hidden" name="id" value="<?= $action['id'] ?>"/>
     <label for="name">Name</label>
