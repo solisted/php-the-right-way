@@ -6,6 +6,7 @@
   <?php sl_template_render_flash_message() ?>
   <form method="POST" action="/user/<?= $user['id'] > 0 ? $user['id'] : "add" ?>?XDEBUG_TRIGGER=1">
     <input type="hidden" name="id" value="<?= $user['id'] ?>"/>
+    <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
     <label for="username">Username</label>
     <input type="text" name="username" id="username" value="<?= $user['username'] ?>"<?= isset($errors['username']) ? ' class="error"' : "" ?>/>
     <?php if (isset($errors['username'])): ?>
@@ -64,6 +65,7 @@
           <form class="hidden" method="POST" action="/user/<?= $user['id'] ?>">
             <input type="hidden" name="action" value="delete_role"/>
             <input type="hidden" name="id" value="<?= $user['id'] ?>"/>
+            <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
             <input type="hidden" name="role_id" value="<?= $role['id'] ?>"/>
             <button type="submit">&#128473;</button>
           </form>
@@ -82,6 +84,7 @@
   <form class="horizontal" method="POST" action="/user/<?= $user['id'] ?>">
     <input type="hidden" name="action" value="add_role"/>
     <input type="hidden" name="id" value="<?= $user['id'] ?>"/>
+    <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
     <label for="role">Role</label>
     <?php if (count($other_roles) > 0): ?>
     <select name="role_id" id="role">

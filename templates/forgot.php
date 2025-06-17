@@ -1,5 +1,6 @@
 <div class="login">
   <form method="POST" action="/forgot-password">
+    <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
     <?php if ($show_reset === false): ?>
     <h3>Forgot password</h3>
     <?php if (isset($reset_message)): ?>
@@ -18,13 +19,14 @@
     <?php else: ?>
     <h3>Reset password</h3>
     <input type="hidden" name="action" value="reset_password"/>
+    <input type="hidden" name="token" value="<?= $reset["token"] ?>"/>
     <label for="password">Password</label>
-    <input type="text" name="password" id="password" value="<?= $reset['password'] ?>"<?= isset($errors['password']) ? ' class="error"' : "" ?>/>
+    <input type="password" name="password" id="password" value="<?= $reset['password'] ?>"<?= isset($errors['password']) ? ' class="error"' : "" ?>/>
     <?php if (isset($errors["password"])): ?>
     <span class="error"><?= $errors['password'] ?></span>
     <?php endif; ?>
     <label for="password1">Repeat password</label>
-    <input type="text" name="password1" id="password1" value="<?= $reset['password1'] ?>"<?= isset($errors['password1']) ? ' class="error"' : "" ?>/>
+    <input type="password" name="password1" id="password1" value="<?= $reset['password1'] ?>"<?= isset($errors['password1']) ? ' class="error"' : "" ?>/>
     <?php if (isset($errors["password1"])): ?>
     <span class="error"><?= $errors['password1'] ?></span>
     <?php endif; ?>

@@ -78,6 +78,7 @@ function sl_product_get_product_images(PDO $connection, int $product_id): array
 }
 
 sl_request_methods_assert(["GET", "POST"]);
+sl_auth_assert_csrf_is_valid();
 
 $product = [
     "id" => 0,

@@ -69,14 +69,9 @@ function sl_request_get_integer(int $request_type, string $parameter_name, int $
     return $value;
 }
 
-function sl_request_query_get_integer(string $parameter_name, int $min, int $max, ?int $default = null): int
+function sl_request_get_string(int $request_type, string $parameter_name, string $regexp, ?string $default = null): string
 {
-    return sl_request_get_integer(INPUT_GET, $parameter_name, $min, $max, $default);
-}
-
-function sl_request_query_get_string(string $parameter_name, string $regexp, ?string $default = null): string
-{
-    $value = filter_input(INPUT_GET, $parameter_name, FILTER_SANITIZE_FULL_SPECIAL_CHARS, ["flags" => FILTER_NULL_ON_FAILURE]);
+    $value = filter_input($request_type, $parameter_name, FILTER_SANITIZE_FULL_SPECIAL_CHARS, ["flags" => FILTER_NULL_ON_FAILURE]);
 
     if (($value === false && $default === null) || $value === null) {
         sl_request_terminate(400);
@@ -93,6 +88,21 @@ function sl_request_query_get_string(string $parameter_name, string $regexp, ?st
     return $value;
 }
 
+function sl_request_query_get_integer(string $parameter_name, int $min, int $max, ?int $default = null): int
+{
+    return sl_request_get_integer(INPUT_GET, $parameter_name, $min, $max, $default);
+}
+
+function sl_request_query_get_string(string $parameter_name, string $regexp, ?string $default = null): string
+{
+    return sl_request_get_string(INPUT_GET, $parameter_name, $regexp, $default);
+}
+
+function sl_request_post_get_string(string $parameter_name, string $regexp, ?string $default = null): string
+{
+    return sl_request_get_string(INPUT_POST, $parameter_name, $regexp, $default);
+}
+
 function sl_request_post_get_integer(string $parameter_name, int $min, int $max, ?int $default = null): int
 {
     return sl_request_get_integer(INPUT_POST, $parameter_name, $min, $max, $default);
@@ -106,4 +116,9 @@ function sl_request_get_post_parameters(array $parameters): array
 function sl_request_post_string_equals(string $parameter, string $value)
 {
     return isset($_POST[$parameter]) && $_POST[$parameter] === $value;
+}
+
+function sl_request_get_csrf(): string
+{
+    return sl_request_post_get_string("csrf", "/^[0-9a-f]{32}$/");
 }

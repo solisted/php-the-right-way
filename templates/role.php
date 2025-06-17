@@ -6,6 +6,7 @@
   <?php sl_template_render_flash_message() ?>
   <form method="POST" action="/role/<?= $role['id'] > 0 ? $role['id'] : "add" ?>">
     <input type="hidden" name="id" value="<?= $role['id'] ?>"/>
+    <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
     <label for="name">Name</label>
     <input type="text" name="name" id="name" value="<?= $role['name'] ?>"<?= isset($errors['name']) ? ' class="error"' : "" ?>/>
     <?php if (isset($errors['name'])): ?>
@@ -44,6 +45,7 @@
           <form class="hidden" method="POST" action="/role/<?= $role['id'] ?>">
             <input type="hidden" name="action" value="delete_action"/>
             <input type="hidden" name="id" value="<?= $role['id'] ?>"/>
+            <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
             <input type="hidden" name="action_id" value="<?= $action['id'] ?>"/>
             <button type="submit">&#128473;</button>
           </form>
@@ -62,6 +64,7 @@
   <form class="horizontal" method="POST" action="/role/<?= $role['id'] ?>">
     <input type="hidden" name="action" value="add_action"/>
     <input type="hidden" name="id" value="<?= $role['id'] ?>"/>
+    <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
     <label for="action">Action</label>
     <?php if (count($other_actions) > 0): ?>
     <select name="action_id" id="action">

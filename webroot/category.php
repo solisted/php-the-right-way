@@ -111,6 +111,7 @@ function sl_category_delete(PDO $connection, int $category_id, int $category_rig
 }
 
 sl_request_methods_assert(["GET", "POST"]);
+sl_auth_assert_csrf_is_valid();
 
 $category = [
     "id" => 0,
@@ -130,6 +131,8 @@ $category_id = sl_request_query_get_integer("id", 0, PHP_INT_MAX);
 $attribute_id = sl_request_post_get_integer("attribute_id", 0, PHP_INT_MAX, 0);
 
 if ($category_id > 0) {
+    sl_auth_assert_authorized("ReadCategory");
+
     $statement = $connection->prepare("SELECT parent.id FROM categories AS node, categories AS parent WHERE node.lft BETWEEN parent.lft AND parent.rgt AND node.id = :id ORDER BY parent.lft DESC LIMIT 1, 1");
     $statement->bindValue(":id", $category_id, PDO::PARAM_INT);
     $statement->execute();
@@ -142,6 +145,8 @@ if ($category_id > 0) {
 }
 
 if (sl_request_is_method("GET") && $category_id > 0) {
+    sl_auth_assert_authorized("ReadCategory");
+
     $category = sl_categories_find_category_by_id($category_id, $categories);
     if ($category === null) {
         sl_request_terminate(404);
@@ -151,9 +156,16 @@ if (sl_request_is_method("GET") && $category_id > 0) {
 
     $category_attributes = sl_category_get_category_attributes($connection, $category_id);
     $other_attributes = sl_category_get_other_attributes($connection, $category_id);
+} else if (sl_request_is_method("GET") && $category_id === 0) {
+    sl_auth_assert_authorized("CreateCategory");
+
+    $category_attributes = sl_category_get_category_attributes($connection, $category_id);
+    $other_attributes = sl_category_get_other_attributes($connection, $category_id);
 }
 
 if (sl_request_is_method("POST") && $attribute_id === 0 && !sl_request_post_string_equals("action", "delete")) {
+    sl_auth_assert_authorized_any(["CreateCategory", "UpdateCategory"]);
+
     $parent_id = sl_request_post_get_integer("parent_id", 0, PHP_INT_MAX, 0);
 
     $parameters = sl_request_get_post_parameters([
@@ -174,6 +186,8 @@ if (sl_request_is_method("POST") && $attribute_id === 0 && !sl_request_post_stri
 
     if (!sl_validate_has_errors($errors) && $category_id > 0) {
         if ($category_parent_id === $parent_id) {
+            sl_auth_assert_authorized("UpdateCategory");
+
             sl_category_update($connection, $category_id, $category["name"]);
         } else {
             sl_request_terminate(400);
@@ -189,6 +203,8 @@ if (sl_request_is_method("POST") && $attribute_id === 0 && !sl_request_post_stri
             sl_request_terminate(400);
         }
 
+        sl_auth_assert_authorized("CreateCategory");
+
         sl_category_create($connection, $category["name"], intval($parent["lft"]), intval($parent["rgt"]));
         sl_request_redirect("/categories");
     }
@@ -200,6 +216,8 @@ if (sl_request_is_method("POST") && $attribute_id === 0 && !sl_request_post_stri
 }
 
 if (sl_request_is_method("POST") && $attribute_id === 0 && sl_request_post_string_equals("action", "delete")) {
+    sl_auth_assert_authorized("DeleteCategory");
+
     $category = sl_categories_find_category_by_id($category_id, $categories);
     if ($category === null) {
         sl_request_terminate(404);
@@ -209,12 +227,14 @@ if (sl_request_is_method("POST") && $attribute_id === 0 && sl_request_post_strin
         sl_request_terminate(400);
     }
 
-    sl_category_delete($connection, $category_id, $category_id, intval($category["rgt"]));
+    sl_category_delete($connection, $category_id, intval($category["rgt"]));
 
     sl_request_redirect("/categories");
 }
 
 if (sl_request_is_method("POST") && $attribute_id > 0) {
+    sl_auth_assert_authorized("UpdateCategory");
+
     $category = sl_categories_find_category_by_id($category_id, $categories);
     if ($category === null || $category["rgt"] != $category["lft"] + 1) {
         sl_request_terminate(400);

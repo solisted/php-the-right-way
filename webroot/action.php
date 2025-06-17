@@ -16,6 +16,7 @@ function sl_render_action(array $action, array $errors): void
 }
 
 sl_request_methods_assert(["GET", "POST"]);
+sl_auth_assert_csrf_is_valid();
 
 $action = [
     "id" => 0,

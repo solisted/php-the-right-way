@@ -24,6 +24,7 @@
           <form class="hidden" method="POST" action="/product/<?= $product['id'] ?>?category=<?= $category_id ?>">
             <input type="hidden" name="action" value="delete_product"/>
             <input type="hidden" name="id" value="<?= $product['id'] ?>"/>
+            <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
             <button type="submit">&#128473;</button>
           </form>
         </td>

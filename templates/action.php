@@ -6,6 +6,7 @@
   <?php sl_template_render_flash_message() ?>
   <form method="POST" action="/action/<?= $action['id'] > 0 ? $action['id'] : "add" ?>">
     <input type="hidden" name="id" value="<?= $action['id'] ?>"/>
+    <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
     <label for="name">Name</label>
     <input type="text" name="name" id="name" value="<?= $action['name'] ?>"<?= isset($errors['name']) ? ' class="error"' : "" ?>/>
     <?php if (isset($errors['name'])): ?>

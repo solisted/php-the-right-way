@@ -37,7 +37,7 @@ CREATE TABLE `actions` (
   `description` varchar(1024) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -46,7 +46,7 @@ CREATE TABLE `actions` (
 
 LOCK TABLES `actions` WRITE;
 /*!40000 ALTER TABLE `actions` DISABLE KEYS */;
-INSERT INTO `actions` VALUES (1,'CreateUser','Add new user'),(2,'ReadUser','Retrieve user information'),(3,'UpdateUser','Edit user information'),(4,'DeleteUser','Mark user as deleted'),(5,'ListUsers','Retrieve list of all users'),(6,'CreateRole','Add new role'),(7,'ReadRole','Retrieve role information'),(8,'UpdateRole','Edit role information'),(9,'DeleteRole','Mark role as deleted'),(10,'ListRoles','Retrieve list of all roles'),(11,'CreateAction','Add new action'),(12,'ReadAction','Retrieve action information'),(13,'UpdateAction','Edit action information'),(14,'DeleteAction','Mark action as deleted'),(15,'ListActions','Retrieve list of all actions');
+INSERT INTO `actions` VALUES (1,'CreateUser','Add new user'),(2,'ReadUser','Retrieve user information'),(3,'UpdateUser','Edit user information'),(4,'DeleteUser','Mark user as deleted'),(5,'ListUsers','Retrieve list of all users'),(6,'CreateRole','Add new role'),(7,'ReadRole','Retrieve role information'),(8,'UpdateRole','Edit role information'),(9,'DeleteRole','Mark role as deleted'),(10,'ListRoles','Retrieve list of all roles'),(11,'CreateAction','Add new action'),(12,'ReadAction','Retrieve action information'),(13,'UpdateAction','Edit action information'),(14,'DeleteAction','Mark action as deleted'),(15,'ListActions','Retrieve list of all actions'),(16,'CreateAttribute','Add new attribute'),(17,'ReadAttribute','Retrieve attribute information'),(18,'UpdateAttribute','Edit attribute information'),(19,'DeleteAttribute','Delete attribute information'),(20,'ListAttributes','Retrieve list of all attributes'),(21,'CreateCategory','Add new category'),(22,'ReadCategory','Retrieve category information'),(23,'UpdateCategory','Edit category information'),(24,'DeleteCategory','Delete category information'),(25,'ListCategories','Retrieve list of all categories');
 /*!40000 ALTER TABLE `actions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -90,7 +90,7 @@ CREATE TABLE `categories` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `lft` (`lft`,`rgt`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -99,7 +99,7 @@ CREATE TABLE `categories` (
 
 LOCK TABLES `categories` WRITE;
 /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
-INSERT INTO `categories` VALUES (1,'Computers',1,22),(2,'Computer Parts',2,9),(3,'Processors',3,4),(4,'Memory',5,6),(5,'Peripherals',10,15),(6,'Keyboards',11,12),(7,'Mouse',13,14),(8,'Storage',16,21),(9,'Solid State Drives',17,18),(16,'Hard Drives',19,20),(18,'Graphics Adapters',7,8);
+INSERT INTO `categories` VALUES (1,'Computers',1,24),(2,'Computer Parts',2,9),(3,'Processors',3,4),(4,'Memory',5,6),(5,'Peripherals',10,15),(6,'Keyboards',11,12),(7,'Mouse',13,14),(8,'Storage',16,23),(9,'Solid State Drives',17,18),(16,'Hard Drives',19,20),(18,'Graphics Adapters',7,8),(23,'Test',21,22);
 /*!40000 ALTER TABLE `categories` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -174,7 +174,7 @@ CREATE TABLE `password_tokens` (
   KEY `created` (`created`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `password_tokens_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -183,7 +183,6 @@ CREATE TABLE `password_tokens` (
 
 LOCK TABLES `password_tokens` WRITE;
 /*!40000 ALTER TABLE `password_tokens` DISABLE KEYS */;
-INSERT INTO `password_tokens` VALUES (1,1,'7d59b54bf79fdf18898efcbf030df9ce','2025-06-08 19:25:33'),(2,1,'c5754d7fe927db8d6daf1c4156e92959','2025-06-08 19:31:47'),(3,1,'77fed212f6d89241c20b78410b5a444d','2025-06-08 19:34:23'),(4,1,'7dd848c4d2c542a41c5a2a23afa849d1','2025-06-08 19:38:17'),(5,1,'0a3e1734be5616844462c914491836c7','2025-06-08 19:39:25'),(6,1,'4926b852e9d19d91a37816a354064924','2025-06-08 19:40:21'),(7,1,'951371b84dbe01e9aaf5d1e7b124e869','2025-06-08 19:59:14'),(8,1,'f4e621174ad905766cb4cd4a874a74f0','2025-06-08 20:13:46');
 /*!40000 ALTER TABLE `password_tokens` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -240,7 +239,7 @@ CREATE TABLE `products_attributes` (
 
 LOCK TABLES `products_attributes` WRITE;
 /*!40000 ALTER TABLE `products_attributes` DISABLE KEYS */;
-INSERT INTO `products_attributes` VALUES (12,5,'CORSAIR'),(12,6,'Vengeance'),(12,7,'Vengeance 64GB');
+INSERT INTO `products_attributes` VALUES (1,5,'Intel'),(1,6,'Core Ultra 9'),(1,7,'288V'),(12,5,'CORSAIR'),(12,6,'Vengeance'),(12,7,'Vengeance 64GB');
 /*!40000 ALTER TABLE `products_attributes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -320,7 +319,7 @@ CREATE TABLE `roles_actions` (
 
 LOCK TABLES `roles_actions` WRITE;
 /*!40000 ALTER TABLE `roles_actions` DISABLE KEYS */;
-INSERT INTO `roles_actions` VALUES (1,1),(1,2),(2,2),(1,3),(1,4),(1,5),(2,5),(1,6),(1,7),(2,7),(1,8),(1,9),(1,10),(2,10),(1,11),(1,12),(2,12),(1,13),(1,14),(1,15),(2,15);
+INSERT INTO `roles_actions` VALUES (1,1),(1,2),(2,2),(1,3),(1,4),(1,5),(2,5),(1,6),(1,7),(2,7),(1,8),(1,9),(1,10),(2,10),(1,11),(1,12),(2,12),(1,13),(1,14),(1,15),(2,15),(1,16),(1,17),(1,18),(1,19),(1,20),(1,21),(1,22),(1,23),(1,24),(1,25);
 /*!40000 ALTER TABLE `roles_actions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -351,7 +350,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'testtest','Test','Test','isolisted@gmail.com','$2y$12$ZY3L9buAVtBvF5VQDsjk.uKKfFbuW.0INool6EEzCCUo1lEKtiQni'),(2,'userone','One','One','userone@example.com','$2y$12$EMrMy8NNiSm.9FWjydbnuuM2keam43nWRd9EnNaan0qAJ1d5LofJO'),(3,'usertwo','Two','Two','usertwo@example.com','$2y$12$v2CtYlwR4/Wa5TYsfydGvOHL.slJglrrryuCXQ2cGP4Jg6qTr9j16');
+INSERT INTO `users` VALUES (1,'testtest','Test','Test','isolisted@gmail.com','$2y$12$wqEpuVoyFemkY.HXKNzn2ORcU.bOz59LyJKPIUPjDpUUMPx6lpKya'),(2,'userone','One','One','userone@example.com','$2y$12$EMrMy8NNiSm.9FWjydbnuuM2keam43nWRd9EnNaan0qAJ1d5LofJO'),(3,'usertwo','Two','Two','usertwo@example.com','$2y$12$v2CtYlwR4/Wa5TYsfydGvOHL.slJglrrryuCXQ2cGP4Jg6qTr9j16');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -395,4 +394,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-10 18:36:01
+-- Dump completed on 2025-06-17  0:44:53

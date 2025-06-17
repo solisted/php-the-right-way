@@ -1,0 +1,1 @@
+<p>Your password was successfully reset.</p>

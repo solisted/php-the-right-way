@@ -15,6 +15,8 @@ function sl_render_roles(array $roles, string $url, int $page, int $size, int $t
 
 sl_request_method_assert("GET");
 
+sl_auth_assert_authorized("ListRoles");
+
 $page = sl_request_query_get_integer("page", 1, PHP_INT_MAX, 1);
 $page_size = sl_request_query_get_integer("size", 10, 100, 15);
 

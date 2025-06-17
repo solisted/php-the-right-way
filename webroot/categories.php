@@ -15,6 +15,8 @@ function sl_render_categories(array $categories): void
 
 sl_request_method_assert("GET");
 
+sl_auth_assert_authorized("ListCategories");
+
 $connection = sl_database_get_connection();
 $categories = sl_template_escape_array_of_arrays(sl_database_get_categories_with_product_count($connection));
 

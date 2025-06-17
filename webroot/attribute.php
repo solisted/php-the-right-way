@@ -16,6 +16,7 @@ function sl_render_attribute(array $attribute, array $errors): void
 }
 
 sl_request_methods_assert(["GET", "POST"]);
+sl_auth_assert_csrf_is_valid();
 
 $attribute = [
     "id" => 0,
@@ -31,6 +32,8 @@ $attribute_id = sl_request_query_get_integer("id", 0, PHP_INT_MAX);
 
 if (sl_request_is_method("GET")) {
     if ($attribute_id > 0) {
+        sl_auth_assert_authorized_any(["ReadAttribute", "UpdateAttribute"]);
+
         $statement = $connection->prepare("SELECT id, name FROM attributes WHERE id = :id");
         $statement->bindValue(":id", $attribute_id, PDO::PARAM_INT);
         $statement->execute();
@@ -40,11 +43,15 @@ if (sl_request_is_method("GET")) {
         }
 
         $attribute = sl_template_escape_array($statement->fetch(PDO::FETCH_ASSOC));
+    } else {
+        sl_auth_assert_authorized("CreateAttribute");
     }
 }
 
 if (sl_request_is_method("POST")) {
     if (!sl_request_post_string_equals("action", "delete")) {
+        sl_auth_assert_authorized_any(["CreateAttribute", "UpdateAttribute"]);
+
         $parameters = sl_request_get_post_parameters([
             "name" => FILTER_SANITIZE_FULL_SPECIAL_CHARS
         ]);
@@ -61,11 +68,15 @@ if (sl_request_is_method("POST")) {
 
         if (!sl_validate_has_errors($errors)) {
             if ($attribute_id > 0) {
+                sl_auth_assert_authorized("UpdateAttribute");
+
                 $statement = $connection->prepare(
                     "UPDATE attributes SET name = :name WHERE id = :id"
                 );
                 $statement->bindValue(":id", $attribute_id, PDO::PARAM_INT);
             } else {
+                sl_auth_assert_authorized("CreateAttribute");
+
                 $statement = $connection->prepare(
                     "INSERT INTO attributes (name) VALUES (:name)"
                 );
@@ -77,6 +88,8 @@ if (sl_request_is_method("POST")) {
             sl_request_redirect("/attributes");
         }
     } else if (sl_request_post_string_equals("action", "delete")) {
+        sl_auth_assert_authorized("DeleteAttribute");
+
         $statement = $connection->prepare("DELETE FROM attributes WHERE id = :id");
         $statement->bindValue(":id", $attribute_id, PDO::PARAM_INT);
         $statement->execute();

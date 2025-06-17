@@ -3,6 +3,7 @@
   <form method="POST" action="/product/<?= $product['id'] > 0 ? $product['id'] : "add" ?>?tab=<?= $tab_number ?>">
     <input type="hidden" name="action" value="add_update_product"/>
     <input type="hidden" name="id" value="<?= $product['id'] ?>"/>
+    <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
     <label for="name">Name</label>
     <input type="text" name="name" id="name" value="<?= $product['name'] ?>"<?= isset($errors['name']) ? ' class="error"' : "" ?>/>
     <?php if (isset($errors['name'])): ?>
@@ -63,6 +64,7 @@
           <form class="hidden" method="POST" action="/product/<?= $product['id'] ?>?tab=<?= $tab_number ?>">
             <input type="hidden" name="action" value="delete_attribute"/>
             <input type="hidden" name="id" value="<?= $product['id'] ?>"/>
+            <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
             <input type="hidden" name="attribute_id" value="<?= $product_attribute['id'] ?>"/>
             <button type="submit">&#128473;</button>
           </form>
@@ -79,6 +81,7 @@
   <form method="POST" action="/product/<?= $product['id'] ?>?tab=<?= $tab_number ?>">
     <input type="hidden" name="action" value="add_attribute"/>
     <input type="hidden" name="id" value="<?= $product['id'] ?>"/>
+    <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
     <label for="action">Attribute</label>
     <?php if (count($other_attributes) > 0): ?>
     <select name="attribute_id" id="action">
@@ -122,6 +125,7 @@
           <form class="hidden" method="POST" action="/product/<?= $product['id'] ?>?tab=<?= $tab_number ?>">
             <input type="hidden" name="action" value="delete_image"/>
             <input type="hidden" name="id" value="<?= $product['id'] ?>"/>
+            <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
             <input type="hidden" name="image_id" value="<?= $product_image['id'] ?>"/>
             <button type="submit">&#128473;</button>
           </form>
@@ -138,6 +142,7 @@
   <form enctype="multipart/form-data" method="POST" action="/product/<?= $product['id'] ?>?tab=<?= $tab_number ?>">
     <input type="hidden" name="action" value="add_image"/>
     <input type="hidden" name="id" value="<?= $product['id'] ?>"/>
+    <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
     <label for="image">Image</label>
     <input type="file" id="image" name="image" accept="image/png, image/jpeg" <?= isset($errors['image']) ? ' class="error"' : "" ?>/>
     <?php if (isset($errors['image'])): ?>

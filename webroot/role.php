@@ -36,6 +36,7 @@ function sl_role_get_other_actions(PDO $connection, int $role_id): array
 }
 
 sl_request_methods_assert(["GET", "POST"]);
+sl_auth_assert_csrf_is_valid();
 
 $role = [
     "id" => 0,

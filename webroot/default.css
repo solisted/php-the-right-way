@@ -283,3 +283,67 @@ div.flash {
     from { opacity: 1; }
     to { opacity: 0; display: none; }
 }
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #222222;
+        color: #eeeeee;
+    }
+
+    form input, form textarea, form select {
+        background-color: #222222;
+        color: #eeeeee;
+    }
+
+    a, a:visited {
+        color: #00aaee;
+    }
+
+    a:hover {
+        color: #0088cc;
+    }
+
+    ul.sidebar li.active, ul.tabbar li.active {
+        background-color: #0088cc;
+    }
+
+    form button[type=submit] {
+        background-color: #0088cc;
+        border: 1px solid #0088cc;
+        color: #eeeeee;
+    }
+
+    form button[type=button] {
+        background-color: #444444;
+        border: 1px solid #444444;
+        color: #eeeeee;
+    }
+
+    form.hidden button[type=submit] {
+        background-color: #222222;
+        color: #eeeeee;
+        border: none;
+    }
+
+    form.hidden button[disabled] {
+        color: #666666;
+    }
+
+    form input[type=text].error, form input[type=password].error, input[type=file].error, form select.error, form textarea.error {
+        border-color: #ff6666;
+    }
+
+    form span.error {
+        color: #ff6666;
+    }
+
+    div.flash {
+        border: 1px solid #00aa00;
+        background-color: #008800;
+    }
+
+    nav.pager a.selected {
+        background-color: #0088cc;
+        color: #eeeeee;
+    }
+}

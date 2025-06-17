@@ -36,6 +36,7 @@ function sl_user_get_other_roles(PDO $connection, int $user_id): array
 }
 
 sl_request_methods_assert(["GET", "POST"]);
+sl_auth_assert_csrf_is_valid();
 
 $user = [
     "id" => 0,

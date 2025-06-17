@@ -1,5 +1,6 @@
 <div class="login">
   <form method="POST" action="/login">
+    <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
     <h3>Please log in</h3>
     <?php if (isset($auth_error)): ?>
     <span class="alert"><?= $auth_error ?></span>

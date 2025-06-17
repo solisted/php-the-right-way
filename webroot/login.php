@@ -15,6 +15,7 @@ function sl_render_login(string $username, string $password, ?string $auth_error
 }
 
 sl_request_methods_assert(["GET", "POST"]);
+sl_auth_assert_csrf_is_valid();
 
 $username = "";
 $password = "";
@@ -56,6 +57,7 @@ if (sl_request_is_method("POST")) {
 
                 $actions = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
 
+                session_regenerate_id();
                 $_SESSION["user_id"] = $user["id"];
                 $_SESSION["actions"] = $actions;
 

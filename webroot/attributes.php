@@ -15,6 +15,8 @@ function sl_render_attributes(array $attributes, string $url, int $page, int $si
 
 sl_request_method_assert("GET");
 
+sl_auth_assert_authorized("ListAttributes");
+
 $page = sl_request_query_get_integer("page", 1, PHP_INT_MAX, 1);
 $page_size = sl_request_query_get_integer("size", 10, 100, 15);
 
