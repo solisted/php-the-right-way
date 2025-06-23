@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require("../includes/errors.php");
+require("../config/config.php");
 require("../includes/authentication.php");
 require("../includes/authorization.php");
 require("../includes/database.php");
@@ -9,6 +10,7 @@ require("../includes/request.php");
 require("../includes/template.php");
 require("../includes/validate.php");
 require("../includes/sanitize.php");
+require("../includes/session.php");
 
 function sl_render_user(array $user, array $user_roles, array $other_roles, array $errors): void
 {
@@ -36,7 +38,6 @@ function sl_user_get_other_roles(PDO $connection, int $user_id): array
 }
 
 sl_request_methods_assert(["GET", "POST"]);
-sl_auth_assert_csrf_is_valid();
 
 $user = [
     "id" => 0,
@@ -175,6 +176,7 @@ if (sl_request_is_method("POST")) {
             $statement->bindValue(":email", $user["email"], PDO::PARAM_STR);
             $statement->execute();
 
+            sl_session_set_flash_message($user_id > 0 ? "User updated successfully" : "User added successfully");
             sl_request_redirect("/users");
         } else {
             $user_roles = sl_user_get_user_roles($connection, $user_id);
@@ -189,6 +191,7 @@ if (sl_request_is_method("POST")) {
             $statement->bindValue(":role_id", $role_id, PDO::PARAM_INT);
             $statement->execute();
 
+            sl_session_set_flash_message("Role added to the user successfully");
             sl_request_redirect("/user/${user_id}");
         } else if (sl_request_post_string_equals("action", "delete_role")) {
             $statement = $connection->prepare("DELETE FROM users_roles WHERE user_id = :user_id AND role_id = :role_id");
@@ -196,6 +199,7 @@ if (sl_request_is_method("POST")) {
             $statement->bindValue(":role_id", $role_id, PDO::PARAM_INT);
             $statement->execute();
 
+            sl_session_set_flash_message("Role deleted from the user successfully");
             sl_request_redirect("/user/${user_id}");
         } else {
             sl_request_terminate(400);

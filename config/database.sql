@@ -2,7 +2,7 @@
 --
 -- Host: localhost    Database: ivan
 -- ------------------------------------------------------
--- Server version	8.4.4-4
+-- Server version	8.4.5-5
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -37,7 +37,7 @@ CREATE TABLE `actions` (
   `description` varchar(1024) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -46,7 +46,7 @@ CREATE TABLE `actions` (
 
 LOCK TABLES `actions` WRITE;
 /*!40000 ALTER TABLE `actions` DISABLE KEYS */;
-INSERT INTO `actions` VALUES (1,'CreateUser','Add new user'),(2,'ReadUser','Retrieve user information'),(3,'UpdateUser','Edit user information'),(4,'DeleteUser','Mark user as deleted'),(5,'ListUsers','Retrieve list of all users'),(6,'CreateRole','Add new role'),(7,'ReadRole','Retrieve role information'),(8,'UpdateRole','Edit role information'),(9,'DeleteRole','Mark role as deleted'),(10,'ListRoles','Retrieve list of all roles'),(11,'CreateAction','Add new action'),(12,'ReadAction','Retrieve action information'),(13,'UpdateAction','Edit action information'),(14,'DeleteAction','Mark action as deleted'),(15,'ListActions','Retrieve list of all actions'),(16,'CreateAttribute','Add new attribute'),(17,'ReadAttribute','Retrieve attribute information'),(18,'UpdateAttribute','Edit attribute information'),(19,'DeleteAttribute','Delete attribute information'),(20,'ListAttributes','Retrieve list of all attributes'),(21,'CreateCategory','Add new category'),(22,'ReadCategory','Retrieve category information'),(23,'UpdateCategory','Edit category information'),(24,'DeleteCategory','Delete category information'),(25,'ListCategories','Retrieve list of all categories');
+INSERT INTO `actions` VALUES (1,'CreateUser','Add new user'),(2,'ReadUser','Retrieve user information'),(3,'UpdateUser','Edit user information'),(4,'DeleteUser','Mark user as deleted'),(5,'ListUsers','Retrieve list of all users'),(6,'CreateRole','Add new role'),(7,'ReadRole','Retrieve role information'),(8,'UpdateRole','Edit role information'),(9,'DeleteRole','Mark role as deleted'),(10,'ListRoles','Retrieve list of all roles'),(11,'CreateAction','Add new action'),(12,'ReadAction','Retrieve action information'),(13,'UpdateAction','Edit action information'),(14,'DeleteAction','Mark action as deleted'),(15,'ListActions','Retrieve list of all actions'),(16,'CreateAttribute','Add new attribute'),(17,'ReadAttribute','Retrieve attribute information'),(18,'UpdateAttribute','Edit attribute information'),(19,'DeleteAttribute','Delete attribute information'),(20,'ListAttributes','Retrieve list of all attributes'),(21,'CreateCategory','Add new category'),(22,'ReadCategory','Retrieve category information'),(23,'UpdateCategory','Edit category information'),(24,'DeleteCategory','Delete category information'),(25,'ListCategories','Retrieve list of all categories'),(26,'CreateProduct','Add new product'),(27,'ReadProduct','Retrieve product information'),(28,'UpdateProduct','Edit product information'),(29,'DeleteProduct','Delete product information'),(30,'ListProducts','Retrieve list of all products');
 /*!40000 ALTER TABLE `actions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -62,7 +62,7 @@ CREATE TABLE `attributes` (
   `name` varchar(32) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -71,7 +71,7 @@ CREATE TABLE `attributes` (
 
 LOCK TABLES `attributes` WRITE;
 /*!40000 ALTER TABLE `attributes` DISABLE KEYS */;
-INSERT INTO `attributes` VALUES (5,'Brand'),(6,'Family'),(9,'Memory Size'),(7,'Model'),(8,'Number Of Cores');
+INSERT INTO `attributes` VALUES (5,'Brand'),(10,'Capacity'),(6,'Family'),(9,'Memory Size'),(7,'Model'),(8,'Number Of Cores');
 /*!40000 ALTER TABLE `attributes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -99,7 +99,7 @@ CREATE TABLE `categories` (
 
 LOCK TABLES `categories` WRITE;
 /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
-INSERT INTO `categories` VALUES (1,'Computers',1,24),(2,'Computer Parts',2,9),(3,'Processors',3,4),(4,'Memory',5,6),(5,'Peripherals',10,15),(6,'Keyboards',11,12),(7,'Mouse',13,14),(8,'Storage',16,23),(9,'Solid State Drives',17,18),(16,'Hard Drives',19,20),(18,'Graphics Adapters',7,8),(23,'Test',21,22);
+INSERT INTO `categories` VALUES (1,'Computers',1,22),(2,'Computer Parts',2,9),(3,'Processors',3,4),(4,'Memory',5,6),(5,'Peripherals',10,15),(6,'Keyboards',11,12),(7,'Mouse',13,14),(8,'Storage',16,21),(9,'Solid State Drives',17,18),(16,'Hard Drives',19,20),(18,'Graphics Adapters',7,8);
 /*!40000 ALTER TABLE `categories` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -126,7 +126,7 @@ CREATE TABLE `categories_attributes` (
 
 LOCK TABLES `categories_attributes` WRITE;
 /*!40000 ALTER TABLE `categories_attributes` DISABLE KEYS */;
-INSERT INTO `categories_attributes` VALUES (3,5),(4,5),(18,5),(3,6),(4,6),(18,6),(3,7),(4,7),(18,7),(3,8),(4,9);
+INSERT INTO `categories_attributes` VALUES (3,5),(4,5),(9,5),(16,5),(18,5),(3,6),(4,6),(9,6),(16,6),(18,6),(3,7),(4,7),(9,7),(16,7),(18,7),(3,8),(4,9),(9,10),(16,10);
 /*!40000 ALTER TABLE `categories_attributes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -319,7 +319,7 @@ CREATE TABLE `roles_actions` (
 
 LOCK TABLES `roles_actions` WRITE;
 /*!40000 ALTER TABLE `roles_actions` DISABLE KEYS */;
-INSERT INTO `roles_actions` VALUES (1,1),(1,2),(2,2),(1,3),(1,4),(1,5),(2,5),(1,6),(1,7),(2,7),(1,8),(1,9),(1,10),(2,10),(1,11),(1,12),(2,12),(1,13),(1,14),(1,15),(2,15),(1,16),(1,17),(1,18),(1,19),(1,20),(1,21),(1,22),(1,23),(1,24),(1,25);
+INSERT INTO `roles_actions` VALUES (1,1),(1,2),(2,2),(1,3),(1,4),(1,5),(2,5),(1,6),(1,7),(2,7),(1,8),(1,9),(1,10),(2,10),(1,11),(1,12),(2,12),(1,13),(1,14),(1,15),(2,15),(1,16),(1,17),(2,17),(1,18),(1,19),(1,20),(2,20),(1,21),(1,22),(2,22),(1,23),(1,24),(1,25),(2,25),(3,25),(1,26),(1,27),(2,27),(1,28),(1,29),(1,30),(2,30);
 /*!40000 ALTER TABLE `roles_actions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -350,7 +350,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'testtest','Test','Test','isolisted@gmail.com','$2y$12$wqEpuVoyFemkY.HXKNzn2ORcU.bOz59LyJKPIUPjDpUUMPx6lpKya'),(2,'userone','One','One','userone@example.com','$2y$12$EMrMy8NNiSm.9FWjydbnuuM2keam43nWRd9EnNaan0qAJ1d5LofJO'),(3,'usertwo','Two','Two','usertwo@example.com','$2y$12$v2CtYlwR4/Wa5TYsfydGvOHL.slJglrrryuCXQ2cGP4Jg6qTr9j16');
+INSERT INTO `users` VALUES (1,'testtest','Test','Test','isolisted@gmail.com','$2y$12$wqEpuVoyFemkY.HXKNzn2ORcU.bOz59LyJKPIUPjDpUUMPx6lpKya'),(2,'userone','One','One','userone@example.com','$2y$12$Ho1H5naL48HO1s6547rcP.QzsSy/6cF1gsS2lftod/pXTkYLjpHty'),(3,'usertwo','Two','Two','usertwo@example.com','$2y$12$FimRJ7lvgQA1AAJobx6dXO4CZXXvtRWALrbnom.Dv58nktKyo6Xea');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -377,7 +377,7 @@ CREATE TABLE `users_roles` (
 
 LOCK TABLES `users_roles` WRITE;
 /*!40000 ALTER TABLE `users_roles` DISABLE KEYS */;
-INSERT INTO `users_roles` VALUES (1,1),(2,2),(3,2);
+INSERT INTO `users_roles` VALUES (1,1),(2,2),(3,3);
 /*!40000 ALTER TABLE `users_roles` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50112 SET @disable_bulk_load = IF (@is_rocksdb_supported, 'SET SESSION rocksdb_bulk_load = @old_rocksdb_bulk_load', 'SET @dummy_rocksdb_bulk_load = 0') */;
@@ -394,4 +394,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-17  0:44:53
+-- Dump completed on 2025-06-22 21:29:32

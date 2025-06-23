@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require("../includes/errors.php");
+require("../config/config.php");
 require("../includes/authentication.php");
 require("../includes/authorization.php");
 require("../includes/database.php");
@@ -9,6 +10,7 @@ require("../includes/request.php");
 require("../includes/template.php");
 require("../includes/validate.php");
 require("../includes/sanitize.php");
+require("../includes/session.php");
 
 function sl_render_category(array $category, array $categories, array $category_attributes, array $other_attributes, int $parent_id, array $errors): void
 {
@@ -111,7 +113,6 @@ function sl_category_delete(PDO $connection, int $category_id, int $category_rig
 }
 
 sl_request_methods_assert(["GET", "POST"]);
-sl_auth_assert_csrf_is_valid();
 
 $category = [
     "id" => 0,
@@ -193,6 +194,7 @@ if (sl_request_is_method("POST") && $attribute_id === 0 && !sl_request_post_stri
             sl_request_terminate(400);
         }
 
+        sl_session_set_flash_message("Category updated successfully");
         sl_request_redirect("/categories");
     }
 
@@ -206,6 +208,8 @@ if (sl_request_is_method("POST") && $attribute_id === 0 && !sl_request_post_stri
         sl_auth_assert_authorized("CreateCategory");
 
         sl_category_create($connection, $category["name"], intval($parent["lft"]), intval($parent["rgt"]));
+
+        sl_session_set_flash_message("Category added successfully");
         sl_request_redirect("/categories");
     }
 
@@ -229,6 +233,7 @@ if (sl_request_is_method("POST") && $attribute_id === 0 && sl_request_post_strin
 
     sl_category_delete($connection, $category_id, intval($category["rgt"]));
 
+    sl_session_set_flash_message("Category deleted successfully");
     sl_request_redirect("/categories");
 }
 
@@ -246,6 +251,7 @@ if (sl_request_is_method("POST") && $attribute_id > 0) {
         $statement->bindValue(":attribute_id", $attribute_id, PDO::PARAM_INT);
         $statement->execute();
 
+        sl_session_set_flash_message("Attribute added to the category successfully");
         sl_request_redirect("/category/${category_id}");
     } else if (sl_request_post_string_equals("action", "delete_attribute")) {
         $statement = $connection->prepare("DELETE FROM categories_attributes WHERE category_id = :category_id AND attribute_id = :attribute_id");
@@ -253,6 +259,7 @@ if (sl_request_is_method("POST") && $attribute_id > 0) {
         $statement->bindValue(":attribute_id", $attribute_id, PDO::PARAM_INT);
         $statement->execute();
 
+        sl_session_set_flash_message("Attribute deleted from the category successfully");
         sl_request_redirect("/category/${category_id}");
     } else {
         sl_request_terminate(400);

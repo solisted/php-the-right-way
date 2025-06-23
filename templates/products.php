@@ -16,17 +16,23 @@
       <?php foreach ($products as $product): ?>
       <tr>
         <td align="right"><?= $product["id"] ?></td>
+        <?php if (sl_auth_is_authorized_any(["ReadProduct", "UpdateProduct"])): ?>
         <td><a href="/product/<?= $product["id"] ?>"><?= $product["name"] ?></a></td>
+        <?php else: ?>
+        <td><?= $product["name"] ?></td>
+        <?php endif; ?>
         <?php if ($category_id === 0): ?>
         <td><?= $product["category"] ?></td>
         <?php endif; ?>
         <td align="right">
+          <?php if (sl_auth_is_authorized("DeleteProduct")): ?>
           <form class="hidden" method="POST" action="/product/<?= $product['id'] ?>?category=<?= $category_id ?>">
             <input type="hidden" name="action" value="delete_product"/>
             <input type="hidden" name="id" value="<?= $product['id'] ?>"/>
             <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
             <button type="submit">&#128473;</button>
           </form>
+          <?php endif; ?>
         </td>
       </tr>
       <?php endforeach; ?>

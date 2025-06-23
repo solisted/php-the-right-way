@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require("../includes/errors.php");
+require("../config/config.php");
 require("../includes/authentication.php");
 require("../includes/authorization.php");
 require("../includes/database.php");
@@ -9,6 +10,7 @@ require("../includes/request.php");
 require("../includes/template.php");
 require("../includes/validate.php");
 require("../includes/sanitize.php");
+require("../includes/session.php");
 
 function sl_render_action(array $action, array $errors): void
 {
@@ -16,7 +18,6 @@ function sl_render_action(array $action, array $errors): void
 }
 
 sl_request_methods_assert(["GET", "POST"]);
-sl_auth_assert_csrf_is_valid();
 
 $action = [
     "id" => 0,
@@ -78,11 +79,13 @@ if (sl_request_is_method("POST")) {
                 "UPDATE actions SET name = :name, description = :description WHERE id = :id"
             );
             $statement->bindValue(":id", $action_id, PDO::PARAM_INT);
+            sl_session_set_flash_message("Action updated successfully");
         } else {
             sl_auth_assert_authorized("CreateAction");
             $statement = $connection->prepare(
                 "INSERT INTO actions (name, description) VALUES (:name, :description)"
             );
+            sl_session_set_flash_message("Action created successfully");
         }
 
         $statement->bindValue(":name", $action["name"], PDO::PARAM_STR);

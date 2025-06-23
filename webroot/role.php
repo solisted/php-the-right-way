@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require("../includes/errors.php");
+require("../config/config.php");
 require("../includes/authentication.php");
 require("../includes/authorization.php");
 require("../includes/database.php");
@@ -9,6 +10,7 @@ require("../includes/request.php");
 require("../includes/template.php");
 require("../includes/validate.php");
 require("../includes/sanitize.php");
+require("../includes/session.php");
 
 function sl_render_role(array $role, array $role_actions, array $other_actions, array $errors): void
 {
@@ -36,7 +38,6 @@ function sl_role_get_other_actions(PDO $connection, int $role_id): array
 }
 
 sl_request_methods_assert(["GET", "POST"]);
-sl_auth_assert_csrf_is_valid();
 
 $role = [
     "id" => 0,
@@ -116,6 +117,7 @@ if (sl_request_is_method("POST")) {
             $statement->bindValue(":description", $role["description"], PDO::PARAM_STR);
             $statement->execute();
 
+            sl_session_set_flash_message($role_id > 0 ? "Role updated successfully" : "Role added successfully");
             sl_request_redirect("/roles");
         } else {
             $role_actions = sl_role_get_role_actions($connection, $role_id);
@@ -130,6 +132,7 @@ if (sl_request_is_method("POST")) {
             $statement->bindValue(":action_id", $action_id, PDO::PARAM_INT);
             $statement->execute();
 
+            sl_session_set_flash_message("Action added to the role successfully");
             sl_request_redirect("/role/${role_id}");
         } else if (sl_request_post_string_equals("action", "delete_action")) {
             $statement = $connection->prepare("DELETE FROM roles_actions WHERE role_id = :role_id AND action_id = :action_id");
@@ -137,6 +140,7 @@ if (sl_request_is_method("POST")) {
             $statement->bindValue(":action_id", $action_id, PDO::PARAM_INT);
             $statement->execute();
 
+            sl_session_set_flash_message("Action deleted from the role successfully");
             sl_request_redirect("/role/${role_id}");
         } else {
             sl_request_terminate(400);

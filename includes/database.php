@@ -3,9 +3,8 @@ declare(strict_types=1);
 
 function sl_database_get_connection(): PDO
 {
-    return new PDO("mysql:dbname=ivan;host=localhost", "ivan", "ivan");
+    return new PDO(SL_DATABASE_DSN, SL_DATABASE_USER, SL_DATABASE_PASSWORD);
 }
-
 
 function sl_database_is_unique_column(PDO $connection, string $table, string $column, string $value, int $id)
 {

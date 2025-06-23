@@ -1,6 +1,8 @@
 <div class="sidebar">
   <ul class="sidebar">
+    <?php if (sl_auth_is_authorized_any(["ListCategories", "ListProducts", "ListAttributes"])): ?>
     <li class="header">Catalog</li>
+    <?php endif; ?>
     <?php if (sl_auth_is_authorized("ListCategories")): ?>
     <li <?= sl_request_is_uri('/categor') ? 'class="active"' : "" ?>><a href="/categories">Categories</a>
       <?php if (sl_auth_is_authorized("CreateCategory")): ?>
@@ -8,10 +10,13 @@
       <?php endif; ?>
     </li>
     <?php endif; ?>
-    <li <?= sl_request_is_uri('/product') ? 'class="active"' : "" ?>>
-      <a href="/products">Products</a>
+    <?php if (sl_auth_is_authorized("ListProducts")): ?>
+    <li <?= sl_request_is_uri('/product') ? 'class="active"' : "" ?>><a href="/products">Products</a>
+      <?php if (sl_auth_is_authorized("CreateProduct")): ?>
       <a href="/product/add">+</a>
+      <?php endif; ?>
     </li>
+    <?php endif; ?>
     <?php if (sl_auth_is_authorized("ListAttributes")): ?>
     <li <?= sl_request_is_uri('/attribute') ? 'class="active"' : "" ?>><a href="/attributes">Attributes</a>
       <?php if (sl_auth_is_authorized("CreateAttribute")): ?>
@@ -19,7 +24,9 @@
       <?php endif; ?>
     </li>
     <?php endif; ?>
+    <?php if (sl_auth_is_authorized_any(["ListUsers", "ListRoles", "ListActions"])): ?>
     <li class="header">Access control</li>
+    <?php endif; ?>
     <?php if (sl_auth_is_authorized("ListUsers")): ?>
     <li <?= sl_request_is_uri('/user') ? 'class="active"' : "" ?>><a href="/users">Users</a>
     <?php if (sl_auth_is_authorized("CreateUser")): ?>

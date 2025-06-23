@@ -1,6 +1,33 @@
 <?php
 declare(strict_types=1);
 
+$previous_csrf = isset($_SESSION["csrf"]) ? $_SESSION["csrf"] : null;
+$current_csrf = bin2hex(random_bytes(16));
+$_SESSION["csrf"] = $current_csrf;
+
+function sl_auth_get_current_csrf(): string
+{
+    global $current_csrf;
+
+    return $current_csrf;
+}
+
+function sl_auth_get_previous_csrf(): string
+{
+    global $previous_csrf;
+
+    return $previous_csrf;
+}
+
+function sl_auth_assert_csrf_is_valid(): void
+{
+    if (!isset($_REQUEST["csrf"]) || $_REQUEST["csrf"] !== sl_auth_get_previous_csrf()) {
+        ob_end_clean();
+        http_response_code(403);
+        exit();
+    }
+}
+
 function sl_request_terminate(int $http_code): void
 {
     ob_end_clean();
@@ -27,12 +54,20 @@ function sl_request_method_assert(string $method): void
     if (!isset($_SERVER["REQUEST_METHOD"]) || $_SERVER["REQUEST_METHOD"] !== $method) {
         sl_request_terminate(403);
     }
+
+    if (in_array($_SERVER["REQUEST_METHOD"], ["POST", "PATCH", "PUT", "DELETE"])) {
+        sl_auth_assert_csrf_is_valid();
+    }
 }
 
 function sl_request_methods_assert(array $methods): void
 {
     if (!isset($_SERVER["REQUEST_METHOD"]) || !in_array($_SERVER["REQUEST_METHOD"], $methods)) {
         sl_request_terminate(403);
+    }
+
+    if (in_array($_SERVER["REQUEST_METHOD"], ["POST", "PATCH", "PUT", "DELETE"])) {
+        sl_auth_assert_csrf_is_valid();
     }
 }
 

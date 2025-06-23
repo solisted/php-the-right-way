@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require("../includes/errors.php");
+require("../config/config.php");
 require("../includes/authentication.php");
 require("../includes/database.php");
 require("../includes/request.php");
@@ -47,7 +48,6 @@ function sl_forgot_get_user_by_token(PDO $connection, string $token): ?int
 }
 
 sl_request_methods_assert(["GET", "POST"]);
-sl_auth_assert_csrf_is_valid();
 
 $reset = [
     "username" => "",

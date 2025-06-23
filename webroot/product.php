@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require("../includes/errors.php");
+require("../config/config.php");
 require("../includes/authentication.php");
 require("../includes/authorization.php");
 require("../includes/database.php");
@@ -78,7 +79,6 @@ function sl_product_get_product_images(PDO $connection, int $product_id): array
 }
 
 sl_request_methods_assert(["GET", "POST"]);
-sl_auth_assert_csrf_is_valid();
 
 $product = [
     "id" => 0,
@@ -109,6 +109,8 @@ $image_id = sl_request_post_get_integer("image_id", 0, PHP_INT_MAX, 0);
 $tab_number = sl_request_query_get_integer("tab", 0, 1, 0);
 
 if (sl_request_is_method("GET") && $product_id > 0) {
+    sl_auth_assert_authorized("ReadProduct");
+
     $product = sl_product_get_product_by_id($connection, $product_id);
     if (empty($product)) {
         sl_request_terminate(404);
@@ -120,9 +122,13 @@ if (sl_request_is_method("GET") && $product_id > 0) {
     } else if ($tab_number === 1) {
         $product_images = sl_product_get_product_images($connection, $product_id);
     }
+} else if (sl_request_is_method("GET") && $product_id === 0) {
+    sl_auth_assert_authorized("CreateProduct");
 }
 
 if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "add_update_product")) {
+    sl_auth_assert_authorized_any(["CreateProduct", "UpdateProduct"]);
+
     $parameters = sl_request_get_post_parameters([
         "name" => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
         "category_id" => FILTER_SANITIZE_NUMBER_INT,
@@ -161,11 +167,15 @@ if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "add
 
     if (!sl_validate_has_errors($errors)) {
         if ($product_id > 0) {
+            sl_auth_assert_authorized("UpdateProduct");
+
             $statement = $connection->prepare(
                 "UPDATE products SET name = :name, category_id = :category_id, description = :description WHERE id = :id"
             );
             $statement->bindValue(":id", $product_id, PDO::PARAM_INT);
         } else {
+            sl_auth_assert_authorized("CreateProduct");
+
             $statement = $connection->prepare(
                 "INSERT INTO products (name, category_id, description) VALUES (:name, :category_id, :description)"
             );
@@ -185,6 +195,8 @@ if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "add
 }
 
 if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "delete_product")) {
+    sl_auth_assert_authorized("DeleteProduct");
+
     $product_id = sl_request_post_get_integer("id", 0, PHP_INT_MAX);
 
     $statement = $connection->prepare("DELETE FROM products WHERE id = :id");
@@ -196,6 +208,8 @@ if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "del
 }
 
 if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "add_attribute")) {
+    sl_auth_assert_authorized("UpdateProduct");
+
     if (!sl_product_is_product_attribute($connection, $product_id, $attribute_id)) {
         sl_request_terminate(400);
     }
@@ -236,6 +250,8 @@ if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "add
 }
 
 if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "delete_attribute")) {
+    sl_auth_assert_authorized("UpdateProduct");
+
     $product_id = sl_request_post_get_integer("id", 0, PHP_INT_MAX);
 
     $statement = $connection->prepare("DELETE FROM products_attributes WHERE product_id = :product_id AND attribute_id = :attribute_id");
@@ -248,6 +264,8 @@ if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "del
 }
 
 if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "add_image")) {
+    sl_auth_assert_authorized("UpdateProduct");
+
     if (!isset($_FILES["image"]) || !is_uploaded_file($_FILES["image"]["tmp_name"])) {
         $errors["image"] = "Image file is required";
     } else {
@@ -330,6 +348,8 @@ if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "add
 }
 
 if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "delete_image")) {
+    sl_auth_assert_authorized("UpdateProduct");
+
     $product_id = sl_request_post_get_integer("id", 0, PHP_INT_MAX);
 
     $statement = $connection->prepare("SELECT filename FROM images WHERE id = :image_id");

@@ -1,3 +1,7 @@
+<?php
+  $can_update = sl_auth_is_authorized("UpdateProduct") && $product['id'] > 0;
+  $can_create = sl_auth_is_authorized("CreateProduct") && $product['id'] === 0;
+?>
 <div class="main">
   <?php sl_template_render_flash_message() ?>
   <form method="POST" action="/product/<?= $product['id'] > 0 ? $product['id'] : "add" ?>?tab=<?= $tab_number ?>">
@@ -31,8 +35,10 @@
     <?php if (isset($errors['description'])): ?>
       <span class="error"><?= $errors['description'] ?></span>
     <?php endif; ?>
+    <?php if ($can_update || $can_create): ?>
     <button type="submit"><?= $product["id"] == 0 ? "Add" : "Update" ?></button>
     <a href="/products"><button type="button">Cancel</button></a>
+    <?php endif; ?>
   </form>
   <?php if ($product['id'] > 0): ?>
   <ul class="tabbar">
@@ -61,6 +67,7 @@
         <td><?= $product_attribute['name'] ?></td>
         <td><?= $product_attribute['value'] ?></td>
         <td align="right">
+          <?php if ($can_update): ?>
           <form class="hidden" method="POST" action="/product/<?= $product['id'] ?>?tab=<?= $tab_number ?>">
             <input type="hidden" name="action" value="delete_attribute"/>
             <input type="hidden" name="id" value="<?= $product['id'] ?>"/>
@@ -68,6 +75,7 @@
             <input type="hidden" name="attribute_id" value="<?= $product_attribute['id'] ?>"/>
             <button type="submit">&#128473;</button>
           </form>
+          <?php endif; ?>
         </td>
       </tr>
       <?php endforeach; ?>
@@ -75,9 +83,10 @@
       <tr>
         <td colspan="5" align="center">No attributes found</td>
       </tr>
-      <?php endif ?>
+      <?php endif; ?>
     </tbody>
   </table>
+  <?php if ($can_update): ?>
   <form method="POST" action="/product/<?= $product['id'] ?>?tab=<?= $tab_number ?>">
     <input type="hidden" name="action" value="add_attribute"/>
     <input type="hidden" name="id" value="<?= $product['id'] ?>"/>
@@ -102,6 +111,7 @@
     <button type="submit" <?= count($other_attributes) === 0 ? "disabled" : "" ?>>Add</button>
   </form>
   <?php endif; ?>
+  <?php endif; ?>
   <?php if ($tab_number === 1): ?>
   <table>
     <thead>
@@ -122,6 +132,7 @@
         </td>
         <td><?= $product_image['mime_type'] ?></td>
         <td align="right">
+          <?php if ($can_update): ?>
           <form class="hidden" method="POST" action="/product/<?= $product['id'] ?>?tab=<?= $tab_number ?>">
             <input type="hidden" name="action" value="delete_image"/>
             <input type="hidden" name="id" value="<?= $product['id'] ?>"/>
@@ -129,6 +140,7 @@
             <input type="hidden" name="image_id" value="<?= $product_image['id'] ?>"/>
             <button type="submit">&#128473;</button>
           </form>
+          <?php endif; ?>
         </td>
       </tr>
       <?php endforeach; ?>
@@ -139,6 +151,7 @@
       <?php endif ?>
     </tbody>
   </table>
+  <?php if ($can_update): ?>
   <form enctype="multipart/form-data" method="POST" action="/product/<?= $product['id'] ?>?tab=<?= $tab_number ?>">
     <input type="hidden" name="action" value="add_image"/>
     <input type="hidden" name="id" value="<?= $product['id'] ?>"/>
@@ -151,5 +164,6 @@
     <button type="submit">Upload</button>
   </form>
   <?php endif; ?>
-  <?php endif ?>
+  <?php endif; ?>
+  <?php endif; ?>
 </div>

@@ -4,7 +4,7 @@
 ?>
 <div class="main">
   <?php sl_template_render_flash_message() ?>
-  <form method="POST" action="/user/<?= $user['id'] > 0 ? $user['id'] : "add" ?>?XDEBUG_TRIGGER=1">
+  <form method="POST" action="/user/<?= $user['id'] > 0 ? $user['id'] : "add" ?>">
     <input type="hidden" name="id" value="<?= $user['id'] ?>"/>
     <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
     <label for="username">Username</label>

@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require("../includes/errors.php");
+require("../config/config.php");
 require("../includes/authentication.php");
 require("../includes/authorization.php");
 require("../includes/database.php");
@@ -9,6 +10,7 @@ require("../includes/request.php");
 require("../includes/template.php");
 require("../includes/validate.php");
 require("../includes/sanitize.php");
+require("../includes/session.php");
 
 function sl_render_attribute(array $attribute, array $errors): void
 {
@@ -16,7 +18,6 @@ function sl_render_attribute(array $attribute, array $errors): void
 }
 
 sl_request_methods_assert(["GET", "POST"]);
-sl_auth_assert_csrf_is_valid();
 
 $attribute = [
     "id" => 0,
@@ -74,12 +75,14 @@ if (sl_request_is_method("POST")) {
                     "UPDATE attributes SET name = :name WHERE id = :id"
                 );
                 $statement->bindValue(":id", $attribute_id, PDO::PARAM_INT);
+                sl_session_set_flash_message("Attribute updated successfully");
             } else {
                 sl_auth_assert_authorized("CreateAttribute");
 
                 $statement = $connection->prepare(
                     "INSERT INTO attributes (name) VALUES (:name)"
                 );
+                sl_session_set_flash_message("Attribute added successfully");
             }
 
             $statement->bindValue(":name", $attribute["name"], PDO::PARAM_STR);
@@ -94,6 +97,7 @@ if (sl_request_is_method("POST")) {
         $statement->bindValue(":id", $attribute_id, PDO::PARAM_INT);
         $statement->execute();
 
+        sl_session_set_flash_message("Attribute deleted successfully");
         sl_request_redirect("/attributes");
     } else {
         sl_request_terminate(400);

@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require("../includes/errors.php");
+require("../config/config.php");
 require("../includes/authentication.php");
 require("../includes/database.php");
 require("../includes/request.php");
@@ -15,7 +16,6 @@ function sl_render_login(string $username, string $password, ?string $auth_error
 }
 
 sl_request_methods_assert(["GET", "POST"]);
-sl_auth_assert_csrf_is_valid();
 
 $username = "";
 $password = "";
