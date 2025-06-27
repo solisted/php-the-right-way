@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-require("../includes/errors.php");
 require("../config/config.php");
+require("../includes/errors.php");
 require("../includes/authentication.php");
 require("../includes/authorization.php");
 require("../includes/database.php");
@@ -38,9 +38,9 @@ if ($total_pages > 0 && $page > $total_pages) {
 }
 
 if ($category_id == 0) {
-    $statement = $connection->prepare("SELECT p.id, p.name, c.name AS category FROM products p, categories c WHERE c.id = p.category_id LIMIT :offset, :limit");
+    $statement = $connection->prepare("SELECT p.id, p.sku, p.name, c.name AS category FROM products p, categories c WHERE c.id = p.category_id LIMIT :offset, :limit");
 } else {
-    $statement = $connection->prepare("SELECT p.id, p.name FROM products p WHERE p.category_id = :category_id LIMIT :offset, :limit");
+    $statement = $connection->prepare("SELECT p.id, p.sku, p.name FROM products p WHERE p.category_id = :category_id LIMIT :offset, :limit");
     $statement->bindValue(":category_id", $category_id, PDO::PARAM_INT);
 }
 

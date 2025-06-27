@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-require("../includes/errors.php");
 require("../config/config.php");
+require("../includes/errors.php");
 require("../includes/authentication.php");
 require("../includes/authorization.php");
 require("../includes/database.php");

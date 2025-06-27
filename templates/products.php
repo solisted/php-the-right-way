@@ -4,9 +4,10 @@
     <thead>
       <tr>
         <th width="5%">#</th>
-        <th width="70%">Name</th>
+        <th width="60%">Name</th>
         <?php if ($category_id === 0): ?>
-        <th width="25%">Category</th>
+        <th width="15%">SKU</th>
+        <th width="15%">Category</th>
         <?php endif; ?>
         <th width="5%">&nbsp;</th>
       </tr>
@@ -21,6 +22,7 @@
         <?php else: ?>
         <td><?= $product["name"] ?></td>
         <?php endif; ?>
+        <td><?= $product["sku"] ?></td>
         <?php if ($category_id === 0): ?>
         <td><?= $product["category"] ?></td>
         <?php endif; ?>

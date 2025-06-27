@@ -13,6 +13,11 @@
     <?php if (isset($errors['name'])): ?>
       <span class="error"><?= $errors['name'] ?></span>
     <?php endif; ?>
+    <label for="sku">SKU</label>
+    <input type="text" name="sku" id="sku" value="<?= $product['sku'] ?>"<?= isset($errors['sku']) ? ' class="error"' : "" ?>/>
+    <?php if (isset($errors['sku'])): ?>
+      <span class="error"><?= $errors['sku'] ?></span>
+    <?php endif; ?>
     <label for="category">Category</label>
     <?php if (count($categories) > 0): ?>
     <select name="category_id" id="category"<?= isset($errors['category_id']) ? ' class="error"' : "" ?>>

@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-require("../includes/errors.php");
 require("../config/config.php");
+require("../includes/errors.php");
 require("../includes/authentication.php");
 require("../includes/authorization.php");
 require("../includes/database.php");
@@ -27,7 +27,7 @@ function sl_render_product(
 
 function sl_product_get_product_by_id(PDO $connection, int $product_id): array
 {
-    $statement = $connection->prepare("SELECT id, category_id, name, description FROM products WHERE id = :id");
+    $statement = $connection->prepare("SELECT id, category_id, sku, name, description FROM products WHERE id = :id");
     $statement->bindValue(":id", $product_id, PDO::PARAM_INT);
     $statement->execute();
 
@@ -82,6 +82,7 @@ sl_request_methods_assert(["GET", "POST"]);
 
 $product = [
     "id" => 0,
+    "sku" => "",
     "category_id" => 0,
     "name" => "",
     "description" => ""
@@ -94,6 +95,7 @@ $product_attributes = [];
 $product_images = [];
 $other_attributes = [];
 $errors = [
+    "sku" => null,
     "name" => null,
     "description" => null,
     "value" => null,
@@ -130,6 +132,7 @@ if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "add
     sl_auth_assert_authorized_any(["CreateProduct", "UpdateProduct"]);
 
     $parameters = sl_request_get_post_parameters([
+        "sku" => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
         "name" => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
         "category_id" => FILTER_SANITIZE_NUMBER_INT,
         "description" => FILTER_SANITIZE_FULL_SPECIAL_CHARS
@@ -151,14 +154,20 @@ if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "add
         }
     }
 
+    $product["sku"] = sl_sanitize_case($parameters["sku"], MB_CASE_UPPER_SIMPLE);
     $product["name"] = sl_sanitize_trim($parameters["name"]);
     $product["description"] = sl_sanitize_trim($parameters["description"], preserve_whitespace: true);
 
+    $errors["sku"] = sl_validate_regexp($product["sku"], 8, 16, "/^[A-Z0-9]+$/u", "SKU", "alphanumeric characters");
     $errors["name"] = sl_validate_regexp($product["name"], 8, 128, "/^[[:print:]]+$/u", "Name", "printable characters");
     $errors["description"] = sl_validate_regexp($product["description"], 10, 4096, "/^[[:print:][:space:]]+$/u", "Description", "printable characters and whitespace");
 
     if ($product["category_id"] === 0) {
         $errors["category_id"] = "Select product category";
+    }
+
+    if (!isset($errors["sku"]) && !sl_database_is_unique_column($connection, "products", "sku", $product["sku"], $product_id)) {
+        $errors["sku"] = "Product with the same SKU already exists";
     }
 
     if (!isset($errors["name"]) && !sl_database_is_unique_column($connection, "products", "name", $product["name"], $product_id)) {
@@ -170,17 +179,18 @@ if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "add
             sl_auth_assert_authorized("UpdateProduct");
 
             $statement = $connection->prepare(
-                "UPDATE products SET name = :name, category_id = :category_id, description = :description WHERE id = :id"
+                "UPDATE products SET sku = :sku, name = :name, category_id = :category_id, description = :description WHERE id = :id"
             );
             $statement->bindValue(":id", $product_id, PDO::PARAM_INT);
         } else {
             sl_auth_assert_authorized("CreateProduct");
 
             $statement = $connection->prepare(
-                "INSERT INTO products (name, category_id, description) VALUES (:name, :category_id, :description)"
+                "INSERT INTO products (sku, name, category_id, description) VALUES (:sku, :name, :category_id, :description)"
             );
         }
 
+        $statement->bindValue(":sku", $product["sku"], PDO::PARAM_STR);
         $statement->bindValue(":category_id", $product["category_id"], PDO::PARAM_INT);
         $statement->bindValue(":name", $product["name"], PDO::PARAM_STR);
         $statement->bindValue(":description", $product["description"], PDO::PARAM_STR);
