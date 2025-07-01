@@ -38,9 +38,9 @@ if ($total_pages > 0 && $page > $total_pages) {
 }
 
 if ($category_id == 0) {
-    $statement = $connection->prepare("SELECT p.id, p.sku, p.name, c.name AS category FROM products p, categories c WHERE c.id = p.category_id LIMIT :offset, :limit");
+    $statement = $connection->prepare("SELECT p.id, p.sku, p.name, c.name AS category, SUBSTRING_INDEX(GROUP_CONCAT(pp.price ORDER BY pp.created DESC), ',', 1) AS price FROM products p LEFT JOIN categories c ON (p.category_id = c.id) LEFT JOIN product_prices pp ON (p.id = pp.product_id) GROUP BY p.id LIMIT :offset, :limit");
 } else {
-    $statement = $connection->prepare("SELECT p.id, p.sku, p.name FROM products p WHERE p.category_id = :category_id LIMIT :offset, :limit");
+    $statement = $connection->prepare("SELECT p.id, p.sku, p.name, c.name AS category, SUBSTRING_INDEX(GROUP_CONCAT(pp.price ORDER BY pp.created DESC), ',', 1) AS price FROM products p LEFT JOIN categories c ON (p.category_id = c.id) LEFT JOIN product_prices pp FORCE INDEX FOR JOIN (product_id) ON (p.id = pp.product_id) WHERE c.id = :category_id GROUP BY p.id LIMIT :offset, :limit");
     $statement->bindValue(":category_id", $category_id, PDO::PARAM_INT);
 }
 

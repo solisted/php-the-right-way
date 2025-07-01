@@ -37,7 +37,7 @@ CREATE TABLE `actions` (
   `description` varchar(1024) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -46,7 +46,7 @@ CREATE TABLE `actions` (
 
 LOCK TABLES `actions` WRITE;
 /*!40000 ALTER TABLE `actions` DISABLE KEYS */;
-INSERT INTO `actions` VALUES (1,'CreateUser','Add new user'),(2,'ReadUser','Retrieve user information'),(3,'UpdateUser','Edit user information'),(4,'DeleteUser','Mark user as deleted'),(5,'ListUsers','Retrieve list of all users'),(6,'CreateRole','Add new role'),(7,'ReadRole','Retrieve role information'),(8,'UpdateRole','Edit role information'),(9,'DeleteRole','Mark role as deleted'),(10,'ListRoles','Retrieve list of all roles'),(11,'CreateAction','Add new action'),(12,'ReadAction','Retrieve action information'),(13,'UpdateAction','Edit action information'),(14,'DeleteAction','Mark action as deleted'),(15,'ListActions','Retrieve list of all actions'),(16,'CreateAttribute','Add new attribute'),(17,'ReadAttribute','Retrieve attribute information'),(18,'UpdateAttribute','Edit attribute information'),(19,'DeleteAttribute','Delete attribute information'),(20,'ListAttributes','Retrieve list of all attributes'),(21,'CreateCategory','Add new category'),(22,'ReadCategory','Retrieve category information'),(23,'UpdateCategory','Edit category information'),(24,'DeleteCategory','Delete category information'),(25,'ListCategories','Retrieve list of all categories'),(26,'CreateProduct','Add new product'),(27,'ReadProduct','Retrieve product information'),(28,'UpdateProduct','Edit product information'),(29,'DeleteProduct','Delete product information'),(30,'ListProducts','Retrieve list of all products');
+INSERT INTO `actions` VALUES (1,'CreateUser','Add new user'),(2,'ReadUser','Retrieve user information'),(3,'UpdateUser','Edit user information'),(4,'DeleteUser','Mark user as deleted'),(5,'ListUsers','Retrieve list of all users'),(6,'CreateRole','Add new role'),(7,'ReadRole','Retrieve role information'),(8,'UpdateRole','Edit role information'),(9,'DeleteRole','Mark role as deleted'),(10,'ListRoles','Retrieve list of all roles'),(11,'CreateAction','Add new action'),(12,'ReadAction','Retrieve action information'),(13,'UpdateAction','Edit action information'),(14,'DeleteAction','Mark action as deleted'),(15,'ListActions','Retrieve list of all actions'),(16,'CreateAttribute','Add new attribute'),(17,'ReadAttribute','Retrieve attribute information'),(18,'UpdateAttribute','Edit attribute information'),(19,'DeleteAttribute','Delete attribute information'),(20,'ListAttributes','Retrieve list of all attributes'),(21,'CreateCategory','Add new category'),(22,'ReadCategory','Retrieve category information'),(23,'UpdateCategory','Edit category information'),(24,'DeleteCategory','Delete category information'),(25,'ListCategories','Retrieve list of all categories'),(26,'CreateProduct','Add new product'),(27,'ReadProduct','Retrieve product information'),(28,'UpdateProduct','Edit product information'),(29,'DeleteProduct','Delete product information'),(30,'ListProducts','Retrieve list of all products'),(31,'CreateCustomer','Add new customer'),(32,'ReadCustomer','Retrieve customer information'),(33,'UpdateCustomer','Edit customer information'),(34,'DeleteCustomer','Delete customer information'),(35,'ListCustomers','Retrieve list of all customers'),(36,'CreateOrder','Add new order'),(37,'ReadOrder','Retrieve order information'),(38,'UpdateOrder','Edit order information'),(39,'DeleteOrder','Mark order as deleted'),(40,'ListOrders','Retrieve list of all orders');
 /*!40000 ALTER TABLE `actions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -131,6 +131,33 @@ INSERT INTO `categories_attributes` VALUES (3,5),(4,5),(9,5),(16,5),(18,5),(3,6)
 UNLOCK TABLES;
 
 --
+-- Table structure for table `customers`
+--
+
+DROP TABLE IF EXISTS `customers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `customers` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(32) NOT NULL,
+  `last_name` varchar(32) NOT NULL,
+  `email` varchar(128) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `customers`
+--
+
+LOCK TABLES `customers` WRITE;
+/*!40000 ALTER TABLE `customers` DISABLE KEYS */;
+INSERT INTO `customers` VALUES (1,'Test','Tester','tester@example.com'),(2,'Order','Orderer','orderer@example.com'),(3,'Shipment','Shipmenter','shipmenter@example.com');
+/*!40000 ALTER TABLE `customers` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `images`
 --
 
@@ -155,6 +182,32 @@ LOCK TABLES `images` WRITE;
 /*!40000 ALTER TABLE `images` DISABLE KEYS */;
 INSERT INTO `images` VALUES (3,'/home/ivan/www/images/f2173bbe8e12c3d3c8eb252685fee74b.jpeg','cpu1.jpeg','image/jpeg'),(4,'/home/ivan/www/images/93210b3275467d7dab2ebfeb71708a4f.jpeg','cpu2.jpeg','image/jpeg'),(13,'/home/ivan/www/images/b886b961a7b36cf6afdd3c64b484376e.jpeg','cpu1.jpeg','image/jpeg'),(14,'/home/ivan/www/images/c6cc1716697c05d5451b4487c759a69c.jpeg','cpu2.jpeg','image/jpeg');
 /*!40000 ALTER TABLE `images` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `orders`
+--
+
+DROP TABLE IF EXISTS `orders`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `orders` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `number` char(16) NOT NULL,
+  `created` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `number` (`number`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `orders`
+--
+
+LOCK TABLES `orders` WRITE;
+/*!40000 ALTER TABLE `orders` DISABLE KEYS */;
+INSERT INTO `orders` VALUES (1,'4570932750293475','2025-06-28 20:18:55'),(2,'9234523948752934','2025-06-28 20:19:08');
+/*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -184,6 +237,34 @@ CREATE TABLE `password_tokens` (
 LOCK TABLES `password_tokens` WRITE;
 /*!40000 ALTER TABLE `password_tokens` DISABLE KEYS */;
 /*!40000 ALTER TABLE `password_tokens` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `product_prices`
+--
+
+DROP TABLE IF EXISTS `product_prices`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `product_prices` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `product_id` bigint unsigned NOT NULL,
+  `price` int unsigned NOT NULL,
+  `created` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `product_id` (`product_id`),
+  CONSTRAINT `product_prices_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `product_prices`
+--
+
+LOCK TABLES `product_prices` WRITE;
+/*!40000 ALTER TABLE `product_prices` DISABLE KEYS */;
+INSERT INTO `product_prices` VALUES (1,1,29999,'2025-06-30 20:07:24'),(2,1,28999,'2025-06-30 20:07:36'),(3,12,9999,'2025-06-30 20:10:28'),(4,12,19999,'2025-06-30 20:10:36');
+/*!40000 ALTER TABLE `product_prices` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -321,7 +402,7 @@ CREATE TABLE `roles_actions` (
 
 LOCK TABLES `roles_actions` WRITE;
 /*!40000 ALTER TABLE `roles_actions` DISABLE KEYS */;
-INSERT INTO `roles_actions` VALUES (1,1),(1,2),(2,2),(1,3),(1,4),(1,5),(2,5),(1,6),(1,7),(2,7),(1,8),(1,9),(1,10),(2,10),(1,11),(1,12),(2,12),(1,13),(1,14),(1,15),(2,15),(1,16),(1,17),(2,17),(1,18),(1,19),(1,20),(2,20),(1,21),(1,22),(2,22),(1,23),(1,24),(1,25),(2,25),(3,25),(1,26),(1,27),(2,27),(1,28),(1,29),(1,30),(2,30);
+INSERT INTO `roles_actions` VALUES (1,1),(1,2),(2,2),(1,3),(1,4),(1,5),(2,5),(3,5),(1,6),(1,7),(2,7),(1,8),(1,9),(1,10),(2,10),(3,10),(1,11),(1,12),(2,12),(1,13),(1,14),(1,15),(2,15),(3,15),(1,16),(1,17),(2,17),(1,18),(1,19),(1,20),(2,20),(3,20),(1,21),(1,22),(2,22),(1,23),(1,24),(1,25),(2,25),(3,25),(1,26),(1,27),(2,27),(1,28),(1,29),(1,30),(2,30),(3,30),(1,31),(1,32),(2,32),(1,33),(1,34),(1,35),(2,35),(3,35),(1,36),(1,37),(2,37),(1,38),(1,39),(1,40),(2,40),(3,40);
 /*!40000 ALTER TABLE `roles_actions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -396,4 +477,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-26 21:56:20
+-- Dump completed on 2025-06-30 21:09:00

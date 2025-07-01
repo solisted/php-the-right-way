@@ -1,5 +1,22 @@
 <div class="sidebar">
   <ul class="sidebar">
+    <?php if (sl_auth_is_authorized_any(["ListOrders", "ListCustomers"])): ?>
+    <li class="header">Store</li>
+    <?php endif; ?>
+    <?php if (sl_auth_is_authorized("ListOrders")): ?>
+    <li <?= sl_request_is_uri('/orders') ? 'class="active"' : "" ?>><a href="/orders">Orders</a>
+      <?php if (sl_auth_is_authorized("CreateOrder")): ?>
+      <a href="/order/add">+</a>
+      <?php endif; ?>
+    </li>
+    <?php endif; ?>
+    <?php if (sl_auth_is_authorized("ListCustomers")): ?>
+    <li <?= sl_request_is_uri('/customer') ? 'class="active"' : "" ?>><a href="/customers">Customers</a>
+      <?php if (sl_auth_is_authorized("CreateCustomer")): ?>
+      <a href="/customer/add">+</a>
+      <?php endif; ?>
+    </li>
+    <?php endif; ?>
     <?php if (sl_auth_is_authorized_any(["ListCategories", "ListProducts", "ListAttributes"])): ?>
     <li class="header">Catalog</li>
     <?php endif; ?>

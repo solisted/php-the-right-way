@@ -4,11 +4,12 @@
     <thead>
       <tr>
         <th width="5%">#</th>
-        <th width="60%">Name</th>
-        <?php if ($category_id === 0): ?>
+        <th width="50%">Name</th>
         <th width="15%">SKU</th>
+        <?php if ($category_id === 0): ?>
         <th width="15%">Category</th>
         <?php endif; ?>
+        <th width="10%">Price</th>
         <th width="5%">&nbsp;</th>
       </tr>
     </thead>
@@ -26,6 +27,7 @@
         <?php if ($category_id === 0): ?>
         <td><?= $product["category"] ?></td>
         <?php endif; ?>
+        <td align="right"><?= number_format($product["price"] / 100, 2) ?></td>
         <td align="right">
           <?php if (sl_auth_is_authorized("DeleteProduct")): ?>
           <form class="hidden" method="POST" action="/product/<?= $product['id'] ?>?category=<?= $category_id ?>">
