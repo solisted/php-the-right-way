@@ -50,3 +50,11 @@ function sl_database_get_categories_with_product_count(PDO $connection): array
 
     return $statement->fetchAll(PDO::FETCH_ASSOC);
 }
+
+function sl_database_get_statuses(PDO $connection): array
+{
+    $statement = $connection->query("SELECT id, name FROM order_statuses ORDER BY id");
+    $statement->execute();
+
+    return $statement->fetchAll(PDO::FETCH_ASSOC);
+}

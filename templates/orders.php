@@ -4,8 +4,9 @@
     <thead>
       <tr>
         <th width="5%">#</th>
-        <th width="25%">Number</th>
-        <th width="70%">Created</th>
+        <th width="55%">Number</th>
+        <th width="15%">Status</th>
+        <th width="25%">Updated</th>
       </tr>
     </thead>
     <tbody>
@@ -18,7 +19,8 @@
         <?php else: ?>
         <td><?= $order["number"] ?></td>
         <?php endif; ?>
-        <td><?= $order["created"] ?></td>
+        <td><?= $order["status"] ?></td>
+        <td><?= $order["updated"] ?></td>
       </tr>
       <?php endforeach; ?>
       <?php else: ?>

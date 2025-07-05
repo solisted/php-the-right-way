@@ -20,6 +20,7 @@ function sl_render_product(
     array $product_attributes,
     array $other_attributes,
     array $product_images,
+    array $product_prices,
     array $errors): void
 {
     require("../templates/product.php");
@@ -27,7 +28,7 @@ function sl_render_product(
 
 function sl_product_get_product_by_id(PDO $connection, int $product_id): array
 {
-    $statement = $connection->prepare("SELECT id, category_id, sku, name, description FROM products WHERE id = :id");
+    $statement = $connection->prepare("SELECT p.id, p.category_id, p.sku, p.name, SUBSTRING_INDEX(GROUP_CONCAT(pp.price ORDER BY pp.created DESC), ',', 1) AS price, p.description FROM products p LEFT JOIN product_prices pp ON (p.id = pp.product_id) WHERE p.id = :id GROUP BY p.id");
     $statement->bindValue(":id", $product_id, PDO::PARAM_INT);
     $statement->execute();
 
@@ -78,6 +79,15 @@ function sl_product_get_product_images(PDO $connection, int $product_id): array
     return sl_template_escape_array_of_arrays($statement->fetchAll(PDO::FETCH_ASSOC));
 }
 
+function sl_product_get_product_prices(PDO $connection, int $product_id): array
+{
+    $statement = $connection->prepare("SELECT id, price, created FROM product_prices WHERE product_id = :product_id ORDER BY created DESC");
+    $statement->bindValue(":product_id", $product_id, PDO::PARAM_INT);
+    $statement->execute();
+
+    return sl_template_escape_array_of_arrays($statement->fetchAll(PDO::FETCH_ASSOC));
+}
+
 sl_request_methods_assert(["GET", "POST"]);
 
 $product = [
@@ -85,7 +95,8 @@ $product = [
     "sku" => "",
     "category_id" => 0,
     "name" => "",
-    "description" => ""
+    "description" => "",
+    "price" => ""
 ];
 $attribute = [
     "id" => 0,
@@ -93,22 +104,25 @@ $attribute = [
 ];
 $product_attributes = [];
 $product_images = [];
+$product_prices = [];
 $other_attributes = [];
 $errors = [
     "sku" => null,
     "name" => null,
     "description" => null,
     "value" => null,
-    "image" => null
+    "image" => null,
+    "price" => null
 ];
 
 $connection = sl_database_get_connection();
 $categories = sl_template_escape_array_of_arrays(sl_database_get_categories($connection));
 
+$category_id = sl_request_query_get_integer("category", 0, PHP_INT_MAX, 0);
 $product_id = sl_request_query_get_integer("id", 0, PHP_INT_MAX);
 $attribute_id = sl_request_post_get_integer("attribute_id", 0, PHP_INT_MAX, 0);
 $image_id = sl_request_post_get_integer("image_id", 0, PHP_INT_MAX, 0);
-$tab_number = sl_request_query_get_integer("tab", 0, 1, 0);
+$tab_number = sl_request_query_get_integer("tab", 0, 2, 0);
 
 if (sl_request_is_method("GET") && $product_id > 0) {
     sl_auth_assert_authorized("ReadProduct");
@@ -123,6 +137,8 @@ if (sl_request_is_method("GET") && $product_id > 0) {
         $other_attributes = sl_product_get_other_attributes($connection, $product_id, intval($product["category_id"]));
     } else if ($tab_number === 1) {
         $product_images = sl_product_get_product_images($connection, $product_id);
+    } else if ($tab_number === 2) {
+        $product_prices = sl_product_get_product_prices($connection, $product_id);
     }
 } else if (sl_request_is_method("GET") && $product_id === 0) {
     sl_auth_assert_authorized("CreateProduct");
@@ -135,7 +151,8 @@ if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "add
         "sku" => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
         "name" => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
         "category_id" => FILTER_SANITIZE_NUMBER_INT,
-        "description" => FILTER_SANITIZE_FULL_SPECIAL_CHARS
+        "description" => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+        "price" => FILTER_SANITIZE_FULL_SPECIAL_CHARS
     ]);
 
     $product["id"] = $product_id;
@@ -154,13 +171,33 @@ if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "add
         }
     }
 
+    if ($product_id > 0) {
+        $statement = $connection->prepare("SELECT price FROM product_prices WHERE product_id = :product_id ORDER BY created DESC LIMIT 1");
+        $statement->bindValue(":product_id", $product_id, PDO::PARAM_INT);
+        $statement->execute();
+
+        $existing_price = intval($statement->fetchColumn(0));
+    } else {
+        $existing_price = 0;
+    }
+
     $product["sku"] = sl_sanitize_case($parameters["sku"], MB_CASE_UPPER_SIMPLE);
     $product["name"] = sl_sanitize_trim($parameters["name"]);
+    $product["price"] = sl_sanitize_trim($parameters["price"]);
     $product["description"] = sl_sanitize_trim($parameters["description"], preserve_whitespace: true);
 
     $errors["sku"] = sl_validate_regexp($product["sku"], 8, 16, "/^[A-Z0-9]+$/u", "SKU", "alphanumeric characters");
     $errors["name"] = sl_validate_regexp($product["name"], 8, 128, "/^[[:print:]]+$/u", "Name", "printable characters");
+    $errors["price"] = sl_validate_regexp($product["price"], 1, 8, "/^[0-9]+(\.[0-9]+)?$/u", "Price", "integer or decimal numbers");
     $errors["description"] = sl_validate_regexp($product["description"], 10, 4096, "/^[[:print:][:space:]]+$/u", "Description", "printable characters and whitespace");
+
+    if (!isset($errors["price"])) {
+        $product["price"] = intval($product["price"] * 100);
+    }
+
+    if (!isset($errors["price"]) && $product["price"] === 0) {
+        $errors["price"] = "Specify product price greater than zero";
+    }
 
     if ($product["category_id"] === 0) {
         $errors["category_id"] = "Select product category";
@@ -175,6 +212,8 @@ if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "add
     }
 
     if (!sl_validate_has_errors($errors)) {
+        $connection->beginTransaction();
+
         if ($product_id > 0) {
             sl_auth_assert_authorized("UpdateProduct");
 
@@ -196,22 +235,55 @@ if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "add
         $statement->bindValue(":description", $product["description"], PDO::PARAM_STR);
         $statement->execute();
 
+        if ($product_id === 0) {
+            $product_id = $connection->lastInsertId();
+        }
+
+        if ($existing_price !== $product["price"]) {
+            $statement = $connection->prepare("INSERT INTO product_prices (product_id, price, created) VALUES (:product_id, :price, NOW())");
+
+            $statement->bindValue(":product_id", $product_id, PDO::PARAM_INT);
+            $statement->bindValue(":price", $product["price"], PDO::PARAM_INT);
+            $statement->execute();
+        }
+
+        $connection->commit();
+
         sl_session_set_flash_message($product_id > 0 ? "Product updated successfully" : "Product added successfully");
         sl_request_redirect("/products");
     } else if ($tab_number === 0) {
         $product_attributes = sl_product_get_product_attributes($connection, $product_id);
         $other_attributes = sl_product_get_other_attributes($connection, $product_id, intval($product["category_id"]));
+    } else if ($tab_number === 1) {
+        $product_images = sl_product_get_product_images($connection, $product_id);
+    } else if ($tab_number === 2) {
+        $product_prices = sl_product_get_product_prices($connection, $product_id);
     }
 }
 
 if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "delete_product")) {
     sl_auth_assert_authorized("DeleteProduct");
-
     $product_id = sl_request_post_get_integer("id", 0, PHP_INT_MAX);
+
+    $connection->beginTransaction();
+
+    $statement = $connection->prepare("DELETE FROM products_images WHERE product_id = :id");
+    $statement->bindValue(":id", $product_id, PDO::PARAM_INT);
+    $statement->execute();
+
+    $statement = $connection->prepare("DELETE FROM products_attributes WHERE product_id = :id");
+    $statement->bindValue(":id", $product_id, PDO::PARAM_INT);
+    $statement->execute();
+
+    $statement = $connection->prepare("DELETE FROM product_prices WHERE product_id = :id");
+    $statement->bindValue(":id", $product_id, PDO::PARAM_INT);
+    $statement->execute();
 
     $statement = $connection->prepare("DELETE FROM products WHERE id = :id");
     $statement->bindValue(":id", $product_id, PDO::PARAM_INT);
     $statement->execute();
+
+    $connection->commit();
 
     sl_session_set_flash_message("Product deleted successfully");
     sl_request_redirect($category_id == 0 ? "/products" : "/products?category={$category_id}");
@@ -396,5 +468,5 @@ if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "del
 
 sl_template_render_header();
 sl_template_render_sidebar();
-sl_render_product($tab_number, $product, $attribute, $categories, $product_attributes, $other_attributes, $product_images, $errors);
+sl_render_product($tab_number, $product, $attribute, $categories, $product_attributes, $other_attributes, $product_images, $product_prices, $errors);
 sl_template_render_footer();

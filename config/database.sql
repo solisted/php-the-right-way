@@ -185,6 +185,61 @@ INSERT INTO `images` VALUES (3,'/home/ivan/www/images/f2173bbe8e12c3d3c8eb252685
 UNLOCK TABLES;
 
 --
+-- Table structure for table `order_history`
+--
+
+DROP TABLE IF EXISTS `order_history`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `order_history` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `order_id` bigint unsigned NOT NULL,
+  `status_id` bigint unsigned NOT NULL,
+  `created` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `order_id` (`order_id`),
+  KEY `status_id` (`status_id`),
+  CONSTRAINT `order_history_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
+  CONSTRAINT `order_history_ibfk_2` FOREIGN KEY (`status_id`) REFERENCES `order_statuses` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `order_history`
+--
+
+LOCK TABLES `order_history` WRITE;
+/*!40000 ALTER TABLE `order_history` DISABLE KEYS */;
+INSERT INTO `order_history` VALUES (1,1,1,'2025-07-04 18:30:24'),(2,2,1,'2025-07-04 18:30:32'),(3,1,2,'2025-07-04 18:35:18');
+/*!40000 ALTER TABLE `order_history` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `order_statuses`
+--
+
+DROP TABLE IF EXISTS `order_statuses`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `order_statuses` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(16) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `order_statuses`
+--
+
+LOCK TABLES `order_statuses` WRITE;
+/*!40000 ALTER TABLE `order_statuses` DISABLE KEYS */;
+INSERT INTO `order_statuses` VALUES (5,'Cancelled'),(1,'Created'),(4,'Delivered'),(2,'Paid'),(3,'Shipped');
+/*!40000 ALTER TABLE `order_statuses` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `orders`
 --
 
@@ -194,7 +249,6 @@ DROP TABLE IF EXISTS `orders`;
 CREATE TABLE `orders` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `number` char(16) NOT NULL,
-  `created` datetime NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `number` (`number`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -206,7 +260,7 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
-INSERT INTO `orders` VALUES (1,'4570932750293475','2025-06-28 20:18:55'),(2,'9234523948752934','2025-06-28 20:19:08');
+INSERT INTO `orders` VALUES (1,'4570932750293475'),(2,'9234523948752934');
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -254,7 +308,7 @@ CREATE TABLE `product_prices` (
   PRIMARY KEY (`id`),
   KEY `product_id` (`product_id`),
   CONSTRAINT `product_prices_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -263,7 +317,7 @@ CREATE TABLE `product_prices` (
 
 LOCK TABLES `product_prices` WRITE;
 /*!40000 ALTER TABLE `product_prices` DISABLE KEYS */;
-INSERT INTO `product_prices` VALUES (1,1,29999,'2025-06-30 20:07:24'),(2,1,28999,'2025-06-30 20:07:36'),(3,12,9999,'2025-06-30 20:10:28'),(4,12,19999,'2025-06-30 20:10:36');
+INSERT INTO `product_prices` VALUES (1,1,29999,'2025-06-30 20:07:24'),(2,1,28999,'2025-06-30 20:07:36'),(3,12,9999,'2025-06-30 20:10:28'),(4,12,19999,'2025-06-30 20:10:36'),(5,1,28995,'2025-07-02 19:17:33'),(6,12,9999,'2025-07-02 19:18:00'),(7,12,12300,'2025-07-02 19:20:34'),(8,1,12300,'2025-07-02 19:20:47'),(9,1,12500,'2025-07-02 19:21:01');
 /*!40000 ALTER TABLE `product_prices` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -285,7 +339,7 @@ CREATE TABLE `products` (
   UNIQUE KEY `sku` (`sku`),
   KEY `category_id` (`category_id`),
   CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -477,4 +531,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-30 21:09:00
+-- Dump completed on 2025-07-05 13:48:30
