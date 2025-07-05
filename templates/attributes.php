@@ -3,8 +3,7 @@
   <table>
     <thead>
       <tr>
-        <th width="5%">#</th>
-        <th width="90%">Name</th>
+        <th width="95%">Name</th>
         <th width="5%">&nbsp;</th>
       </tr>
     </thead>
@@ -12,7 +11,6 @@
       <?php if (count($attributes) > 0): ?>
       <?php foreach ($attributes as $attribute): ?>
       <tr>
-        <td align="right"><?= $attribute["id"] ?></td>
         <?php if (sl_auth_is_authorized_any(["ReadAttribute", "UpdateAttribute"])): ?>
         <td><a href="/attribute/<?= $attribute["id"] ?>"><?= $attribute["name"] ?></a></td>
         <?php else: ?>

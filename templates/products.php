@@ -3,8 +3,7 @@
   <table>
     <thead>
       <tr>
-        <th width="5%">#</th>
-        <th width="50%">Name</th>
+        <th width="55%">Name</th>
         <th width="15%">SKU</th>
         <?php if ($category_id === 0): ?>
         <th width="15%">Category</th>
@@ -17,7 +16,6 @@
       <?php if (count($products) > 0): ?>
       <?php foreach ($products as $product): ?>
       <tr>
-        <td align="right"><?= $product["id"] ?></td>
         <?php if (sl_auth_is_authorized_any(["ReadProduct", "UpdateProduct"])): ?>
         <td><a href="/product/<?= $product["id"] ?>"><?= $product["name"] ?></a></td>
         <?php else: ?>

@@ -47,8 +47,7 @@
   <table>
     <thead>
       <tr>
-        <th width="5%">#</th>
-        <th width="30%">Name</th>
+        <th width="35%">Name</th>
         <th width="60%">Description</th>
         <th width="5%">&nbsp;</th>
       </tr>
@@ -57,7 +56,6 @@
       <?php if (count($user_roles) > 0): ?>
       <?php foreach ($user_roles as $role): ?>
       <tr>
-        <td align="right"><?= $role["id"] ?></td>
         <td><?= $role["name"] ?></td>
         <td><?= $role["description"] ?></td>
         <td align="right">
@@ -75,7 +73,7 @@
       <?php endforeach; ?>
       <?php else: ?>
       <tr>
-        <td colspan="5" align="center">No roles found</td>
+        <td colspan="3" align="center">No roles found</td>
       </tr>
       <?php endif; ?>
     </tbody>

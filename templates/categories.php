@@ -3,8 +3,7 @@
   <table>
     <thead>
       <tr>
-        <th width="5%">#</th>
-        <th width="65%">Name</th>
+        <th width="70%">Name</th>
         <th class="number" width="20%">Products</th>
         <th width="5%">&nbsp;</th>
       </tr>
@@ -12,7 +11,6 @@
     <tbody>
     <?php foreach ($categories as $category): ?>
       <tr>
-        <td align="right"><?= $category['id'] ?></td>
         <?php if (sl_auth_is_authorized_any(["ReadCategory", "UpdateCategory"])): ?>
         <td>
           <?= $category['depth'] > 0 ? str_repeat("&emsp;", $category['depth'] - 1) . "\u{2514}" : "" ?>

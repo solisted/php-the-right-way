@@ -35,6 +35,13 @@
     <?php else: ?>
     <select name="category_id" disabled><option>No categories found</option></select>
     <?php endif; ?>
+    <label for="price">Price</label>
+    <?php if (isset($errors['price'])): ?>
+      <input type="text" name="price" id="price" value="<?= $product['price'] ?>" class="error"/>
+      <span class="error"><?= $errors['price'] ?></span>
+    <?php else: ?>
+    <input type="text" name="price" id="price" value="<?= number_format(intval($product['price']) / 100, 2) ?>"/>
+    <?php endif; ?>
     <label for="description">Description</label>
     <textarea type="text" name="description" id="description" rows="8" <?= isset($errors['description']) ? ' class="error"' : "" ?>><?= $product['description'] ?></textarea>
     <?php if (isset($errors['description'])): ?>
@@ -53,14 +60,16 @@
     <li class="<?= $tab_number === 1 ? "active" : "" ?>">
       <a href="/product/<?= $product['id'] ?>?tab=1">Images</a>
     </li>
+    <li class="<?= $tab_number === 2 ? "active" : "" ?>">
+      <a href="/product/<?= $product['id'] ?>?tab=2">Price History</a>
+    </li>
   </ul>
   <?php if ($tab_number === 0): ?>
   <table>
     <thead>
       <tr>
-        <th width="5%">#</th>
         <th width="30%">Name</th>
-        <th width="60%">Value</th>
+        <th width="65%">Value</th>
         <th width="5%">&nbsp;</th>
       </tr>
     </thead>
@@ -68,7 +77,6 @@
       <?php if (count($product_attributes) > 0): ?>
       <?php foreach ($product_attributes as $product_attribute): ?>
       <tr>
-        <td align="right"><?= $product_attribute['id'] ?></td>
         <td><?= $product_attribute['name'] ?></td>
         <td><?= $product_attribute['value'] ?></td>
         <td align="right">
@@ -86,7 +94,7 @@
       <?php endforeach; ?>
       <?php else: ?>
       <tr>
-        <td colspan="5" align="center">No attributes found</td>
+        <td colspan="3" align="center">No attributes found</td>
       </tr>
       <?php endif; ?>
     </tbody>
@@ -121,8 +129,7 @@
   <table>
     <thead>
       <tr>
-        <th width="5%">#</th>
-        <th width="70%">File Name</th>
+        <th width="75%">File Name</th>
         <th width="20%">Type</th>
         <th width="5%">&nbsp;</th>
       </tr>
@@ -131,7 +138,6 @@
       <?php if (count($product_images) > 0): ?>
       <?php foreach ($product_images as $product_image): ?>
       <tr>
-        <td align="right"><?= $product_image['id'] ?></td>
         <td>
           <a href="/image/<?= $product_image['id'] ?>"><?= basename($product_image['orig_filename']) ?></a>
         </td>
@@ -151,7 +157,7 @@
       <?php endforeach; ?>
       <?php else: ?>
       <tr>
-        <td colspan="5" align="center">No images found</td>
+        <td colspan="3" align="center">No images found</td>
       </tr>
       <?php endif ?>
     </tbody>
@@ -170,5 +176,29 @@
   </form>
   <?php endif; ?>
   <?php endif; ?>
+  <?php endif; ?>
+  <?php if ($tab_number === 2): ?>
+  <table>
+    <thead>
+      <tr>
+        <th width="10%">Price</th>
+        <th width="90%">Created</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php if (count($product_prices) > 0): ?>
+      <?php foreach ($product_prices as $product_price): ?>
+      <tr>
+        <td align="right"><?= number_format($product_price['price'] / 100, 2) ?></td>
+        <td><?= $product_price['created'] ?></td>
+      </tr>
+      <?php endforeach; ?>
+      <?php else: ?>
+      <tr>
+        <td colspan="2" align="center">No prices found</td>
+      </tr>
+      <?php endif; ?>
+    </tbody>
+  </table>
   <?php endif; ?>
 </div>

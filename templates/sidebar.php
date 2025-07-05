@@ -4,7 +4,7 @@
     <li class="header">Store</li>
     <?php endif; ?>
     <?php if (sl_auth_is_authorized("ListOrders")): ?>
-    <li <?= sl_request_is_uri('/orders') ? 'class="active"' : "" ?>><a href="/orders">Orders</a>
+    <li <?= sl_request_is_uri('/order') ? 'class="active"' : "" ?>><a href="/orders">Orders</a>
       <?php if (sl_auth_is_authorized("CreateOrder")): ?>
       <a href="/order/add">+</a>
       <?php endif; ?>

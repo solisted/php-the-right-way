@@ -12,15 +12,26 @@ require("../includes/validate.php");
 require("../includes/sanitize.php");
 require("../includes/session.php");
 
-function sl_render_role(array $role, array $role_actions, array $other_actions, array $errors): void
+function sl_render_role(array $role, array $role_actions, array $other_actions, array $errors, string $url, int $page, int $size, int $total_pages): void
 {
     require("../templates/role.php");
 }
 
-function sl_role_get_role_actions(PDO $connection, int $role_id): array
+function sl_role_get_role_actions_count(PDO $connection, int $role_id, int $page, int $page_size): int
 {
-    $statement = $connection->prepare("SELECT id, name, description FROM actions, roles_actions WHERE action_id = id AND role_id = :role_id");
+    $statement = $connection->prepare("SELECT COUNT(*) FROM actions, roles_actions WHERE action_id = id AND role_id = :role_id");
     $statement->bindValue(":role_id", $role_id, PDO::PARAM_INT);
+    $statement->execute();
+
+    return intval($statement->fetchColumn(0));
+}
+
+function sl_role_get_role_actions(PDO $connection, int $role_id, int $page, int $page_size): array
+{
+    $statement = $connection->prepare("SELECT id, name, description FROM actions, roles_actions WHERE action_id = id AND role_id = :role_id LIMIT :offset, :limit");
+    $statement->bindValue(":role_id", $role_id, PDO::PARAM_INT);
+    $statement->bindValue(":offset", ($page - 1) * $page_size, PDO::PARAM_INT);
+    $statement->bindValue(":limit", $page_size, PDO::PARAM_INT);
     $statement->execute();
 
     return sl_template_escape_array_of_arrays($statement->fetchAll(PDO::FETCH_ASSOC));
@@ -54,6 +65,8 @@ $errors = [
 $connection = sl_database_get_connection();
 
 $role_id = sl_request_query_get_integer("id", 0, PHP_INT_MAX);
+$page = sl_request_query_get_integer("page", 1, PHP_INT_MAX, 1);
+$page_size = sl_request_query_get_integer("size", 10, 100, 10);
 
 if (sl_request_is_method("GET")) {
     if ($role_id > 0) {
@@ -69,7 +82,14 @@ if (sl_request_is_method("GET")) {
 
         $role = sl_template_escape_array($statement->fetch(PDO::FETCH_ASSOC));
 
-        $role_actions = sl_role_get_role_actions($connection, $role_id);
+        $row_count = sl_role_get_role_actions_count($connection, $role_id, $page, $page_size);
+
+        $total_pages = intval(ceil($row_count / $page_size));
+        if ($total_pages > 0 && $page > $total_pages) {
+            sl_request_terminate(400);
+        }
+
+        $role_actions = sl_role_get_role_actions($connection, $role_id, $page, $page_size);
         $other_actions = sl_role_get_other_actions($connection, $role_id);
     } else {
         sl_auth_assert_authorized("CreateRole");
@@ -120,7 +140,14 @@ if (sl_request_is_method("POST")) {
             sl_session_set_flash_message($role_id > 0 ? "Role updated successfully" : "Role added successfully");
             sl_request_redirect("/roles");
         } else {
-            $role_actions = sl_role_get_role_actions($connection, $role_id);
+            $row_count = sl_role_get_role_actions_count($connection, $role_id, $page, $page_size);
+
+            $total_pages = intval(ceil($row_count / $page_size));
+            if ($total_pages > 0 && $page > $total_pages) {
+                sl_request_terminate(400);
+            }
+
+            $role_actions = sl_role_get_role_actions($connection, $role_id, $page, $page_size);
             $other_actions = sl_role_get_other_actions($connection, $role_id);
         }
     } else if ($role_id > 0) {
@@ -152,5 +179,5 @@ if (sl_request_is_method("POST")) {
 
 sl_template_render_header();
 sl_template_render_sidebar();
-sl_render_role($role, $role_actions, $other_actions, $errors);
+sl_render_role($role, $role_actions, $other_actions, $errors, "/role/{$role_id}", $page, $page_size, $total_pages);
 sl_template_render_footer();

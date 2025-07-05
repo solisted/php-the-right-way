@@ -24,6 +24,10 @@ table td, table th {
     padding: .4em .8em;
 }
 
+table td:first-child, table th:first-child {
+    padding-left: 1.2em;
+}
+
 table td {
     border-top: 1px solid #aaaaaa;
 }
@@ -33,7 +37,7 @@ table th {
     text-align: left;
 }
 
-table th:first-child, table th.number {
+table th.number {
     text-align: right
 }
 

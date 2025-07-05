@@ -4,7 +4,7 @@
 ?>
 <div class="main">
   <?php sl_template_render_flash_message() ?>
-  <form method="POST" action="/role/<?= $role['id'] > 0 ? $role['id'] : "add" ?>">
+  <form method="POST" action="/role/<?= $role['id'] > 0 ? $role['id'] : "add" ?><?= $role['id'] > 0 && $page > 1 ? "?page={$page}&size={$size}" : ""?>">
     <input type="hidden" name="id" value="<?= $role['id'] ?>"/>
     <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
     <label for="name">Name</label>
@@ -27,8 +27,7 @@
   <table>
     <thead>
       <tr>
-        <th width="5%">#</th>
-        <th width="30%">Name</th>
+        <th width="35%">Name</th>
         <th width="60%">Description</th>
         <th width="5%">&nbsp;</th>
       </tr>
@@ -37,7 +36,6 @@
       <?php if (count($role_actions) > 0): ?>
       <?php foreach ($role_actions as $action): ?>
       <tr>
-        <td align="right"><?= $action["id"] ?></td>
         <td><?= $action["name"] ?></td>
         <td><?= $action["description"] ?></td>
         <td align="right">
@@ -55,11 +53,12 @@
       <?php endforeach; ?>
       <?php else: ?>
       <tr>
-        <td colspan="5" align="center">No roles found</td>
+        <td colspan="3" align="center">No roles found</td>
       </tr>
       <?php endif ?>
     </tbody>
   </table>
+  <?php sl_template_render_pager($url, $page, $size, $total_pages); ?>
   <?php if ($can_update): ?>
   <form class="horizontal" method="POST" action="/role/<?= $role['id'] ?>">
     <input type="hidden" name="action" value="add_action"/>

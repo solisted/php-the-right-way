@@ -3,16 +3,14 @@
   <table>
     <thead>
       <tr>
-        <th width="5%">#</th>
         <th width="30%">Name</th>
-        <th width="65%">Description</th>
+        <th width="70%">Description</th>
       </tr>
     </thead>
     <tbody>
       <?php if (count($actions) > 0): ?>
       <?php foreach ($actions as $action): ?>
       <tr>
-        <td align="right"><?= $action["id"] ?></td>
         <?php if (sl_auth_is_authorized_any(["ReadAction", "UpdateAction"])): ?>
         <td><a href="/action/<?= $action["id"] ?>"><?= $action["name"] ?></a></td>
         <?php else: ?>
@@ -23,7 +21,7 @@
       <?php endforeach; ?>
       <?php else: ?>
       <tr>
-        <td colspan="5" align="center">No actions found</td>
+        <td colspan="2" align="center">No actions found</td>
       </tr>
       <?php endif ?>
     </tbody>

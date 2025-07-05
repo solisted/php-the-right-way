@@ -43,8 +43,7 @@
   <table>
     <thead>
       <tr>
-        <th width="5%">#</th>
-        <th width="90%">Name</th>
+        <th width="95%">Name</th>
         <th width="5%">&nbsp;</th>
       </tr>
     </thead>
@@ -52,7 +51,6 @@
       <?php if (count($category_attributes) > 0): ?>
       <?php foreach ($category_attributes as $attribute): ?>
       <tr>
-        <td align="right"><?= $attribute["id"] ?></td>
         <td><?= $attribute["name"] ?></td>
         <td align="right">
           <?php if ($can_update): ?>
@@ -69,7 +67,7 @@
       <?php endforeach; ?>
       <?php else: ?>
       <tr>
-        <td colspan="5" align="center">No attributes found</td>
+        <td colspan="2" align="center">No attributes found</td>
       </tr>
       <?php endif; ?>
     </tbody>
