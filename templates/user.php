@@ -7,40 +7,56 @@
   <form method="POST" action="/user/<?= $user['id'] > 0 ? $user['id'] : "add" ?>">
     <input type="hidden" name="id" value="<?= $user['id'] ?>"/>
     <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
-    <label for="username">Username</label>
-    <input type="text" name="username" id="username" value="<?= $user['username'] ?>"<?= isset($errors['username']) ? ' class="error"' : "" ?>/>
-    <?php if (isset($errors['username'])): ?>
-      <span class="error"><?= $errors['username'] ?></span>
-    <?php endif; ?>
-    <label for="first_name">First Name</label>
-    <input type="text" name="first_name" id="first_name" value="<?= $user['first_name'] ?>"<?= isset($errors['first_name']) ? ' class="error"' : "" ?>/>
-    <?php if (isset($errors['first_name'])): ?>
-      <span class="error"><?= $errors['first_name'] ?></span>
-    <?php endif; ?>
-    <label for="last_name">Last Name</label>
-    <input type="text" name="last_name" id="last_name" value="<?= $user['last_name'] ?>"<?= isset($errors['last_name']) ? ' class="error"' : "" ?>/>
-    <?php if (isset($errors['last_name'])): ?>
-      <span class="error"><?= $errors['last_name'] ?></span>
-    <?php endif; ?>
-    <label for="email">Email</label>
-    <input type="text" name="email" id="email" value="<?= $user['email'] ?>"<?= isset($errors['email']) ? ' class="error"' : "" ?>/>
-    <?php if (isset($errors['email'])): ?>
-      <span class="error"><?= $errors['email'] ?></span>
-    <?php endif; ?>
-    <?php if ($can_update || $can_create): ?>
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" value="<?= $user['password'] ?>" <?= isset($errors['password']) ? ' class="error"' : "" ?>/>
-    <?php if (isset($errors['password'])): ?>
-      <span class="error"><?= $errors['password'] ?></span>
-    <?php endif; ?>
-    <label for="password1">Repeat Password</label>
-    <input type="password" name="password1" id="password1" value="<?= $user['password1'] ?>" <?= isset($errors['password1']) ? ' class="error"' : "" ?>/>
-    <?php if (isset($errors['password1'])): ?>
-      <span class="error"><?= $errors['password1'] ?></span>
-    <?php endif; ?>
-    <button type="submit"><?= $user["id"] == 0 ? "Add" : "Update" ?></button>
-    <a href="/users"><button type="button">Cancel</button></a>
-    <?php endif; ?>
+    <div class="row">
+      <div class="left-column">
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" value="<?= $user['username'] ?>"<?= isset($errors['username']) ? ' class="error"' : "" ?>/>
+        <?php if (isset($errors['username'])): ?>
+          <span class="error"><?= $errors['username'] ?></span>
+        <?php endif; ?>
+        <label for="first_name">First Name</label>
+        <input type="text" name="first_name" id="first_name" value="<?= $user['first_name'] ?>"<?= isset($errors['first_name']) ? ' class="error"' : "" ?>/>
+        <?php if (isset($errors['first_name'])): ?>
+          <span class="error"><?= $errors['first_name'] ?></span>
+        <?php endif; ?>
+        <?php if ($can_update || $can_create): ?>
+        <label for="last_name">Last Name</label>
+        <input type="text" name="last_name" id="last_name" value="<?= $user['last_name'] ?>"<?= isset($errors['last_name']) ? ' class="error"' : "" ?>/>
+        <?php if (isset($errors['last_name'])): ?>
+          <span class="error"><?= $errors['last_name'] ?></span>
+        <?php endif; ?>
+        <?php endif; ?>
+      </div>
+      <div class="right-column">
+        <label for="email">Email</label>
+        <input type="text" name="email" id="email" value="<?= $user['email'] ?>"<?= isset($errors['email']) ? ' class="error"' : "" ?>/>
+        <?php if (isset($errors['email'])): ?>
+          <span class="error"><?= $errors['email'] ?></span>
+        <?php endif; ?>
+        <?php if ($can_update || $can_create): ?>
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" value="<?= $user['password'] ?>" <?= isset($errors['password']) ? ' class="error"' : "" ?>/>
+        <?php if (isset($errors['password'])): ?>
+          <span class="error"><?= $errors['password'] ?></span>
+        <?php endif; ?>
+        <label for="password1">Repeat Password</label>
+        <input type="password" name="password1" id="password1" value="<?= $user['password1'] ?>" <?= isset($errors['password1']) ? ' class="error"' : "" ?>/>
+        <?php if (isset($errors['password1'])): ?>
+          <span class="error"><?= $errors['password1'] ?></span>
+        <?php endif; ?>
+        <?php else: ?>
+        <label for="last_name">Last Name</label>
+        <input type="text" name="last_name" id="last_name" value="<?= $user['last_name'] ?>"<?= isset($errors['last_name']) ? ' class="error"' : "" ?>/>
+        <?php if (isset($errors['last_name'])): ?>
+          <span class="error"><?= $errors['last_name'] ?></span>
+        <?php endif; ?>
+        <?php endif; ?>
+      </div>
+    </div>
+    <div class="row">
+      <button type="submit"><?= $user["id"] == 0 ? "Add" : "Update" ?></button>
+      <a href="/users"><button type="button">Cancel</button></a>
+    </div>
   </form>
   <?php if ($user['id'] > 0): ?>
   <h3>Roles</h3>

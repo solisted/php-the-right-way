@@ -8,49 +8,59 @@
     <input type="hidden" name="action" value="add_update_product"/>
     <input type="hidden" name="id" value="<?= $product['id'] ?>"/>
     <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
-    <label for="name">Name</label>
-    <input type="text" name="name" id="name" value="<?= $product['name'] ?>"<?= isset($errors['name']) ? ' class="error"' : "" ?>/>
-    <?php if (isset($errors['name'])): ?>
-      <span class="error"><?= $errors['name'] ?></span>
-    <?php endif; ?>
-    <label for="sku">SKU</label>
-    <input type="text" name="sku" id="sku" value="<?= $product['sku'] ?>"<?= isset($errors['sku']) ? ' class="error"' : "" ?>/>
-    <?php if (isset($errors['sku'])): ?>
-      <span class="error"><?= $errors['sku'] ?></span>
-    <?php endif; ?>
-    <label for="category">Category</label>
-    <?php if (count($categories) > 0): ?>
-    <select name="category_id" id="category"<?= isset($errors['category_id']) ? ' class="error"' : "" ?>>
-      <option value="0">Select category</option>
-      <?php foreach ($categories as $category): ?>
-      <option value="<?= $category['id'] ?>" <?= $category['id'] == $product['category_id'] ? "selected" : "" ?> <?= $category["rgt"] - $category["lft"] > 1 ? "disabled" : "" ?>>
-        <?= $category['depth'] > 0 ? str_repeat("&emsp;", $category['depth']) : "" ?>
-        <?= $category['name'] ?>
-      </option>
-      <?php endforeach; ?>
-    </select>
-    <?php if (isset($errors['category_id'])): ?>
-      <span class="error"><?= $errors['category_id'] ?></span>
-    <?php endif; ?>
-    <?php else: ?>
-    <select name="category_id" disabled><option>No categories found</option></select>
-    <?php endif; ?>
-    <label for="price">Price</label>
-    <?php if (isset($errors['price'])): ?>
-      <input type="text" name="price" id="price" value="<?= $product['price'] ?>" class="error"/>
-      <span class="error"><?= $errors['price'] ?></span>
-    <?php else: ?>
-    <input type="text" name="price" id="price" value="<?= number_format(intval($product['price']) / 100, 2) ?>"/>
-    <?php endif; ?>
-    <label for="description">Description</label>
-    <textarea type="text" name="description" id="description" rows="8" <?= isset($errors['description']) ? ' class="error"' : "" ?>><?= $product['description'] ?></textarea>
-    <?php if (isset($errors['description'])): ?>
-      <span class="error"><?= $errors['description'] ?></span>
-    <?php endif; ?>
-    <?php if ($can_update || $can_create): ?>
-    <button type="submit"><?= $product["id"] == 0 ? "Add" : "Update" ?></button>
-    <a href="/products"><button type="button">Cancel</button></a>
-    <?php endif; ?>
+    <div class="row">
+      <div class="left-column">
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name" value="<?= $product['name'] ?>"<?= isset($errors['name']) ? ' class="error"' : "" ?>/>
+        <?php if (isset($errors['name'])): ?>
+          <span class="error"><?= $errors['name'] ?></span>
+        <?php endif; ?>
+        <label for="sku">SKU</label>
+        <input type="text" name="sku" id="sku" value="<?= $product['sku'] ?>"<?= isset($errors['sku']) ? ' class="error"' : "" ?>/>
+        <?php if (isset($errors['sku'])): ?>
+          <span class="error"><?= $errors['sku'] ?></span>
+        <?php endif; ?>
+      </div>
+      <div class="right-column">
+        <label for="category">Category</label>
+        <?php if (count($categories) > 0): ?>
+        <select name="category_id" id="category"<?= isset($errors['category_id']) ? ' class="error"' : "" ?>>
+          <option value="0">Select category</option>
+          <?php foreach ($categories as $category): ?>
+          <option value="<?= $category['id'] ?>" <?= $category['id'] == $product['category_id'] ? "selected" : "" ?> <?= $category["rgt"] - $category["lft"] > 1 ? "disabled" : "" ?>>
+            <?= $category['depth'] > 0 ? str_repeat("&emsp;", $category['depth']) : "" ?>
+            <?= $category['name'] ?>
+          </option>
+          <?php endforeach; ?>
+        </select>
+        <?php else: ?>
+        <select name="category_id" disabled><option>No categories found</option></select>
+        <?php endif; ?>
+        <?php if (isset($errors['category_id'])): ?>
+          <span class="error"><?= $errors['category_id'] ?></span>
+        <?php endif; ?>
+        <label for="price">Price</label>
+        <?php if (isset($errors['price'])): ?>
+          <input type="text" name="price" id="price" value="<?= $product['price'] ?>" class="error"/>
+          <span class="error"><?= $errors['price'] ?></span>
+        <?php else: ?>
+        <input type="text" name="price" id="price" value="<?= number_format(intval($product['price']) / 100, 2) ?>"/>
+        <?php endif; ?>
+      </div>
+    </div>
+    <div class="row">
+      <label for="description">Description</label>
+      <textarea type="text" name="description" id="description" rows="8" <?= isset($errors['description']) ? ' class="error"' : "" ?>><?= $product['description'] ?></textarea>
+      <?php if (isset($errors['description'])): ?>
+        <span class="error"><?= $errors['description'] ?></span>
+      <?php endif; ?>
+    <div class="row">
+    </div>
+      <?php if ($can_update || $can_create): ?>
+      <button type="submit"><?= $product["id"] == 0 ? "Add" : "Update" ?></button>
+      <a href="/products"><button type="button">Cancel</button></a>
+      <?php endif; ?>
+    </div>
   </form>
   <?php if ($product['id'] > 0): ?>
   <ul class="tabbar">
@@ -104,24 +114,35 @@
     <input type="hidden" name="action" value="add_attribute"/>
     <input type="hidden" name="id" value="<?= $product['id'] ?>"/>
     <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
-    <label for="action">Attribute</label>
+    <div class="row">
+      <div class="left-column">
+        <label for="action">Attribute</label>
     <?php if (count($other_attributes) > 0): ?>
-    <select name="attribute_id" id="action">
-      <?php foreach ($other_attributes as $product_attribute): ?>
-      <option value="<?= $product_attribute['id'] ?>" <?= $product_attribute['id'] == $attribute['id'] ? "selected" : "" ?>><?= $product_attribute['name'] ?></option>
-      <?php endforeach; ?>
-    </select>
-    <label for="value">Value</label>
-    <input type="text" name="value" id="value" value="<?= $attribute['value'] ?>"<?= isset($errors['value']) ? ' class="error"' : "" ?>/>
-    <?php if (isset($errors['value'])): ?>
-      <span class="error"><?= $errors['value'] ?></span>
-    <?php endif; ?>
+        <select name="attribute_id" id="action">
+          <?php foreach ($other_attributes as $product_attribute): ?>
+          <option value="<?= $product_attribute['id'] ?>" <?= $product_attribute['id'] == $attribute['id'] ? "selected" : "" ?>><?= $product_attribute['name'] ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      <div class="right-column">
+        <label for="value">Value</label>
+        <input type="text" name="value" id="value" value="<?= $attribute['value'] ?>"<?= isset($errors['value']) ? ' class="error"' : "" ?>/>
+        <?php if (isset($errors['value'])): ?>
+          <span class="error"><?= $errors['value'] ?></span>
+        <?php endif; ?>
+      </div>
     <?php else: ?>
-    <select name="action_id" disabled><option>No attributes found</option></select>
-    <label for="value">Value</label>
-    <input type="text" name="value" id="value" disabled />
+        <select name="action_id" disabled><option>No attributes found</option></select>
+      </div>
+      <div class="right-column">
+        <label for="value">Value</label>
+        <input type="text" name="value" id="value" disabled />
+      </div>
     <?php endif ?>
-    <button type="submit" <?= count($other_attributes) === 0 ? "disabled" : "" ?>>Add</button>
+    </div>
+    <div class="row">
+      <button type="submit" <?= count($other_attributes) === 0 ? "disabled" : "" ?>>Add</button>
+    </div>
   </form>
   <?php endif; ?>
   <?php endif; ?>
@@ -181,21 +202,23 @@
   <table>
     <thead>
       <tr>
-        <th width="10%">Price</th>
-        <th width="90%">Created</th>
+        <th width="1em"></th>
+        <th width="8%">Price</th>
+        <th width="92%">Created</th>
       </tr>
     </thead>
     <tbody>
       <?php if (count($product_prices) > 0): ?>
       <?php foreach ($product_prices as $product_price): ?>
       <tr>
+        <td align="right"><?= ($product_price['id'] == $product['price_id']) ? "&check;" : ""?></td>
         <td align="right"><?= number_format($product_price['price'] / 100, 2) ?></td>
         <td><?= $product_price['created'] ?></td>
       </tr>
       <?php endforeach; ?>
       <?php else: ?>
       <tr>
-        <td colspan="2" align="center">No prices found</td>
+        <td colspan="3" align="center">No prices found</td>
       </tr>
       <?php endif; ?>
     </tbody>

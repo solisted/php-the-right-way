@@ -7,31 +7,145 @@
     <input type="hidden" name="action" value="update_order"/>
     <input type="hidden" name="id" value="<?= $order['id'] ?>"/>
     <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
-
-    <label for="number">Number</label>
-    <input type="text" name="number" id="number" value="<?= $order['number'] ?>" readonly/>
-    <label for="updated">Updated</label>
-    <input type="text" name="updated" id="updated" value="<?= $order['updated'] ?>" readonly/>
-    <label for="status">Status</label>
-    <?php if (count($statuses) > 0): ?>
-    <select name="status_id" id="status"<?= isset($errors['status_id']) ? ' class="error"' : "" ?>>
-      <option value="0">Select status</option>
-      <?php foreach ($statuses as $status): ?>
-      <option value="<?= $status['id'] ?>" <?= $status['name'] == $order['status'] ? "selected" : "" ?>>
-        <?= $status['name'] ?>
-      </option>
-      <?php endforeach; ?>
-    </select>
-    <?php if (isset($errors['status_id'])): ?>
-      <span class="error"><?= $errors['status_id'] ?></span>
-    <?php endif; ?>
-    <?php else: ?>
-    <select name="status_id" disabled><option>No statuses found</option></select>
-    <?php endif; ?>
-
-    <?php if ($can_update): ?>
-    <button type="submit">Update</button>
-    <a href="/orders"><button type="button">Cancel</button></a>
-    <?php endif; ?>
+    <div class="row">
+      <div class="left-column">
+        <label for="number">Number</label>
+        <input type="text" name="number" id="number" value="<?= $order['number'] ?>" readonly/>
+        <label for="customer">Customer</label>
+        <input type="text" name="customer" id="customer" value="<?= $order['first_name'] ?>&nbsp;<?= $order['last_name'] ?>" readonly/>
+      </div>
+      <div class="right-column">
+        <label for="updated">Updated</label>
+        <input type="text" name="updated" id="updated" value="<?= $order['updated'] ?>" readonly/>
+        <label for="status">Status</label>
+        <?php if (count($statuses) > 0): ?>
+        <select name="status_id" id="status"<?= isset($errors['status_id']) ? ' class="error"' : "" ?>>
+          <option value="0">Select status</option>
+          <?php foreach ($statuses as $status): ?>
+          <option value="<?= $status['id'] ?>" <?= $status['id'] == $order['status_id'] ? "selected" : "" ?>>
+            <?= $status['name'] ?>
+          </option>
+          <?php endforeach; ?>
+        </select>
+        <?php if (isset($errors['status_id'])): ?>
+          <span class="error"><?= $errors['status_id'] ?></span>
+        <?php endif; ?>
+        <?php else: ?>
+        <select name="status_id" disabled><option>No statuses found</option></select>
+        <?php endif; ?>
+      </div>
+    </div>
+    <div class="row">
+      <?php if ($can_update): ?>
+      <button type="submit">Update</button>
+      <a href="/orders"><button type="button">Cancel</button></a>
+      <?php endif; ?>
+    </div>
   </form>
+  <?php if ($order['id'] > 0): ?>
+  <ul class="tabbar">
+    <li class="<?= $tab_number === 0 ? "active" : "" ?>">
+      <a href="/order/<?= $order['id'] ?>?tab=0">Items</a>
+    </li>
+    <li class="<?= $tab_number === 1 ? "active" : "" ?>">
+      <a href="/order/<?= $order['id'] ?>?tab=1">History</a>
+    </li>
+  </ul>
+  <?php if ($tab_number === 0): ?>
+  <table>
+    <thead>
+      <tr>
+        <th width="60%">Product</th>
+        <th width="10%">SKU</th>
+        <th width="10%">Price</th>
+        <th width="10%">Quantity</th>
+        <th width="10%">&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php if (count($order_items) > 0): ?>
+      <?php foreach ($order_items as $item): ?>
+      <tr>
+        <?php if (sl_auth_is_authorized("ReadProduct")): ?>
+        <td><a href="/product/<?= $item['product_id']?>"><?= $item['name'] ?></a></td>
+        <?php else: ?>
+        <td><?= $item['name'] ?></td>
+        <?php endif; ?>
+        <td><?= $item['sku'] ?></td>
+        <td align="right"><?= number_format($item["price"] / 100, 2) ?></td>
+        <td align="right"><?= $item['quantity'] ?></td>
+        <td align="right">
+          <?php if ($can_update): ?>
+          <form class="hidden" method="POST" action="/order/<?= $order['id'] ?>?tab=<?= $tab_number ?>">
+            <input type="hidden" name="id" value="<?= $order['id'] ?>"/>
+            <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
+            <input type="hidden" name="item_id" value="<?= $item['id'] ?>"/>
+            <button type="submit" name="action" value="decrease_item"<?= intval($item['quantity']) < 2 ? "disabled" : ""?>>&#9866;</button>
+            <button type="submit" name="action" value="increase_item">&#10010;</button>
+            <button type="submit" name="action" value="delete_item">&#128473;</button>
+          </form>
+          <?php endif; ?>
+        </td>
+      </tr>
+      <?php endforeach; ?>
+      <?php else: ?>
+      <tr>
+        <td colspan="5" align="center">No items found</td>
+      </tr>
+      <?php endif; ?>
+    </tbody>
+  </table>
+  <?php if ($can_update): ?>
+  <form method="POST" action="/order/<?= $order['id'] ?>?tab=<?= $tab_number ?>">
+    <input type="hidden" name="id" value="<?= $order['id'] ?>"/>
+    <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
+    <div class="row">
+      <div class="left-column">
+        <label for="sku">SKU</label>
+        <input type="text" name="sku" id="sku" value="<?= $order_item['sku'] ?>"<?= isset($errors['sku']) ? ' class="error"' : "" ?>/>
+        <?php if (isset($errors['sku'])): ?>
+          <span class="error"><?= $errors['sku'] ?></span>
+        <?php endif; ?>
+      </div>
+      <div class="right-column">
+        <label for="quantity">Quantity</label>
+        <input type="text" name="quantity" id="quantity" value="<?= $order_item['quantity'] ?>"<?= isset($errors['quantity']) ? ' class="error"' : "" ?>/>
+        <?php if (isset($errors['quantity'])): ?>
+          <span class="error"><?= $errors['quantity'] ?></span>
+        <?php endif; ?>
+      </div>
+    </div>
+    <div class="row">
+      <button type="submit" name="action" value="add_item">Add</button>
+      <button type="submit" class="secondary" name="action" value="search_item">Search</button>
+    </div>
+  </form>
+  <?php endif; ?>
+  <?php elseif ($tab_number === 1): ?>
+  <table>
+    <thead>
+      <tr>
+        <th width="1em"></th>
+        <th width="20%">Status</th>
+        <th width="80%">Created</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php if (count($order_history) > 0): ?>
+      <?php foreach ($order_history as $status_item): ?>
+      <tr>
+        <td align="right"><?= ($status_item['id'] == $order['status_history_id']) ? "&check;" : ""?></td>
+        <td><?= $status_item['name'] ?></td>
+        <td><?= $status_item['created'] ?></td>
+      </tr>
+      <?php endforeach; ?>
+      <?php else: ?>
+      <tr>
+        <td colspan="3" align="center">No history items found</td>
+      </tr>
+      <?php endif; ?>
+    </tbody>
+  </table>
+  <?php endif; ?>
+  <?php endif; ?>
 </div>

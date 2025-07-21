@@ -3,7 +3,8 @@
   <table>
     <thead>
       <tr>
-        <th width="60%">Number</th>
+        <th width="25%">Number</th>
+        <th width="35%">Customer</th>
         <th width="15%">Status</th>
         <th width="25%">Updated</th>
       </tr>
@@ -17,13 +18,14 @@
         <?php else: ?>
         <td><?= $order["number"] ?></td>
         <?php endif; ?>
+        <td><?= $order["first_name"] ?>&nbsp;<?= $order["last_name"] ?></td>
         <td><?= $order["status"] ?></td>
         <td><?= $order["updated"] ?></td>
       </tr>
       <?php endforeach; ?>
       <?php else: ?>
       <tr>
-        <td colspan="3" align="center">No orders found</td>
+        <td colspan="4" align="center">No orders found</td>
       </tr>
       <?php endif; ?>
     </tbody>

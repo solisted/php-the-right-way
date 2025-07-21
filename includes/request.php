@@ -153,6 +153,11 @@ function sl_request_post_string_equals(string $parameter, string $value)
     return isset($_POST[$parameter]) && $_POST[$parameter] === $value;
 }
 
+function sl_request_post_string_equals_any(string $parameter, array $values)
+{
+    return isset($_POST[$parameter]) && in_array($_POST[$parameter], $values, true);
+}
+
 function sl_request_get_csrf(): string
 {
     return sl_request_post_get_string("csrf", "/^[0-9a-f]{32}$/");

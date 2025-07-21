@@ -28,7 +28,7 @@ function sl_render_product(
 
 function sl_product_get_product_by_id(PDO $connection, int $product_id): array
 {
-    $statement = $connection->prepare("SELECT p.id, p.category_id, p.sku, p.name, SUBSTRING_INDEX(GROUP_CONCAT(pp.price ORDER BY pp.created DESC), ',', 1) AS price, p.description FROM products p LEFT JOIN product_prices pp ON (p.id = pp.product_id) WHERE p.id = :id GROUP BY p.id");
+    $statement = $connection->prepare("SELECT p.id, p.category_id, p.sku, p.name, SUBSTRING_INDEX(GROUP_CONCAT(pp.id ORDER BY pp.created DESC), ',', 1) AS price_id, SUBSTRING_INDEX(GROUP_CONCAT(pp.price ORDER BY pp.created DESC), ',', 1) AS price, p.description FROM products p LEFT JOIN product_prices pp ON (p.id = pp.product_id) WHERE p.id = :id GROUP BY p.id");
     $statement->bindValue(":id", $product_id, PDO::PARAM_INT);
     $statement->execute();
 

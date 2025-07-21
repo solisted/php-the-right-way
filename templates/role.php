@@ -7,19 +7,27 @@
   <form method="POST" action="/role/<?= $role['id'] > 0 ? $role['id'] : "add" ?><?= $role['id'] > 0 && $page > 1 ? "?page={$page}&size={$size}" : ""?>">
     <input type="hidden" name="id" value="<?= $role['id'] ?>"/>
     <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
-    <label for="name">Name</label>
-    <input type="text" name="name" id="name" value="<?= $role['name'] ?>"<?= isset($errors['name']) ? ' class="error"' : "" ?>/>
-    <?php if (isset($errors['name'])): ?>
-      <span class="error"><?= $errors['name'] ?></span>
-    <?php endif; ?>
-    <label for="description">Description</label>
-    <input type="text" name="description" id="description" value="<?= $role['description'] ?>"<?= isset($errors['description']) ? ' class="error"' : "" ?>/>
-    <?php if (isset($errors['description'])): ?>
-      <span class="error"><?= $errors['description'] ?></span>
-    <?php endif; ?>
+    <div class="row">
+      <div class="left-column">
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name" value="<?= $role['name'] ?>"<?= isset($errors['name']) ? ' class="error"' : "" ?>/>
+        <?php if (isset($errors['name'])): ?>
+          <span class="error"><?= $errors['name'] ?></span>
+        <?php endif; ?>
+      </div>
+      <div class="right-column">
+        <label for="description">Description</label>
+        <input type="text" name="description" id="description" value="<?= $role['description'] ?>"<?= isset($errors['description']) ? ' class="error"' : "" ?>/>
+        <?php if (isset($errors['description'])): ?>
+          <span class="error"><?= $errors['description'] ?></span>
+        <?php endif; ?>
+      </div>
+    </div>
     <?php if ($can_update || $can_create): ?>
-    <button type="submit"><?= $role["id"] == 0 ? "Add" : "Update" ?></button>
-    <a href="/roles"><button type="button">Cancel</button></a>
+    <div class="row">
+      <button type="submit"><?= $role["id"] == 0 ? "Add" : "Update" ?></button>
+      <a href="/roles"><button type="button">Cancel</button></a>
+    </div>
     <?php endif; ?>
   </form>
   <?php if ($role['id'] > 0): ?>

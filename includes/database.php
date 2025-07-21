@@ -38,7 +38,6 @@ function sl_database_is_unique_user_name(PDO $connection, string $first_name, st
 function sl_database_get_categories(PDO $connection): array
 {
     $statement = $connection->query("SELECT n.id, n.name, n.lft, n.rgt, (COUNT(pn.id) - 1) AS depth FROM categories n, categories pn WHERE n.lft BETWEEN pn.lft AND pn.rgt GROUP BY n.id ORDER BY n.lft");
-    $statement->execute();
 
     return $statement->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -46,7 +45,6 @@ function sl_database_get_categories(PDO $connection): array
 function sl_database_get_categories_with_product_count(PDO $connection): array
 {
     $statement = $connection->query("SELECT n.id, n.name, n.lft, n.rgt, (COUNT(DISTINCT pn.id) - 1) AS depth, COUNT(DISTINCT p.id) AS products FROM categories n LEFT JOIN categories pn ON (n.lft >= pn.lft AND n.lft <= pn.rgt) LEFT JOIN products p ON (n.id = p.category_id) GROUP BY n.id ORDER BY n.lft");
-    $statement->execute();
 
     return $statement->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -54,7 +52,19 @@ function sl_database_get_categories_with_product_count(PDO $connection): array
 function sl_database_get_statuses(PDO $connection): array
 {
     $statement = $connection->query("SELECT id, name FROM order_statuses ORDER BY id");
-    $statement->execute();
 
     return $statement->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function sl_database_get_product_by_sku(PDO $connection, string $sku): array
+{
+    $statement = $connection->prepare("SELECT p.id, SUBSTRING_INDEX(GROUP_CONCAT(pp.id ORDER BY pp.created DESC), ',', 1) AS product_price_id FROM products p LEFT JOIN product_prices pp ON (p.id = pp.product_id) WHERE p.sku = :sku GROUP BY p.id");
+    $statement->bindValue(":sku", $sku, PDO::PARAM_STR);
+    $statement->execute();
+
+    if ($statement->rowCount() !== 1) {
+        return [];
+    }
+
+    return $statement->fetch(PDO::FETCH_ASSOC);
 }

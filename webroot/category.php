@@ -168,12 +168,19 @@ if (sl_request_is_method("POST") && $attribute_id === 0 && !sl_request_post_stri
     sl_auth_assert_authorized_any(["CreateCategory", "UpdateCategory"]);
 
     $parent_id = sl_request_post_get_integer("parent_id", 0, PHP_INT_MAX, 0);
+    $catrgory_id = sl_request_post_get_integer("id", 0, PHP_INT_MAX, 0);
+
+    $existing_category = sl_categories_find_category_by_id($category_id, $categories);
 
     $parameters = sl_request_get_post_parameters([
         "name" => FILTER_SANITIZE_FULL_SPECIAL_CHARS
     ]);
 
     $category["id"] = $category_id;
+
+    $category["rgt"] = $existing_category["rgt"];
+    $category["lft"] = $existing_category["lft"];
+
     $category["name"] = sl_sanitize_case($parameters["name"], MB_CASE_TITLE_SIMPLE);
     $errors["name"] = sl_validate_regexp($category["name"], 4, 64, "/^[[:alpha:][:blank:]]+$/u", "Name", "letters and space character");
 

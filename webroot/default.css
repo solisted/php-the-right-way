@@ -4,7 +4,7 @@ body {
     margin: 2em auto;
     padding: 0 .62em;
     font: 1em sans-serif;
-    max-width: 60em;
+    max-width: 80em;
 }
 
 table {
@@ -98,7 +98,7 @@ form button[type=submit] {
     background-color: #eeeeee;
 }
 
-form button[type=button] {
+form button[type=button], form button[type=submit].secondary {
     background-color: #ffffff;
 }
 
@@ -169,6 +169,23 @@ form a.middle {
     text-align: center;
 }
 
+form div.row {
+    clear: both;
+}
+
+form div.left-column, form div.right-column {
+    float: left;
+    width: calc(50% - .5em);
+}
+
+form div.left-column {
+    margin-right: .5em;
+}
+
+form div.right-column {
+    margin-left: .5em;
+}
+
 a, a:visited {
     color: #0055aa;
 }
@@ -209,12 +226,12 @@ nav.pager a:last-child {
 
 div.sidebar {
     float: left;
-    width: 20%;
+    width: 15%;
 }
 
 div.main {
     float: right;
-    width: 80%;
+    width: 85%;
 }
 
 div.login {
@@ -259,7 +276,7 @@ ul.tabbar li {
 }
 
 
-@media only screen and (max-width: 60em) {
+@media only screen and (max-width: 80em) {
     div.sidebar,  div.main {
         float: none;
         width: 100%;
@@ -317,7 +334,7 @@ div.flash {
         color: #eeeeee;
     }
 
-    form button[type=button] {
+    form button[type=button], form button[type=submit].secondary {
         background-color: #444444;
         border: 1px solid #444444;
         color: #eeeeee;
