@@ -1,6 +1,15 @@
 <?php
 declare(strict_types=1);
 
+define("SL_USER_INVALID_STATUS_ID", -1);
+define("SL_USER_ACTIVE_STATUS_ID", 1);
+define("SL_USER_LOCKED_STATUS_ID", 2);
+define("SL_USER_DELETED_STATUS_ID", 3);
+
+define("SL_ROLE_INVALID_STATUS_ID", -1);
+define("SL_ROLE_ACTIVE_STATUS_ID", 1);
+define("SL_ROLE_DELETED_STATUS_ID", 2);
+
 $properties = [
     "SL_APPLICATION_DEBUG",
     "SL_DATABASE_DSN",

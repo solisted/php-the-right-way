@@ -139,9 +139,26 @@ form.hidden button {
     padding: 0;
     margin: 0;
     border: none;
-    background-color: #ffffff;
+}
+
+img.icon {
+    margin: 0;
+    padding: 0;
+    width: 18px;
+    height: 18px;
+    vertical-align: bottom;
+}
+
+form.hidden input[type="number"] {
+    display: inline;
+    font-size: .8em;
+    margin: 0 .1em;
+    padding: .2em .2em .1em .2em;
+    border: 1px solid #aaaaaa;
+    border-radius: .4em;
+    width: 3em;
     position: relative;
-    top: -.15em;
+    top: -.1em;
 }
 
 form.horizontal {

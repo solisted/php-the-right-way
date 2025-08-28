@@ -22,7 +22,7 @@
             <input type="hidden" name="action" value="delete"/>
             <input type="hidden" name="id" value="<?= $attribute['id'] ?>"/>
             <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
-            <button type="submit">&#128473;</button>
+            <button type="submit"><img class="icon" src="/icons/delete.png"/></button>
           </form>
           <?php endif; ?>
         </td>

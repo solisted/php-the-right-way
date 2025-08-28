@@ -37,7 +37,7 @@
             <input type="hidden" name="id" value="<?= $category['id'] ?>"/>
             <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
             <?php $can_delete = $category['depth'] > 0 && $category['rgt'] == $category['lft'] + 1 && $category['products'] == 0; ?>
-            <button type="submit" <?= $can_delete ? "" : "disabled" ?>>&#128473;</button>
+            <button type="submit" <?= $can_delete ? "" : "disabled" ?>><img class="icon" src="/icons/delete.png"/></button>
           </form>
           <?php endif; ?>
         </td>

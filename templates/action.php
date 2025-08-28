@@ -23,11 +23,11 @@
         <?php endif; ?>
       </div>
     </div>
-    <?php if ($can_update || $can_create): ?>
     <div class="row">
+    <?php if ($can_update || $can_create): ?>
       <button type="submit"><?= $action["id"] == 0 ? "Add" : "Update" ?></button>
       <a href="/actions"><button type="button">Cancel</button></a>
-    </div>
     <?php endif; ?>
+    </div>
   </form>
 </div>

@@ -31,7 +31,18 @@ if ($total_pages > 0 && $page > $total_pages) {
     sl_request_terminate(400);
 }
 
-$statement = $connection->prepare("SELECT id, name, description FROM roles LIMIT :offset, :limit");
+$statement = $connection->prepare(
+   "SELECT
+        r.id, r.name, r.description,
+        SUBSTRING_INDEX(GROUP_CONCAT(rs.id ORDER BY rh.created DESC), ',', 1) AS status_id,
+        SUBSTRING_INDEX(GROUP_CONCAT(rs.name ORDER BY rh.created DESC), ',', 1) AS status,
+        SUBSTRING_INDEX(GROUP_CONCAT(rh.created ORDER BY rh.created DESC), ',', 1) AS updated
+    FROM roles r
+    LEFT JOIN role_history rh ON (rh.role_id = r.id)
+    LEFT JOIN role_statuses rs ON (rs.id = rh.status_id)
+    GROUP BY r.id
+    LIMIT :offset, :limit"
+);
 $statement->bindValue(":offset", ($page - 1) * $page_size, PDO::PARAM_INT);
 $statement->bindValue(":limit", $page_size, PDO::PARAM_INT);
 $statement->execute();

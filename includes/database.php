@@ -49,9 +49,23 @@ function sl_database_get_categories_with_product_count(PDO $connection): array
     return $statement->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function sl_database_get_statuses(PDO $connection): array
+function sl_database_get_order_statuses(PDO $connection): array
 {
     $statement = $connection->query("SELECT id, name FROM order_statuses ORDER BY id");
+
+    return $statement->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function sl_database_get_user_statuses(PDO $connection): array
+{
+    $statement = $connection->query("SELECT id, name FROM user_statuses ORDER BY id");
+
+    return $statement->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function sl_database_get_role_statuses(PDO $connection): array
+{
+    $statement = $connection->query("SELECT id, name FROM role_statuses ORDER BY id");
 
     return $statement->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -67,4 +81,22 @@ function sl_database_get_product_by_sku(PDO $connection, string $sku): array
     }
 
     return $statement->fetch(PDO::FETCH_ASSOC);
+}
+
+function sl_database_search_products(PDO $connection, string $search_term): array
+{
+    $statement = $connection->prepare("SELECT p.id, p.sku, p.name, c.name AS category, SUBSTRING_INDEX(GROUP_CONCAT(pp.price ORDER BY pp.created DESC), ',', 1) AS price, SUBSTRING_INDEX(GROUP_CONCAT(pp.id ORDER BY pp.created DESC), ',', 1) AS product_price_id FROM products p LEFT JOIN categories c ON (p.category_id = c.id) LEFT JOIN product_prices pp ON (p.id = pp.product_id) WHERE MATCH(p.sku, p.name, p.description) AGAINST(:search_term) GROUP BY p.id");
+    $statement->bindValue(":search_term", $search_term, PDO::PARAM_STR);
+    $statement->execute();
+
+    return $statement->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function sl_database_search_customers(PDO $connection, string $search_term): array
+{
+    $statement = $connection->prepare("SELECT id, first_name, last_name, email FROM customers WHERE MATCH(first_name, last_name, email) AGAINST(:search_term)");
+    $statement->bindValue(":search_term", $search_term, PDO::PARAM_STR);
+    $statement->execute();
+
+    return $statement->fetchAll(PDO::FETCH_ASSOC);
 }

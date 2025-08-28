@@ -54,8 +54,8 @@
       <?php if (isset($errors['description'])): ?>
         <span class="error"><?= $errors['description'] ?></span>
       <?php endif; ?>
-    <div class="row">
     </div>
+    <div class="row">
       <?php if ($can_update || $can_create): ?>
       <button type="submit"><?= $product["id"] == 0 ? "Add" : "Update" ?></button>
       <a href="/products"><button type="button">Cancel</button></a>
@@ -96,7 +96,7 @@
             <input type="hidden" name="id" value="<?= $product['id'] ?>"/>
             <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
             <input type="hidden" name="attribute_id" value="<?= $product_attribute['id'] ?>"/>
-            <button type="submit">&#128473;</button>
+            <button type="submit"><img class="icon" src="/icons/delete.png"/></button>
           </form>
           <?php endif; ?>
         </td>

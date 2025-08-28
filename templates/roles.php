@@ -3,8 +3,10 @@
   <table>
     <thead>
       <tr>
-        <th width="30%">Name</th>
-        <th width="70%">Description</th>
+        <th width="25%">Name</th>
+        <th width="40%">Description</th>
+        <th width="15%">Status</th>
+        <th width="20%">Updated</th>
       </tr>
     </thead>
     <tbody>
@@ -17,11 +19,13 @@
         <td><?= $role["name"] ?></td>
         <?php endif; ?>
         <td><?= $role["description"] ?></td>
+        <td><?= $role["status"] ?></td>
+        <td><?= $role["updated"] ?></td>
       </tr>
       <?php endforeach; ?>
       <?php else: ?>
       <tr>
-        <td colspan="2" align="center">No roles found</td>
+        <td colspan="4" align="center">No roles found</td>
       </tr>
       <?php endif ?>
     </tbody>

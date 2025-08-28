@@ -31,7 +31,18 @@ if ($total_pages > 0 && $page > $total_pages) {
     sl_request_terminate(400);
 }
 
-$statement = $connection->prepare("SELECT id, username, first_name, last_name, email FROM users LIMIT :offset, :limit");
+$statement = $connection->prepare(
+   "SELECT
+        u.id, u.username, u.first_name, u.last_name, u.email,
+        SUBSTRING_INDEX(GROUP_CONCAT(us.id ORDER BY uh.created DESC), ',', 1) AS status_id,
+        SUBSTRING_INDEX(GROUP_CONCAT(us.name ORDER BY uh.created DESC), ',', 1) AS status,
+        SUBSTRING_INDEX(GROUP_CONCAT(uh.created ORDER BY uh.created DESC), ',', 1) AS updated
+    FROM users u
+    LEFT JOIN user_history uh ON (uh.user_id = u.id)
+    LEFT JOIN user_statuses us ON (us.id = uh.status_id)
+    GROUP BY u.id
+    LIMIT :offset, :limit"
+);
 $statement->bindValue(":offset", ($page - 1) * $page_size, PDO::PARAM_INT);
 $statement->bindValue(":limit", $page_size, PDO::PARAM_INT);
 $statement->execute();

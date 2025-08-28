@@ -4,8 +4,9 @@
 ?>
 <div class="main">
   <?php sl_template_render_flash_message() ?>
-  <form method="POST" action="/role/<?= $role['id'] > 0 ? $role['id'] : "add" ?><?= $role['id'] > 0 && $page > 1 ? "?page={$page}&size={$size}" : ""?>">
+  <form method="POST" action="/role/<?= ($role['id'] > 0 ? $role['id'] : "add") . "?tab={$tab_number}" . ($role['id'] > 0 && $page > 1 ? "?page={$page}&size={$size}" : "")?>">
     <input type="hidden" name="id" value="<?= $role['id'] ?>"/>
+    <input type="hidden" name="action" value="add_update_role"/>
     <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
     <div class="row">
       <div class="left-column">
@@ -23,15 +24,23 @@
         <?php endif; ?>
       </div>
     </div>
-    <?php if ($can_update || $can_create): ?>
     <div class="row">
+    <?php if ($can_update || $can_create): ?>
       <button type="submit"><?= $role["id"] == 0 ? "Add" : "Update" ?></button>
       <a href="/roles"><button type="button">Cancel</button></a>
-    </div>
     <?php endif; ?>
+    </div>
   </form>
   <?php if ($role['id'] > 0): ?>
-  <h3>Actions</h3>
+  <ul class="tabbar">
+    <li class="<?= $tab_number === 0 ? "active" : "" ?>">
+      <a href="/role/<?= $role['id'] ?>?tab=0">Actions</a>
+    </li>
+    <li class="<?= $tab_number === 1 ? "active" : "" ?>">
+      <a href="/role/<?= $role['id'] ?>?tab=1">History</a>
+    </li>
+  </ul>
+  <?php if ($tab_number === 0): ?>
   <table>
     <thead>
       <tr>
@@ -53,7 +62,7 @@
             <input type="hidden" name="id" value="<?= $role['id'] ?>"/>
             <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
             <input type="hidden" name="action_id" value="<?= $action['id'] ?>"/>
-            <button type="submit">&#128473;</button>
+            <button type="submit"><img class="icon" src="/icons/delete.png"/></button>
           </form>
           <?php endif; ?>
         </td>
@@ -61,7 +70,7 @@
       <?php endforeach; ?>
       <?php else: ?>
       <tr>
-        <td colspan="3" align="center">No roles found</td>
+        <td colspan="3" align="center">No actions found</td>
       </tr>
       <?php endif ?>
     </tbody>
@@ -84,6 +93,32 @@
     <?php endif ?>
     <button type="submit" <?= count($other_actions) === 0 ? "disabled" : "" ?>>Add</button>
   </form>
-  <?php endif ?>
-  <?php endif ?>
+  <?php endif; ?>
+  <?php elseif ($tab_number === 1): ?>
+  <table>
+    <thead>
+      <tr>
+        <th width="1em"></th>
+        <th width="20%">Status</th>
+        <th width="80%">Created</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php if (count($role_history) > 0): ?>
+      <?php foreach ($role_history as $status_item): ?>
+      <tr>
+        <td align="right"><?= ($status_item['id'] == $role['status_history_id']) ? "<img class=\"icon\" src=\"/icons/check.png\"/>" : ""?></td>
+        <td><?= $status_item['name'] ?></td>
+        <td><?= $status_item['created'] ?></td>
+      </tr>
+      <?php endforeach; ?>
+      <?php else: ?>
+      <tr>
+        <td colspan="3" align="center">No history items found</td>
+      </tr>
+      <?php endif; ?>
+    </tbody>
+  </table>
+  <?php endif; ?>
+  <?php endif; ?>
 </div>

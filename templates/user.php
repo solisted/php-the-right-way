@@ -4,7 +4,7 @@
 ?>
 <div class="main">
   <?php sl_template_render_flash_message() ?>
-  <form method="POST" action="/user/<?= $user['id'] > 0 ? $user['id'] : "add" ?>">
+  <form method="POST" action="/user/<?= $user['id'] > 0 ? $user['id'] . "?tab={$tab_number}" : "add" ?>">
     <input type="hidden" name="id" value="<?= $user['id'] ?>"/>
     <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
     <div class="row">
@@ -54,12 +54,30 @@
       </div>
     </div>
     <div class="row">
-      <button type="submit"><?= $user["id"] == 0 ? "Add" : "Update" ?></button>
+    <?php if ($can_create || $can_update): ?>
+      <button type="submit" name="action" value="add_update_user"><?= $user["id"] == 0 ? "Add" : "Update" ?></button>
+      <?php if ($user["status_id"] == SL_USER_ACTIVE_STATUS_ID): ?>
+      <button type="submit" class="secondary" name="action" value="lock_user">Lock</button>
+      <button type="submit" class="secondary" name="action" value="delete_user">Delete</button>
+      <?php elseif ($user["status_id"] == SL_USER_LOCKED_STATUS_ID): ?>
+      <button type="submit" class="secondary" name="action" value="unlock_user">Unlock</button>
+      <?php elseif ($user["status_id"] == SL_USER_DELETED_STATUS_ID): ?>
+      <button type="submit" class="secondary" name="action" value="restore_user">Restore</button>
+      <?php endif; ?>
       <a href="/users"><button type="button">Cancel</button></a>
+    <?php endif; ?>
     </div>
   </form>
   <?php if ($user['id'] > 0): ?>
-  <h3>Roles</h3>
+  <ul class="tabbar">
+    <li class="<?= $tab_number === 0 ? "active" : "" ?>">
+      <a href="/user/<?= $user['id'] ?>?tab=0">Roles</a>
+    </li>
+    <li class="<?= $tab_number === 1 ? "active" : "" ?>">
+      <a href="/user/<?= $user['id'] ?>?tab=1">History</a>
+    </li>
+  </ul>
+  <?php if ($tab_number === 0): ?>
   <table>
     <thead>
       <tr>
@@ -76,12 +94,12 @@
         <td><?= $role["description"] ?></td>
         <td align="right">
           <?php if ($can_update): ?>
-          <form class="hidden" method="POST" action="/user/<?= $user['id'] ?>">
+          <form class="hidden" method="POST" action="/user/<?= $user['id'] . "?tab={$tab_number}"?>">
             <input type="hidden" name="action" value="delete_role"/>
             <input type="hidden" name="id" value="<?= $user['id'] ?>"/>
             <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
             <input type="hidden" name="role_id" value="<?= $role['id'] ?>"/>
-            <button type="submit">&#128473;</button>
+            <button type="submit"><img class="icon" src="/icons/delete.png"/></button>
           </form>
           <?php endif; ?>
         </td>
@@ -95,7 +113,7 @@
     </tbody>
   </table>
   <?php if ($can_update): ?>
-  <form class="horizontal" method="POST" action="/user/<?= $user['id'] ?>">
+  <form class="horizontal" method="POST" action="/user/<?= $user['id'] . "?tab={$tab_number}"?>">
     <input type="hidden" name="action" value="add_role"/>
     <input type="hidden" name="id" value="<?= $user['id'] ?>"/>
     <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
@@ -111,6 +129,32 @@
     <?php endif; ?>
     <button type="submit" <?= count($other_roles) === 0 ? "disabled" : "" ?>>Add</button>
   </form>
+  <?php endif; ?>
+  <?php elseif ($tab_number === 1): ?>
+  <table>
+    <thead>
+      <tr>
+        <th width="1em"></th>
+        <th width="20%">Status</th>
+        <th width="80%">Created</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php if (count($user_history) > 0): ?>
+      <?php foreach ($user_history as $status_item): ?>
+      <tr>
+        <td align="right"><?= ($status_item['id'] == $user['status_history_id']) ? "<img class=\"icon\" src=\"/icons/check.png\"/>" : ""?></td>
+        <td><?= $status_item['name'] ?></td>
+        <td><?= $status_item['created'] ?></td>
+      </tr>
+      <?php endforeach; ?>
+      <?php else: ?>
+      <tr>
+        <td colspan="3" align="center">No history items found</td>
+      </tr>
+      <?php endif; ?>
+    </tbody>
+  </table>
   <?php endif; ?>
   <?php endif; ?>
 </div>

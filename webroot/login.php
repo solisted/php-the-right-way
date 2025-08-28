@@ -40,8 +40,19 @@ if (sl_request_is_method("POST")) {
     if (!sl_validate_has_errors($errors)) {
         $connection = sl_database_get_connection();
 
-        $statement = $connection->prepare("SELECT id, password FROM users WHERE username = :username");
+        $statement = $connection->prepare(
+            "SELECT
+                 u.id, u.password,
+                 SUBSTRING_INDEX(GROUP_CONCAT(uh.status_id ORDER BY uh.created DESC), ',', 1) AS user_status_id
+             FROM users u
+             LEFT JOIN user_history uh ON (uh.user_id = u.id)
+             LEFT JOIN user_statuses us ON (uh.status_id = us.id)
+             WHERE u.username = :username
+             GROUP BY u.id
+             HAVING user_status_id = :status_id"
+        );
         $statement->bindValue(":username", $username, PDO::PARAM_STR);
+        $statement->bindValue(":status_id", SL_USER_ACTIVE_STATUS_ID, PDO::PARAM_STR);
         $statement->execute();
 
         if ($statement->rowCount() !== 1) {

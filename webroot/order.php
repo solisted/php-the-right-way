@@ -12,7 +12,15 @@ require("../includes/validate.php");
 require("../includes/sanitize.php");
 require("../includes/session.php");
 
-function sl_render_order(int $tab_number, array $order, array $order_item, array $order_items, array $order_history, array $statuses, array $errors): void
+function sl_render_order(
+    int $tab_number,
+    array $order,
+    array $order_item,
+    array $order_items,
+    array $found_products,
+    array $order_history,
+    array $statuses,
+    array $errors): void
 {
     require("../templates/order.php");
 }
@@ -32,7 +40,7 @@ function sl_order_get_order_by_id(PDO $connection, int $order_id): array
 
 function sl_order_get_order_items(PDO $connection, int $order_id): array
 {
-    $statement = $connection->prepare("SELECT oi.id, p.id AS product_id, p.sku, p.name, pp.price, oi.quantity FROM order_items oi LEFT JOIN product_prices pp ON (pp.id = oi.product_price_id) LEFT JOIN products p ON (pp.product_id = p.id) WHERE oi.order_id = :order_id");
+    $statement = $connection->prepare("SELECT oi.id, p.id AS product_id, p.sku, p.name, pp.price, oi.quantity, pp.id AS product_price_id FROM order_items oi LEFT JOIN product_prices pp ON (pp.id = oi.product_price_id) LEFT JOIN products p ON (pp.product_id = p.id) WHERE oi.order_id = :order_id");
     $statement->bindValue(":order_id", $order_id, PDO::PARAM_INT);
     $statement->execute();
 
@@ -86,6 +94,7 @@ $order_item = [
     "quantity" => 1
 ];
 $order_items = [];
+$found_products = [];
 $order_history = [];
 $errors = [
     "status_id" => null,
@@ -94,7 +103,7 @@ $errors = [
 ];
 
 $connection = sl_database_get_connection();
-$statuses = sl_template_escape_array_of_arrays(sl_database_get_statuses($connection));
+$statuses = sl_template_escape_array_of_arrays(sl_database_get_order_statuses($connection));
 
 $order_id = sl_request_query_get_integer("id", 0, PHP_INT_MAX);
 $tab_number = sl_request_query_get_integer("tab", 0, 2, 0);
@@ -273,7 +282,78 @@ if (sl_request_is_method("POST") && sl_request_post_string_equals_any("action", 
     }
 }
 
+if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "search_item")) {
+    sl_auth_assert_authorized("UpdateOrder");
+    $order_id = sl_request_post_get_integer("id", 0, PHP_INT_MAX);
+
+    $order_items = sl_order_get_order_items($connection, $order_id);
+    $order = sl_order_get_order_by_id($connection, $order_id);
+    if (empty($order)) {
+        sl_request_terminate(404);
+    }
+
+    $parameters = sl_request_get_post_parameters([
+        "sku" => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+        "quantity" => FILTER_SANITIZE_NUMBER_INT
+    ]);
+
+    $search_term = sl_sanitize_trim($parameters["sku"]);
+    $order_item["quantity"] = sl_sanitize_trim($parameters["quantity"]);
+
+    $errors["sku"] = sl_validate_regexp($search_term, 2, 128, "/^[[:print:]]+$/", "Search term", "printable characters");
+
+    if (!sl_validate_has_errors($errors)) {
+        $order_item["sku"] = $search_term;
+
+        $found_products = sl_template_escape_array_of_arrays(sl_database_search_products($connection, $search_term));
+    }
+}
+
+if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "add_product")) {
+    sl_auth_assert_authorized("UpdateOrder");
+
+    $order_id = sl_request_post_get_integer("id", 0, PHP_INT_MAX);
+
+    $order = sl_order_get_order_by_id($connection, $order_id);
+    if (empty($order)) {
+        sl_request_terminate(404);
+    }
+
+    $product_price_id = sl_request_post_get_integer("price_id", 0, PHP_INT_MAX);
+    $quantity = sl_request_post_get_integer("quantity", 1, 10);
+
+    $connection->beginTransaction();
+
+    $statement = $connection->prepare("SELECT COUNT(*) FROM product_prices WHERE id = :product_price_id");
+    $statement->bindValue(":product_price_id", $product_price_id, PDO::PARAM_INT);
+    $statement->execute();
+
+    if (intval($statement->fetchColumn(0)) === 0) {
+        sl_request_terminate(400);
+    }
+
+    $statement = $connection->prepare("SELECT COUNT(*) FROM order_items WHERE order_id = :order_id AND product_price_id = :product_price_id");
+    $statement->bindValue(":order_id", $order_id, PDO::PARAM_INT);
+    $statement->bindValue(":product_price_id", $product_price_id, PDO::PARAM_INT);
+    $statement->execute();
+
+    if (intval($statement->fetchColumn(0)) !== 0) {
+        sl_request_terminate(400);
+    }
+
+    $statement = $connection->prepare("INSERT INTO order_items (order_id, product_price_id, quantity) VALUES (:order_id, :product_price_id, :quantity)");
+    $statement->bindValue(":order_id", $order_id, PDO::PARAM_INT);
+    $statement->bindValue(":product_price_id", $product_price_id, PDO::PARAM_INT);
+    $statement->bindValue(":quantity", $quantity, PDO::PARAM_INT);
+    $statement->execute();
+
+    $connection->commit();
+
+    sl_session_set_flash_message("Order item added successfully");
+    sl_request_redirect("/order/{$order_id}?tab={$tab_number}");
+}
+
 sl_template_render_header();
 sl_template_render_sidebar();
-sl_render_order($tab_number, $order, $order_item, $order_items, $order_history, $statuses, $errors);
+sl_render_order($tab_number, $order, $order_item, $order_items, $found_products, $order_history, $statuses, $errors);
 sl_template_render_footer();

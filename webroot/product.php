@@ -236,13 +236,15 @@ if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "add
         $statement->execute();
 
         if ($product_id === 0) {
-            $product_id = $connection->lastInsertId();
+            $price_product_id = $connection->lastInsertId();
+        } else {
+            $price_product_id = $product_id;
         }
 
         if ($existing_price !== $product["price"]) {
             $statement = $connection->prepare("INSERT INTO product_prices (product_id, price, created) VALUES (:product_id, :price, NOW())");
 
-            $statement->bindValue(":product_id", $product_id, PDO::PARAM_INT);
+            $statement->bindValue(":product_id", $price_product_id, PDO::PARAM_INT);
             $statement->bindValue(":price", $product["price"], PDO::PARAM_INT);
             $statement->execute();
         }

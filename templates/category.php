@@ -39,12 +39,12 @@
         <?php endif; ?>
       </div>
     </div>
-    <?php if ($can_update || $can_create): ?>
     <div class="row">
+    <?php if ($can_update || $can_create): ?>
       <button type="submit"><?= $category["id"] == 0 ? "Add" : "Update" ?></button>
       <a href="/categories"><button type="button">Cancel</button></a>
-    </div>
     <?php endif; ?>
+    </div>
   </form>
   <?php if ($category['id'] > 0 && $category['rgt'] == $category['lft'] + 1): ?>
   <h3>Attributes</h3>
@@ -67,7 +67,7 @@
             <input type="hidden" name="id" value="<?= $category['id'] ?>"/>
             <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
             <input type="hidden" name="attribute_id" value="<?= $attribute['id'] ?>"/>
-            <button type="submit">&#128473;</button>
+            <button type="submit"><img class="icon" src="/icons/delete.png"/></button>
           </form>
           <?php endif; ?>
         </td>
