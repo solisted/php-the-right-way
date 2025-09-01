@@ -6,7 +6,6 @@
   <?php sl_template_render_flash_message() ?>
   <form method="POST" action="/role/<?= ($role['id'] > 0 ? $role['id'] : "add") . "?tab={$tab_number}" . ($role['id'] > 0 && $page > 1 ? "?page={$page}&size={$size}" : "")?>">
     <input type="hidden" name="id" value="<?= $role['id'] ?>"/>
-    <input type="hidden" name="action" value="add_update_role"/>
     <input type="hidden" name="csrf" value="<?= sl_auth_get_current_csrf() ?>"/>
     <div class="row">
       <div class="left-column">
@@ -26,7 +25,12 @@
     </div>
     <div class="row">
     <?php if ($can_update || $can_create): ?>
-      <button type="submit"><?= $role["id"] == 0 ? "Add" : "Update" ?></button>
+      <button type="submit" name="action" value="add_update_role"><?= $role["id"] == 0 ? "Add" : "Update" ?></button>
+      <?php if ($role["status_id"] == SL_ROLE_ACTIVE_STATUS_ID): ?>
+      <button type="submit" class="secondary" name="action" value="delete_role">Delete</button>
+      <?php elseif ($role["status_id"] == SL_ROLE_DELETED_STATUS_ID): ?>
+      <button type="submit" class="secondary" name="action" value="restore_role">Restore</button>
+      <?php endif; ?>
       <a href="/roles"><button type="button">Cancel</button></a>
     <?php endif; ?>
     </div>

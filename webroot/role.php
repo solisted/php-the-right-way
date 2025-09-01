@@ -104,7 +104,9 @@ sl_request_methods_assert(["GET", "POST"]);
 $role = [
     "id" => 0,
     "name" => "",
-    "description" => ""
+    "description" => "",
+    "status_id" => SL_ROLE_INVALID_STATUS_ID,
+    "status_history_id" => 0
 ];
 $role_actions = [];
 $other_actions = [];
@@ -251,6 +253,52 @@ if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "del
     $statement->execute();
 
     sl_session_set_flash_message("Action deleted from the role successfully");
+    sl_request_redirect("/role/${role_id}");
+}
+
+if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "delete_role")) {
+    sl_auth_assert_authorized("UpdateRole");
+
+    $role_id = sl_request_post_get_integer("id", 0, PHP_INT_MAX);
+
+    $role = sl_role_get_role_by_id($connection, $role_id);
+    if (empty($role)) {
+        sl_request_terminate(404);
+    }
+
+    if ($role["status_id"] != SL_ROLE_ACTIVE_STATUS_ID) {
+        sl_request_terminate(400);
+    }
+
+    sl_role_change_role_status($connection, $role_id, SL_ROLE_DELETED_STATUS_ID);
+
+    sl_session_set_flash_message("Role successfully deleted");
+    if (sl_request_post_string_equals("return", "roles")) {
+        sl_request_redirect("/roles");
+    }
+    sl_request_redirect("/role/${role_id}");
+}
+
+if (sl_request_is_method("POST") && sl_request_post_string_equals("action", "restore_role")) {
+    sl_auth_assert_authorized("UpdateRole");
+
+    $role_id = sl_request_post_get_integer("id", 0, PHP_INT_MAX);
+
+    $role = sl_role_get_role_by_id($connection, $role_id);
+    if (empty($role)) {
+        sl_request_terminate(404);
+    }
+
+    if ($role["status_id"] != SL_ROLE_DELETED_STATUS_ID) {
+        sl_request_terminate(400);
+    }
+
+    sl_role_change_role_status($connection, $role_id, SL_ROLE_ACTIVE_STATUS_ID);
+
+    sl_session_set_flash_message("Role successfully restored");
+    if (sl_request_post_string_equals("return", "roles")) {
+        sl_request_redirect("/roles");
+    }
     sl_request_redirect("/role/${role_id}");
 }
 

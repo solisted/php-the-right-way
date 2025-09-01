@@ -61,9 +61,22 @@ if (sl_request_is_method("POST")) {
             $user = $statement->fetch(PDO::FETCH_ASSOC);
             if (password_verify($password, $user["password"]) === true) {
                 $statement = $connection->prepare(
-                    "SELECT DISTINCT a.name FROM users u, users_roles ur, roles_actions ra, actions a WHERE u.id = ur.user_id AND ur.role_id = ra.role_id AND a.id = ra.action_id AND u.id = :user_id"
+                   "SELECT
+                        DISTINCT a.name,
+                        SUBSTRING_INDEX(GROUP_CONCAT(rh.status_id ORDER BY rh.created DESC), ',', 1) AS role_status_id
+                    FROM actions a
+                    LEFT JOIN roles_actions ra ON (ra.action_id = a.id)
+                    LEFT JOIN users_roles ur ON (ur.role_id = ra.role_id)
+                    LEFT JOIN users u ON (u.id = ur.user_id)
+                    LEFT JOIN roles r ON (r.id = ur.role_id)
+                    LEFT JOIN role_history rh ON (rh.role_id = r.id)
+                    LEFT JOIN role_statuses rs ON (rh.status_id = rs.id)
+                    WHERE u.id = :user_id
+                    GROUP BY a.id, r.id
+                    HAVING role_status_id = :status_id"
                 );
                 $statement->bindValue(":user_id", $user["id"], PDO::PARAM_INT);
+                $statement->bindValue(":status_id", SL_ROLE_ACTIVE_STATUS_ID, PDO::PARAM_STR);
                 $statement->execute();
 
                 $actions = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
@@ -72,7 +85,7 @@ if (sl_request_is_method("POST")) {
                 $_SESSION["user_id"] = $user["id"];
                 $_SESSION["actions"] = $actions;
 
-                sl_request_redirect("/orders");
+                sl_request_redirect("/users");
             } else {
                 $auth_error = "Incorrect username or password";
             }
